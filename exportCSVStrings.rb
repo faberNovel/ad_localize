@@ -87,11 +87,13 @@ def exportCSV(argument, prefix, mode)
     end
 
     CSV.foreach(argument, :headers => true) do |row|
-        ios_file_hash.keys.each do |lang|
-            writeToIOS(ios_file_hash[lang], row["key"], debugValue(row[lang], mode))
-        end
-        android_xml_hash.keys.each do |lang|
-            writeToAndroid(android_xml_hash[lang], row["key"], debugValue(row[lang], mode))
+        if (!row.empty?)
+            ios_file_hash.keys.each do |lang|
+                writeToIOS(ios_file_hash[lang], row["key"], debugValue(row[lang], mode))
+            end
+            android_xml_hash.keys.each do |lang|
+                writeToAndroid(android_xml_hash[lang], row["key"], debugValue(row[lang], mode))
+            end
         end
     end
 
