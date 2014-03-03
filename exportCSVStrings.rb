@@ -29,7 +29,6 @@ def exportCSV(argument, prefix, mode)
     CSV.read(argument, :headers => true, :skip_blanks).headers().each do |header|
         if header != "key"
             xml_doc = REXML::Document.new
-#doc.context[:attribute_quote] = :quote  # <-- Set double-quote as the attribute value delimiter
             xml_doc.context[:attribute_quote] = :quote
             xml_doc.context[:raw] = :all
             xml_doc << REXML::XMLDecl.new('1.0', 'utf-8')
