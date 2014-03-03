@@ -26,7 +26,7 @@ def exportCSV(argument, prefix, mode)
 
     android_xml_hash = Hash.new
     ios_file_hash = Hash.new
-    CSV.read(argument, :headers => true).headers().each do |header|
+    CSV.read(argument, :headers => true, :skip_blanks).headers().each do |header|
         if header != "key"
             xml_doc = REXML::Document.new
 #doc.context[:attribute_quote] = :quote  # <-- Set double-quote as the attribute value delimiter
@@ -86,7 +86,7 @@ def exportCSV(argument, prefix, mode)
         return value
     end
 
-    CSV.foreach(argument, :headers => true) do |row|
+    CSV.foreach(argument, :headers => true, :skip_blanks => true) do |row|
         if (!row.empty?)
             ios_file_hash.keys.each do |lang|
                 writeToIOS(ios_file_hash[lang], row["key"], debugValue(row[lang], mode))
