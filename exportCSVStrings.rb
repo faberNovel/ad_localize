@@ -26,7 +26,7 @@ def exportCSV(argument, prefix, mode)
 
     android_xml_hash = Hash.new
     ios_file_hash = Hash.new
-    CSV.read(argument, :headers => true, :skip_blanks).headers().each do |header|
+    CSV.read(argument, :headers => true, :skip_blanks => true).headers().each do |header|
         if header != "key"
             xml_doc = REXML::Document.new
             xml_doc.context[:attribute_quote] = :quote
