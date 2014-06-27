@@ -46,7 +46,7 @@ def exportCSV(argument, prefix, mode)
     end
 
     def writeToJSON(hash, key, value)
-        hash[key] = value
+        hash[key] = convertStringToAngularTemplate value
     end
 
     def convertStringToAndroid(value)
@@ -57,6 +57,10 @@ def exportCSV(argument, prefix, mode)
         processedValue = processedValue.gsub(/&(?!(?:amp|lt|gt|quot|apos);)/, '&amp;')
         processedValue = processedValue.gsub(/(%(\d+\$)?@)/, '%\2s')
         value = "\"#{processedValue}\""
+    end
+
+    def convertStringToAngularTemplate(value)
+        value.gsub(/(%(\d+\$)?@)/, '{\2s}')
     end
 
     def writeToAndroid(xml, key, value)
