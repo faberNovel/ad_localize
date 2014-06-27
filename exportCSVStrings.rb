@@ -4,6 +4,7 @@
 require 'csv'
 require 'rexml/document'
 require 'optparse'
+require 'json'
 
 options = {}
 options[:debug] = false
@@ -26,6 +27,7 @@ def exportCSV(argument, prefix, mode)
 
     android_xml_hash = Hash.new
     ios_file_hash = Hash.new
+    json_hash = Hash.new
     CSV.read(argument, :headers => true, :skip_blanks => true).headers().each do |header|
         if header != "key"
             xml_doc = REXML::Document.new
@@ -35,11 +37,16 @@ def exportCSV(argument, prefix, mode)
             xml_doc.add_element "resources"
             android_xml_hash[header] = xml_doc
             ios_file_hash[header] = File.open("#{prefix}Localizable-#{header}.strings", "w")
+            json_hash[header] = Hash.new
         end
     end
 
     def writeToIOS(file, key, value)
         file.puts "\"#{key}\" = \"#{value}\";"
+    end
+
+    def writeToJSON(hash, key, value)
+        hash[key] = value
     end
 
     def convertStringToAndroid(value)
@@ -93,6 +100,9 @@ def exportCSV(argument, prefix, mode)
             android_xml_hash.keys.each do |lang|
                 writeToAndroid(android_xml_hash[lang], row["key"], debugValue(row[lang], mode))
             end
+            json_hash.each_key do |lang|
+                writeToJSON(json_hash[lang], row["key"], debugValue(row[lang], mode))
+            end
         end
     end
 
@@ -104,6 +114,10 @@ def exportCSV(argument, prefix, mode)
         formatter.write(android_xml_hash[lang], file)
     end
 
+    json_hash.each do |lang, values|
+        file = File.open("#{prefix}locale-#{lang}.json", "w")
+        file.write(values.to_json)
+    end
 end
 
 ARGV.each do |file_name|
