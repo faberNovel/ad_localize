@@ -5,6 +5,7 @@ require 'csv'
 require 'rexml/document'
 require 'optparse'
 require 'json'
+require 'yaml'
 
 options = {}
 options[:debug] = false
@@ -118,11 +119,32 @@ def exportCSV(argument, prefix, mode)
         formatter.compact = true
         formatter.width = Float::INFINITY
         formatter.write(android_xml_hash[lang], file)
+        file.close
+    end
+
+    # Turns {'a:b:c' => 42} into {'a' => {'b' => {'c' => 42}}}
+    def expand_by_splitting_keys(hash, separator = ':')
+        expanded_hash = {}
+        hash.each do |key, value|
+          *subkeys, last = key.split(':')
+          subhash = expanded_hash
+          subkeys.each do |subkey|
+            subhash[subkey] ||= {}
+            subhash = subhash[subkey]
+          end
+          subhash[last] = value
+        end
+        return expanded_hash
     end
 
     json_hash.each do |lang, values|
         file = File.open("#{prefix}locale-#{lang}.json", "w")
         file.write(values.to_json)
+        file.close
+
+        file = File.open("#{prefix}locale-#{lang}.yml", "w")
+        file.write({lang => expand_by_splitting_keys(values)}.to_yaml)
+        file.close
     end
 end
 
