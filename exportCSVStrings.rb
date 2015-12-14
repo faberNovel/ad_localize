@@ -59,6 +59,7 @@ def exportCSV(argument, prefix, mode)
         processedValue = processedValue.gsub(/(%(\d+\$)?@)/, '%\2s')
         processedValue = processedValue.gsub(/(%(\d+\$)?i)/, '%\2d')
         processedValue = processedValue.gsub(/%(?!(\d+\$)?[sd])/, '\%%')
+        processedValue = processedValue.gsub("\\U", "\\u")
         value = "\"#{processedValue}\""
     end
 
