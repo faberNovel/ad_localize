@@ -45,6 +45,7 @@ def organized_csv_data(file_name, debug_mode)
 
       data[key.to_sym] = {} unless data.key? key.to_sym
       locales.map do |locale|
+        next unless row[locale]
         data[key.to_sym][locale.to_sym] = { singular: row[locale] }
       end
     else
@@ -53,6 +54,7 @@ def organized_csv_data(file_name, debug_mode)
 
       data[key.to_sym] = {} unless data.key? key.to_sym
       locales.map do |locale|
+        next unless row[locale]
         data[key.to_sym][locale.to_sym] = { plural: {} } unless data[key.to_sym].key? locale.to_sym
         data[key.to_sym][locale.to_sym][:plural][plural_prefix.to_sym] = row[locale]
       end
@@ -69,6 +71,8 @@ def export(organized_data, debug_mode)
   keys = organized_data.keys
   locales = organized_data[keys.first].keys
   locales.each do |locale|
+    has_wording = organized_data.select{ |key, wording| wording.key? locale }.count > 0
+    next unless has_wording
     @logger.debug "generates empty directory for locale : #{locale.upcase}" if debug_mode
     export_dir = locale_dir(locale)
     @logger.debug "generates android wording file" if debug_mode
@@ -95,7 +99,7 @@ def locale_dir(locale)
 end
 
 def write_to_ios_singular(export_dir,locale, data)
-  singulars = data.select {|key, wording| wording[locale].key? :singular}
+  singulars = data.select {|key, wording| wording[locale]&.key? :singular}
   if singulars.empty?
     @logger.info "Not enough content to generate Localizable.strings"
     return true
@@ -103,7 +107,7 @@ def write_to_ios_singular(export_dir,locale, data)
 
   singulars.each do |key, wording|
     translations = wording[locale]
-    value = translations.dig(:singular)
+    value = translations&.dig(:singular)
     export_dir.join("Localizable.strings").open("a") do |file|
       file.puts "\"#{key}\" = \"#{value}\";\n"
     end
@@ -111,7 +115,7 @@ def write_to_ios_singular(export_dir,locale, data)
 end
 
 def write_to_ios_plural(export_dir,locale, data)
-  plurals = data.select {|key, wording| wording[locale].key? :plural}
+  plurals = data.select {|key, wording| wording[locale]&.key? :plural}
   if plurals.empty?
     @logger.info "Not enough content to generate Localizable.stringsdict"
     return true
@@ -165,12 +169,12 @@ def write_to_android(export_dir, locale, data)
   xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
     xml.resources{
       data.each do |key, wording|
-        if wording.dig(locale).key? :singular
+        if wording.dig(locale)&.key? :singular
           xml.string(name: key) {
             xml.text(convertStringToAndroid(wording.dig(locale, :singular)))
           }
         end
-        if wording.dig(locale).key? :plural
+        if wording.dig(locale)&.key? :plural
           xml.plurals(name: key) {
             wording.dig(locale, :plural).each do |plural_type, plural_text|
               xml.item(quantity: plural_type) {
@@ -204,17 +208,17 @@ def angular_substitution_format(value)
 end
 
 def yml_substitution_format(value)
-  value.gsub(/(%(\d+\$)?@)/, '%{REPLACE_ME}')
+  value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
   formatted_data = data.each_with_object({}) do |(key, wording), hash_acc|
     hash_acc[locale.to_s] = {} unless hash_acc.key? locale.to_s
-    if wording.dig(locale).key? :singular
+    if wording.dig(locale)&.key? :singular
       value = send("#{substitution_format}_substitution_format", wording.dig(locale, :singular))
       hash_acc[locale.to_s][key.to_s] = value
     end
-    if wording.dig(locale).key? :plural
+    if wording.dig(locale)&.key? :plural
       hash_acc[locale.to_s][key.to_s] = {} unless hash_acc[locale.to_s].key? key.to_s
       wording.dig(locale, :plural).each do |plural_type, plural_text|
         value = send("#{substitution_format}_substitution_format", plural_text)
