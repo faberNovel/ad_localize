@@ -9,56 +9,219 @@ require 'yaml'
 require 'byebug'
 require 'pathname'
 require 'fileutils'
+require 'logger'
+require 'nokogiri'
 
+# /!\ wording keys must be in snake case
 
-def get_locales(csv)
-  csv.headers.each_with_object([]) do |header, result|
-    result << header unless %w(key ecran).include? header.downcase
-  end
+def csv_key_column_name
+  "key"
 end
 
-def create_locale_files(locales, prefix)
-  locale_file_names = ["Localizable.strings", "strings.xml"]
-  locales.each do |locale|
-    locale_directory_path = Pathname::pwd.join(locale.upcase)
-    locale_directory_path.rmtree if locale_directory_path.directory?
-    locale_directory_path.mkdir
-    locale_file_names.concat [ "#{locale}.json", "#{locale}.yml"]
-    locale_file_names.each do |file_name|
-      File.new(locale_directory_path.join("#{prefix}#{file_name}"), "w")
+def plural_regexp
+  /\#\#\{(\w+)\}(\w+)/
+end
+
+def organized_csv_data(file_name)
+  locales = nil
+  data = {}
+  CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
+
+    # Find locales
+    if locales.nil?
+      locales = row.headers.reject { |header| %w(key ecran).include? header.downcase }
     end
-  end
-end
 
-def writeToIOS(file, key, value)
-  file.puts "\"#{key}\" = \"#{value}\";"
-end
-
-def writeToJSON(hash, key, value)
-  hash[key] = convertStringToAngularTemplate value
-end
-
-# TODO: return file data in a hash
-def get_data_from_csv(csv, languages)
-  csv.each_with_index do |row, i|
-    usable_row = true
-    %w(key).concat(languages).each do |header|
-      usable_row = false if row.field(header).nil?
+    # Check if the key is plural
+    key = row.field(csv_key_column_name)
+    non_empty_fields = row.fields.reject {|f| f.nil? }
+    if key.nil? or (non_empty_fields.count == 0)
+      @logger.error("Missing key in line #{$.}") if key.nil? and (non_empty_fields.count > 0)
+      next
     end
-    if usable_row
-      # languages.each do |lang|
-      #   byebug
-      #   writeToIOS(ios_file_hash[lang], row["key"], debugValue(row[lang], mode))
-      #   writeToAndroid(android_xml_hash[lang], row["key"], debugValue(row[lang], mode))
-      #   writeToJSON(json_hash[lang], row["key"], debugValue(row[lang], mode))
-      # end
+
+    plural_prefix = key[plural_regexp,1]
+    if plural_prefix.nil?
+      # Set singular
+      data[key.to_sym] = {} unless data.key? key.to_sym
+      locales.map do |locale|
+        data[key.to_sym][locale.to_sym] = { singular: row[locale] }
+      end
     else
-      puts "There are missing values in line #{i}"
+      # Set plural
+      key = row[csv_key_column_name][plural_regexp,2]
+      data[key.to_sym] = {} unless data.key? key.to_sym
+      locales.map do |locale|
+        data[key.to_sym][locale.to_sym] = { plural: {} } unless data[key.to_sym].key? locale.to_sym
+        data[key.to_sym][locale.to_sym][:plural][plural_prefix.to_sym] = row[locale]
+      end
     end
+  end
+  data
+end
+
+def export(organized_data, prefixe, mode)
+  if organized_data.empty?
+    @logger.info "Not enough content to generate wording files"
+    return true
+  end
+  keys = organized_data.keys
+  locales = organized_data[keys.first].keys
+  locales.each do |locale|
+    export_dir = locale_dir(locale)
+    write_to_android(export_dir, locale, organized_data)
+    write_to_ios_singular(export_dir, locale, organized_data)
+    write_to_ios_plural(export_dir,locale, organized_data)
+    write_to_yml(export_dir, locale, organized_data)
+    write_to_json(export_dir, locale, organized_data)
+  end
+end
+
+def locale_dir(locale)
+  locale_directory_path = Pathname::pwd.join(locale.to_s.upcase)
+  if locale_directory_path.directory?
+    FileUtils.rm_rf("#{locale_directory_path}/.", secure: true)
+  else
+    locale_directory_path.mkdir
+  end
+  locale_directory_path
+end
+
+def write_to_ios_singular(export_dir,locale, data)
+  singulars = data.select {|key, wording| wording[locale].key? :singular}
+  if singulars.empty?
+    @logger.info "Not enough content to generate Localizable.strings"
+    return true
+  end
+
+  singulars.each do |key, wording|
+    translations = wording[locale]
+    value = translations.dig(:singular)
+    export_dir.join("Localizable.strings").open("a") do |file|
+      file.puts "\"#{key}\" = \"#{value}\";\n"
+    end
+  end
+end
+
+def write_to_ios_plural(export_dir,locale, data)
+  plurals = data.select {|key, wording| wording[locale].key? :plural}
+  if plurals.empty?
+    @logger.info "Not enough content to generate Localizable.stringsdict"
+    return true
+  end
+
+  xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+    xml.plist {
+      xml.dict {
+        plurals.each do |wording_key, translations|
+          xml.key wording_key
+          xml.dict {
+            xml.key "NSStringLocalizedFormatKey"
+            xml.string "%\#@key@"
+            xml.key "key"
+            xml.dict {
+              xml.key "NSStringFormatSpecTypeKey"
+              xml.string "NSStringPluralRuleType"
+              xml.key "NSStringFormatValueTypeKey"
+              xml.string "d"
+              translations[locale].each do |wording_type, wording_value|
+                wording_value.each do |plural_identifier, plural_value|
+                  xml.key plural_identifier
+                  xml.string plural_value
+                end
+              end
+            }
+          }
+        end
+      }
+    }
+  end
+  export_dir.join("Localizable.stringsdict").open("w") do |file|
+    file.puts xml_doc.to_xml
+  end
+end
+
+def convertStringToAndroid(value)
+  processedValue = value.gsub(/</, "&lt;")
+  processedValue = processedValue.gsub(/>/, "&gt;")
+  processedValue = processedValue.gsub(/(?<!\\)'/, "\\\\'")
+  processedValue = processedValue.gsub(/(?<!\\)\"/, "\\\"")
+  processedValue = processedValue.gsub(/&(?!(?:amp|lt|gt|quot|apos);)/, '&amp;')
+  processedValue = processedValue.gsub(/(%(\d+\$)?@)/, '%\2s')
+  processedValue = processedValue.gsub(/(%(\d+\$)?i)/, '%\2d')
+  processedValue = processedValue.gsub(/%(?!(\d+\$)?[sd])/, '\%%')
+  processedValue = processedValue.gsub("\\U", "\\u")
+  value = "\"#{processedValue}\""
+end
+
+def write_to_android(export_dir, locale, data)
+  xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+    xml.resources{
+      data.each do |key, wording|
+        if wording.dig(locale).key? :singular
+          xml.string(name: key) {
+            xml.text(convertStringToAndroid(wording.dig(locale, :singular)))
+          }
+        end
+        if wording.dig(locale).key? :plural
+          xml.plurals(name: key) {
+            wording.dig(locale, :plural).each do |plural_type, plural_text|
+              xml.item(quantity: plural_type) {
+                xml.text(convertStringToAndroid(plural_text))
+              }
+            end
+          }
+        end
+      end
+    }
+  end
+  export_dir.join("strings.xml").open("w") do |file|
+    file.puts xml_doc.to_xml
+  end
+end
+
+def write_to_json(export_dir, locale, data)
+  write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
+    file.puts json_data.to_json
+  end
+end
+
+def write_to_yml(export_dir, locale, data)
+  write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
+    file.puts yml_data.to_yaml
+  end
+end
+
+def angular_substitution_format(value)
+  value.gsub(/(%(\d+\$)?@)/, '{\2s}')
+end
+
+def yml_substitution_format(value)
+  value.gsub(/(%(\d+\$)?@)/, '%{REPLACE_ME}')
+end
+
+def write_to(export_dir, locale, data, export_extension, substitution_format)
+  formatted_data = data.each_with_object({}) do |(key, wording), hash_acc|
+    hash_acc[locale.to_s] = {} unless hash_acc.key? locale.to_s
+    if wording.dig(locale).key? :singular
+      value = send("#{substitution_format}_substitution_format", wording.dig(locale, :singular))
+      hash_acc[locale.to_s][key.to_s] = value
+    end
+    if wording.dig(locale).key? :plural
+      hash_acc[locale.to_s][key.to_s] = {} unless hash_acc[locale.to_s].key? key.to_s
+      wording.dig(locale, :plural).each do |plural_type, plural_text|
+        value = send("#{substitution_format}_substitution_format", plural_text)
+        hash_acc[locale.to_s][key.to_s][plural_type.to_s] = value
+      end
+    end
+  end
+  export_dir.join("#{locale}.#{export_extension}").open("w") do |file|
+    yield(formatted_data, file)
   end
 end
 
 # MAIN
+# Parse options
 options = { debug: false, prefix: "" }
 OptionParser.new do |opt|
   opt.banner = "Usage: ruby exportCSVStrings.rb [options] file"
@@ -70,121 +233,20 @@ OptionParser.new do |opt|
   end
 end.parse!
 
-
+# Start the process
+@logger = Logger.new(STDOUT)
+@logger.level = Logger::WARN
 
 if ARGV.size.zero?
   puts "Usage: ruby exportCSVStrings.rb [options] file_to_parse"
 else
   puts "FILE(S) TO PARSE : #{ARGV}"
   puts "OPTIONS : #{options}"
+
+  prefix = options[:prefix]
   ARGV.each do |file_name|
-    csv = CSV.read(file_name, :headers => true, :skip_blanks => true)
-    prefix = options[:prefix]
-    locales = get_locales(csv)
-    create_locale_files(locales, prefix)
-    get_data_from_csv(csv, locales)
-    # TODO: generate_files
-    # exportCSV(file_name, prefix, options[:debug])
+    data = organized_csv_data(file_name)
+    export(data, prefix, options[:debug])
   end
 end
-
-
-# # ANDROID
-# xml_doc = REXML::Document.new(nil, {attribute_quote: :quote, raw: :all})
-# xml_doc << REXML::XMLDecl.new('1.0', 'utf-8')
-# xml_doc.add_element "resources"
-# platform_hashes[:android_xml_hash][header] = xml_doc
-
-# # iOS
-# platform_hashes[:ios_file_hash][header] = locale_directory_path.join("#{prefix}Localizable.strings")
-# platform_hashes[:json_hash][header] = Hash.new
-# def convertStringToAndroid(value)
-#     processedValue = value.gsub(/</, "&lt;")
-#     processedValue = processedValue.gsub(/>/, "&gt;")
-#     processedValue = processedValue.gsub(/(?<!\\)'/, "\\\\'")
-#     processedValue = processedValue.gsub(/(?<!\\)\"/, "\\\"")
-#     processedValue = processedValue.gsub(/&(?!(?:amp|lt|gt|quot|apos);)/, '&amp;')
-#     processedValue = processedValue.gsub(/(%(\d+\$)?@)/, '%\2s')
-#     processedValue = processedValue.gsub(/(%(\d+\$)?i)/, '%\2d')
-#     processedValue = processedValue.gsub(/%(?!(\d+\$)?[sd])/, '\%%')
-#     processedValue = processedValue.gsub("\\U", "\\u")
-#     value = "\"#{processedValue}\""
-# end
-
-# def convertStringToAngularTemplate(value)
-#     value.gsub(/(%(\d+\$)?@)/, '{\2s}')
-# end
-
-# PLURALIZE_IDENTIFIERS = [:zero, :one, :two, :few, :many, :other]
-# def writeToAndroid(xml, key, value, )
-#     value = convertStringToAndroid(value)
-#     PLURALIZE_IDENTIFIERS.each {|w|
-#         if (key =~ /\#\#\{#{w}\}/)
-#             shortkey = key.gsub("##\{#{w}\}", "")
-#             existingElem = xml.root.elements.to_a("//plurals[@name='#{shortkey}']")
-#             if (existingElem.size > 0)
-#                 elem = existingElem.first
-#                 elem = elem.add_element "item", {"quantity" => w}
-#                 elem.text = value
-#             else
-#                 elem = xml.root.add_element "plurals", {"name" => shortkey}
-#                 elem = elem.add_element "item", {"quantity" => w}
-#                 elem.text = value
-#             end
-#             return
-#         end
-#     }
-#     elem = xml.root.add_element "string", {"name" => key}
-#     elem.text = value
-# end
-
-# def exportCSV(argument, prefix, mode)
-#     # CSV.foreach(argument, :headers => true, :skip_blanks => true) do |row|
-#     #     if (!row.empty?)
-#     #         ios_file_hash.keys.each do |lang|
-#     #             writeToIOS(ios_file_hash[lang], row["key"], debugValue(row[lang], mode))
-#     #         end
-#     #         android_xml_hash.keys.each do |lang|
-#     #             writeToAndroid(android_xml_hash[lang], row["key"], debugValue(row[lang], mode))
-#     #         end
-#     #         json_hash.each_key do |lang|
-#     #             writeToJSON(json_hash[lang], row["key"], debugValue(row[lang], mode))
-#     #         end
-#     #     end
-#     # end
-
-#     # android_xml_hash.keys.each do |lang|
-#     #     file = File.open("#{prefix}strings-#{lang}.xml", "w");
-#     #     formatter = REXML::Formatters::Pretty.new(4)
-#     #     formatter.compact = true
-#     #     formatter.width = Float::INFINITY
-#     #     formatter.write(android_xml_hash[lang], file)
-#     #     file.close
-#     # end
-
-#     # # Turns {'a:b:c' => 42} into {'a' => {'b' => {'c' => 42}}}
-#     # def expand_by_splitting_keys(hash, separator = ':')
-#     #     expanded_hash = {}
-#     #     hash.each do |key, value|
-#     #       *subkeys, last = key.split(':')
-#     #       subhash = expanded_hash
-#     #       subkeys.each do |subkey|
-#     #         subhash[subkey] ||= {}
-#     #         subhash = subhash[subkey]
-#     #       end
-#     #       subhash[last] = value
-#     #     end
-#     #     return expanded_hash
-#     # end
-
-#     # json_hash.each do |lang, values|
-#     #     file = File.open("#{prefix}locale-#{lang}.json", "w")
-#     #     file.write(values.to_json)
-#     #     file.close
-
-#     #     file = File.open("#{prefix}locale-#{lang}.yml", "w")
-#     #     file.write({lang => expand_by_splitting_keys(values)}.to_yaml)
-#     #     file.close
-#     # end
-# end
 
