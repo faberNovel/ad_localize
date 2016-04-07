@@ -22,14 +22,13 @@ def plural_regexp
   /\#\#\{(\w+)\}(\w+)/
 end
 
-def organized_csv_data(file_name)
+def organized_csv_data(file_name, debug_mode)
   locales = nil
   data = {}
   CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
-
-    # Find locales
     if locales.nil?
       locales = row.headers.reject { |header| %w(key ecran).include? header.downcase }
+      @logger.debug "CSV LOCALES : #{locales}" if debug_mode
     end
 
     # Check if the key is plural
@@ -42,14 +41,16 @@ def organized_csv_data(file_name)
 
     plural_prefix = key[plural_regexp,1]
     if plural_prefix.nil?
-      # Set singular
+      @logger.debug "Singular key ---> #{key}" if debug_mode
+
       data[key.to_sym] = {} unless data.key? key.to_sym
       locales.map do |locale|
         data[key.to_sym][locale.to_sym] = { singular: row[locale] }
       end
     else
-      # Set plural
       key = row[csv_key_column_name][plural_regexp,2]
+      @logger.debug "Plural key ---> plural_identifier : #{plural_prefix}, key : #{key}" if debug_mode
+
       data[key.to_sym] = {} unless data.key? key.to_sym
       locales.map do |locale|
         data[key.to_sym][locale.to_sym] = { plural: {} } unless data[key.to_sym].key? locale.to_sym
@@ -60,7 +61,7 @@ def organized_csv_data(file_name)
   data
 end
 
-def export(organized_data, prefixe, mode)
+def export(organized_data, debug_mode)
   if organized_data.empty?
     @logger.info "Not enough content to generate wording files"
     return true
@@ -68,11 +69,17 @@ def export(organized_data, prefixe, mode)
   keys = organized_data.keys
   locales = organized_data[keys.first].keys
   locales.each do |locale|
+    @logger.debug "generates empty directory for locale : #{locale.upcase}" if debug_mode
     export_dir = locale_dir(locale)
+    @logger.debug "generates android wording file" if debug_mode
     write_to_android(export_dir, locale, organized_data)
+    @logger.debug "generates ios singular wording file" if debug_mode
     write_to_ios_singular(export_dir, locale, organized_data)
+    @logger.debug "generates ios plural wording file" if debug_mode
     write_to_ios_plural(export_dir,locale, organized_data)
+    @logger.debug "generates yml wording file" if debug_mode
     write_to_yml(export_dir, locale, organized_data)
+    @logger.debug "generates json wording file" if debug_mode
     write_to_json(export_dir, locale, organized_data)
   end
 end
@@ -222,31 +229,27 @@ end
 
 # MAIN
 # Parse options
-options = { debug: false, prefix: "" }
+options = { debug: false }
 OptionParser.new do |opt|
   opt.banner = "Usage: ruby exportCSVStrings.rb [options] file"
   opt.on("-d", "--debug", "running for debug mode") do
     options[:debug] = true
   end
-  opt.on("-p", "--prefix", "prefix generated files") do |prefix|
-    options[:prefix] = prefix
-  end
 end.parse!
 
 # Start the process
 @logger = Logger.new(STDOUT)
-@logger.level = Logger::WARN
+@logger.level = Logger::DEBUG
 
 if ARGV.size.zero?
   puts "Usage: ruby exportCSVStrings.rb [options] file_to_parse"
 else
-  puts "FILE(S) TO PARSE : #{ARGV}"
-  puts "OPTIONS : #{options}"
+  @logger.info "FILE(S) TO PARSE : #{ARGV}"
+  @logger.info "OPTIONS : #{options}"
 
-  prefix = options[:prefix]
   ARGV.each do |file_name|
-    data = organized_csv_data(file_name)
-    export(data, prefix, options[:debug])
+    data = organized_csv_data(file_name, options[:debug])
+    export(data, options[:debug])
   end
 end
 
