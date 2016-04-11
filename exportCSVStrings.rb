@@ -149,7 +149,7 @@ def write_to_ios_plural(export_dir,locale, data)
     }
   end
   export_dir.join("Localizable.stringsdict").open("w") do |file|
-    file.puts xml_doc.to_xml
+    file.puts xml_doc.to_xml(indent: 4)
   end
 end
 
@@ -189,7 +189,7 @@ def write_to_android(export_dir, locale, data)
     }
   end
   export_dir.join("strings.xml").open("w") do |file|
-    file.puts xml_doc.to_xml
+    file.puts xml_doc.to_xml(indent: 4)
   end
 end
 
