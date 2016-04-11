@@ -19,16 +19,15 @@ def csv_key_column_name
 end
 
 def plural_regexp
-  /\#\#\{(\w+)\}(\w+)/
+  /(\w+)\#\#\{(\w+)\}/
 end
 
 def organized_csv_data(file_name, debug_mode)
-  locales = nil
   data = {}
   CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
-    if locales.nil?
-      locales = row.headers.reject { |header| %w(key ecran).include? header.downcase }
-      @logger.debug "CSV LOCALES : #{locales}" if debug_mode
+    if @locales.nil?
+      @locales = row.headers.reject{ |header| %w(key ecran).include? header.downcase }
+      @logger.debug "CSV LOCALES : #{@locales}" if debug_mode
     end
 
     # Check if the key is plural
@@ -39,21 +38,22 @@ def organized_csv_data(file_name, debug_mode)
       next
     end
 
-    plural_prefix = key[plural_regexp,1]
+    #FIXME : add flexibility to plural identifier position : extract the identifier from the key no matter its position
+    plural_prefix = key[plural_regexp,2]
     if plural_prefix.nil?
       @logger.debug "Singular key ---> #{key}" if debug_mode
 
       data[key.to_sym] = {} unless data.key? key.to_sym
-      locales.map do |locale|
+      @locales.map do |locale|
         next unless row[locale]
         data[key.to_sym][locale.to_sym] = { singular: row[locale] }
       end
     else
-      key = row[csv_key_column_name][plural_regexp,2]
+      key = row[csv_key_column_name][plural_regexp,1]
       @logger.debug "Plural key ---> plural_identifier : #{plural_prefix}, key : #{key}" if debug_mode
 
       data[key.to_sym] = {} unless data.key? key.to_sym
-      locales.map do |locale|
+      @locales.map do |locale|
         next unless row[locale]
         data[key.to_sym][locale.to_sym] = { plural: {} } unless data[key.to_sym].key? locale.to_sym
         data[key.to_sym][locale.to_sym][:plural][plural_prefix.to_sym] = row[locale]
@@ -68,23 +68,22 @@ def export(organized_data, debug_mode)
     @logger.info "Not enough content to generate wording files"
     return true
   end
-  keys = organized_data.keys
-  locales = organized_data[keys.first].keys
-  locales.each do |locale|
-    has_wording = organized_data.select{ |key, wording| wording.key? locale }.count > 0
+  @logger.debug "GENERATING WORDING FILES..." if debug_mode
+  @locales.each do |locale|
+    has_wording = organized_data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
     next unless has_wording
-    @logger.debug "generates empty directory for locale : #{locale.upcase}" if debug_mode
+    @logger.debug "******* #{locale.upcase} *******" if debug_mode
     export_dir = locale_dir(locale)
-    @logger.debug "generates android wording file" if debug_mode
     write_to_android(export_dir, locale, organized_data)
-    @logger.debug "generates ios singular wording file" if debug_mode
+    @logger.debug "Android ---> DONE!" if debug_mode
     write_to_ios_singular(export_dir, locale, organized_data)
-    @logger.debug "generates ios plural wording file" if debug_mode
+    @logger.debug "iOS singular ---> DONE!" if debug_mode
     write_to_ios_plural(export_dir,locale, organized_data)
-    @logger.debug "generates yml wording file" if debug_mode
+    @logger.debug "iOS plural ---> DONE!" if debug_mode
     write_to_yml(export_dir, locale, organized_data)
-    @logger.debug "generates json wording file" if debug_mode
+    @logger.debug "YML ---> DONE!" if debug_mode
     write_to_json(export_dir, locale, organized_data)
+    @logger.debug "JSON ---> DONE!" if debug_mode
   end
 end
 
@@ -99,14 +98,15 @@ def locale_dir(locale)
 end
 
 def write_to_ios_singular(export_dir,locale, data)
-  singulars = data.select {|key, wording| wording[locale]&.key? :singular}
+  locale_sym = locale.to_sym
+  singulars = data.select {|key, wording| wording.dig(locale_sym)&.key? :singular}
   if singulars.empty?
     @logger.info "Not enough content to generate Localizable.strings"
     return true
   end
 
   singulars.each do |key, wording|
-    translations = wording[locale]
+    translations = wording[locale_sym]
     value = translations&.dig(:singular)
     export_dir.join("Localizable.strings").open("a") do |file|
       file.puts "\"#{key}\" = \"#{value}\";\n"
@@ -115,7 +115,8 @@ def write_to_ios_singular(export_dir,locale, data)
 end
 
 def write_to_ios_plural(export_dir,locale, data)
-  plurals = data.select {|key, wording| wording[locale]&.key? :plural}
+  locale_sym = locale.to_sym
+  plurals = data.select {|key, wording| wording[locale_sym]&.key? :plural}
   if plurals.empty?
     @logger.info "Not enough content to generate Localizable.stringsdict"
     return true
@@ -135,7 +136,7 @@ def write_to_ios_plural(export_dir,locale, data)
               xml.string "NSStringPluralRuleType"
               xml.key "NSStringFormatValueTypeKey"
               xml.string "d"
-              translations[locale].each do |wording_type, wording_value|
+              translations[locale_sym].each do |wording_type, wording_value|
                 wording_value.each do |plural_identifier, plural_value|
                   xml.key plural_identifier
                   xml.string plural_value
@@ -166,17 +167,18 @@ def convertStringToAndroid(value)
 end
 
 def write_to_android(export_dir, locale, data)
+  locale_sym = locale.to_sym
   xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
     xml.resources{
       data.each do |key, wording|
-        if wording.dig(locale)&.key? :singular
+        if wording.dig(locale_sym)&.key? :singular
           xml.string(name: key) {
-            xml.text(convertStringToAndroid(wording.dig(locale, :singular)))
+            xml.text(convertStringToAndroid(wording.dig(locale_sym, :singular)))
           }
         end
-        if wording.dig(locale)&.key? :plural
+        if wording.dig(locale_sym)&.key? :plural
           xml.plurals(name: key) {
-            wording.dig(locale, :plural).each do |plural_type, plural_text|
+            wording.dig(locale_sym, :plural).each do |plural_type, plural_text|
               xml.item(quantity: plural_type) {
                 xml.text(convertStringToAndroid(plural_text))
               }
@@ -212,21 +214,22 @@ def yml_substitution_format(value)
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
+  locale_sym = locale.to_sym
   formatted_data = data.each_with_object({}) do |(key, wording), hash_acc|
     hash_acc[locale.to_s] = {} unless hash_acc.key? locale.to_s
-    if wording.dig(locale)&.key? :singular
-      value = send("#{substitution_format}_substitution_format", wording.dig(locale, :singular))
+    if wording.dig(locale_sym)&.key? :singular
+      value = send("#{substitution_format}_substitution_format", wording.dig(locale_sym, :singular))
       hash_acc[locale.to_s][key.to_s] = value
     end
-    if wording.dig(locale)&.key? :plural
+    if wording.dig(locale_sym)&.key? :plural
       hash_acc[locale.to_s][key.to_s] = {} unless hash_acc[locale.to_s].key? key.to_s
-      wording.dig(locale, :plural).each do |plural_type, plural_text|
+      wording.dig(locale_sym, :plural).each do |plural_type, plural_text|
         value = send("#{substitution_format}_substitution_format", plural_text)
         hash_acc[locale.to_s][key.to_s][plural_type.to_s] = value
       end
     end
   end
-  export_dir.join("#{locale}.#{export_extension}").open("w") do |file|
+  export_dir.join("#{locale.to_s}.#{export_extension}").open("w") do |file|
     yield(formatted_data, file)
   end
 end
@@ -244,6 +247,7 @@ end.parse!
 # Start the process
 @logger = Logger.new(STDOUT)
 @logger.level = Logger::DEBUG
+@locales = nil
 
 if ARGV.size.zero?
   puts "Usage: ruby exportCSVStrings.rb [options] file_to_parse"
