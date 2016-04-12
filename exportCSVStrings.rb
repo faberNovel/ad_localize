@@ -64,10 +64,6 @@ def organized_csv_data(file_name, debug_mode)
 end
 
 def export(organized_data, debug_mode)
-  if organized_data.empty?
-    @logger.info "Not enough content to generate wording files"
-    return true
-  end
   @logger.debug "GENERATING WORDING FILES..." if debug_mode
   @locales.each do |locale|
     has_wording = organized_data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
@@ -118,7 +114,7 @@ def write_to_ios_plural(export_dir,locale, data)
   locale_sym = locale.to_sym
   plurals = data.select {|key, wording| wording[locale_sym]&.key? :plural}
   if plurals.empty?
-    @logger.info "Not enough content to generate Localizable.stringsdict"
+    @logger.info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plurals were found"
     return true
   end
 
@@ -252,12 +248,16 @@ end.parse!
 if ARGV.size.zero?
   puts "Usage: ruby exportCSVStrings.rb [options] file_to_parse"
 else
-  @logger.info "FILE(S) TO PARSE : #{ARGV}"
   @logger.info "OPTIONS : #{options}"
-
   ARGV.each do |file_name|
+    @logger.info "********* PARSING #{file_name} *********"
+    @logger.info "Extracting data from file ..."
     data = organized_csv_data(file_name, options[:debug])
-    export(data, options[:debug])
+    if data.empty?
+      @logger.info "No data were found in the file - cannot start the file generation process"
+    else
+      export(data, options[:debug])
+    end
   end
 end
 
