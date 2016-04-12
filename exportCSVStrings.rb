@@ -97,7 +97,7 @@ def write_to_ios_singular(export_dir,locale, data)
   locale_sym = locale.to_sym
   singulars = data.select {|key, wording| wording.dig(locale_sym)&.key? :singular}
   if singulars.empty?
-    @logger.info "Not enough content to generate Localizable.strings"
+    @logger.info "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found"
     return true
   end
 
@@ -114,7 +114,7 @@ def write_to_ios_plural(export_dir,locale, data)
   locale_sym = locale.to_sym
   plurals = data.select {|key, wording| wording[locale_sym]&.key? :plural}
   if plurals.empty?
-    @logger.info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plurals were found"
+    @logger.info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plural keys were found"
     return true
   end
 
