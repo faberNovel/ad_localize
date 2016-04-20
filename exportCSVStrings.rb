@@ -11,76 +11,24 @@ require 'pathname'
 require 'fileutils'
 require 'logger'
 require 'nokogiri'
+require 'active_support'
 
-# /!\ wording keys must be in snake case
+############################################################
+## @Requirement : csv wording keys must be in snake case  ##
+############################################################
 
-def csv_key_column_name
+def csv_wording_key_column
   "key"
 end
 
 def plural_regexp
-  /(\w+)\#\#\{(\w+)\}/
+  /\#\#\{(\w+)\}/
 end
 
-def organized_csv_data(file_name, debug_mode)
-  data = {}
-  CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
-    if @locales.nil?
-      @locales = row.headers.reject{ |header| %w(key ecran).include? header.downcase }
-      @logger.debug "CSV LOCALES : #{@locales}" if debug_mode
-    end
-
-    # Check if the key is plural
-    key = row.field(csv_key_column_name)
-    non_empty_fields = row.fields.reject {|f| f.nil? }
-    if key.nil? or (non_empty_fields.count == 0)
-      @logger.error("Missing key in line #{$.}") if key.nil? and (non_empty_fields.count > 0)
-      next
-    end
-
-    #FIXME : add flexibility to plural identifier position : extract the identifier from the key no matter its position
-    plural_prefix = key[plural_regexp,2]
-    if plural_prefix.nil?
-      @logger.debug "Singular key ---> #{key}" if debug_mode
-
-      data[key.to_sym] = {} unless data.key? key.to_sym
-      @locales.map do |locale|
-        next unless row[locale]
-        data[key.to_sym][locale.to_sym] = { singular: row[locale] }
-      end
-    else
-      key = row[csv_key_column_name][plural_regexp,1]
-      @logger.debug "Plural key ---> plural_identifier : #{plural_prefix}, key : #{key}" if debug_mode
-
-      data[key.to_sym] = {} unless data.key? key.to_sym
-      @locales.map do |locale|
-        next unless row[locale]
-        data[key.to_sym][locale.to_sym] = { plural: {} } unless data[key.to_sym].key? locale.to_sym
-        data[key.to_sym][locale.to_sym][:plural][plural_prefix.to_sym] = row[locale]
-      end
-    end
-  end
-  data
-end
-
-def export(organized_data, debug_mode)
-  @logger.debug "GENERATING WORDING FILES..." if debug_mode
-  @locales.each do |locale|
-    has_wording = organized_data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
-    next unless has_wording
-    @logger.debug "******* #{locale.upcase} *******" if debug_mode
-    export_dir = locale_dir(locale)
-    write_to_android(export_dir, locale, organized_data)
-    @logger.debug "Android ---> DONE!" if debug_mode
-    write_to_ios_singular(export_dir, locale, organized_data)
-    @logger.debug "iOS singular ---> DONE!" if debug_mode
-    write_to_ios_plural(export_dir,locale, organized_data)
-    @logger.debug "iOS plural ---> DONE!" if debug_mode
-    write_to_yml(export_dir, locale, organized_data)
-    @logger.debug "YML ---> DONE!" if debug_mode
-    write_to_json(export_dir, locale, organized_data)
-    @logger.debug "JSON ---> DONE!" if debug_mode
-  end
+def find_locales(row)
+  wording_key_index = row.index(csv_wording_key_column)
+  @locales = row.headers.slice((wording_key_index+1)..-1)
+  @logger.debug "DETECTED LOCALES : #{@locales}"
 end
 
 def locale_dir(locale)
@@ -91,6 +39,84 @@ def locale_dir(locale)
     locale_directory_path.mkdir
   end
   locale_directory_path
+end
+
+# Returns 1 if row is ok, 0 if row there are missing information and -1 if row is not a csv row
+def check_row(row)
+  valid_row = 1
+  # Check non empty row
+  if row.field(csv_wording_key_column).nil?
+    @logger.error("Missing key in line #{$.}") unless row.fields.all?(&:nil?)
+    valid_row = 0
+  elsif not row.headers.include?(csv_wording_key_column)
+    @logger.error "[CSV FORMAT] #{file_name} is not a valid file"
+    valid_row = -1
+  end
+  return valid_row
+end
+
+def parse_key(row)
+  key = row.field(csv_wording_key_column)
+  plural_prefix = key.match(plural_regexp)
+  plural_identifier = nil
+  numeral_key = :singular
+  unless plural_prefix.nil?
+    key.slice!(plural_prefix[0])
+    plural_identifier = plural_prefix[1]
+    numeral_key = :plural
+  end
+  { key: key.to_sym, numeral_key: numeral_key, plural_identifier: plural_identifier&.to_sym }
+end
+
+def parse_row(row)
+  key_infos = parse_key(row)
+  @locales.each_with_object({ key_infos.dig(:key) => {} }) do |locale, memo|
+    next unless row[locale]
+    memo[key_infos.dig(:key)][locale.to_sym] = { key_infos.dig(:numeral_key) => {} } unless memo[key_infos.dig(:key)].key? locale.to_sym
+    if key_infos.dig(:plural_identifier).nil?
+      @logger.debug "Singular key ---> #{key_infos.dig(:key)}"
+      value = row[locale]
+    else
+      @logger.debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
+      value = { key_infos.dig(:plural_identifier) => row[locale] }
+    end
+      memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
+  end
+end
+
+def extract_data(file_name)
+  data = {}
+  CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
+    validity_status = check_row(row)
+    if validity_status.zero?
+      next
+    elsif validity_status == -1
+      exit
+    end
+    find_locales(row) if @locales.nil?
+    data.deep_merge!(parse_row(row))
+  end
+  data
+end
+
+def export(data)
+  @logger.debug "GENERATING WORDING FILES..."
+  @locales.each do |locale|
+    has_wording = data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
+    next unless has_wording
+    @logger.debug "******* #{locale.upcase} *******"
+    export_dir = locale_dir(locale)
+    write_to_android(export_dir, locale, data)
+    @logger.debug "Android ---> DONE!"
+    write_to_ios_singular(export_dir, locale, data)
+    @logger.debug "iOS singular ---> DONE!"
+    write_to_ios_plural(export_dir,locale, data)
+    @logger.debug "iOS plural ---> DONE!"
+    write_to_yml(export_dir, locale, data)
+    @logger.debug "YML ---> DONE!"
+    write_to_json(export_dir, locale, data)
+    @logger.debug "JSON ---> DONE!"
+  end
 end
 
 def write_to_ios_singular(export_dir,locale, data)
@@ -189,24 +215,24 @@ def write_to_android(export_dir, locale, data)
   end
 end
 
+def angular_substitution_format(value)
+  value.gsub(/(%(\d+\$)?@)/, '{\2s}')
+end
+
 def write_to_json(export_dir, locale, data)
   write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
     file.puts json_data.to_json
   end
 end
 
+def yml_substitution_format(value)
+  value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
+end
+
 def write_to_yml(export_dir, locale, data)
   write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
     file.puts yml_data.to_yaml
   end
-end
-
-def angular_substitution_format(value)
-  value.gsub(/(%(\d+\$)?@)/, '{\2s}')
-end
-
-def yml_substitution_format(value)
-  value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
@@ -234,30 +260,32 @@ end
 # Parse options
 options = { debug: false }
 OptionParser.new do |opt|
-  opt.banner = "Usage: ruby exportCSVStrings.rb [options] file"
+  opt.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
   opt.on("-d", "--debug", "running for debug mode") do
     options[:debug] = true
   end
+  opt.on("-h", "--help", "Prints help") do
+    puts "Usage: ruby exportCSVStrings.rb [options] file name(s)"
+    exit
+  end
 end.parse!
 
-# Start the process
-@logger = Logger.new(STDOUT)
-@logger.level = Logger::DEBUG
-@locales = nil
-
+# Process
 if ARGV.size.zero?
-  puts "Usage: ruby exportCSVStrings.rb [options] file_to_parse"
+  puts "[COMPLETE] That was quick, you didn't provide any file to parse"
 else
+  @logger = Logger.new(STDOUT)
+  @logger.level = options[:debug]? Logger::DEBUG : Logger::INFO
+  @locales = nil
   @logger.info "OPTIONS : #{options}"
-  ARGV.each do |file_name|
-    @logger.info "********* PARSING #{file_name} *********"
+  ARGV.each do |file_path|
+    @logger.info "********* PARSING #{file_path} *********"
     @logger.info "Extracting data from file ..."
-    data = organized_csv_data(file_name, options[:debug])
+    data = extract_data(file_path)
     if data.empty?
       @logger.info "No data were found in the file - cannot start the file generation process"
     else
-      export(data, options[:debug])
+      export(data)
     end
   end
 end
-
