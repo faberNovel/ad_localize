@@ -12,10 +12,15 @@ require 'fileutils'
 require 'logger'
 require 'nokogiri'
 require 'active_support'
+require 'open-uri'
 
 ############################################################
 ## @Requirement : csv wording keys must be in snake case  ##
 ############################################################
+# TODO:
+# - define a Wording class that has methods such as has_singular, has_plural, singulars, plurals
+# - define methods to get data formatted for a techno
+#
 
 def csv_wording_key_column
   "key"
@@ -23,6 +28,21 @@ end
 
 def plural_regexp
   /\#\#\{(\w+)\}/
+end
+
+def drive_download_url(key)
+  "https://docs.google.com/spreadsheets/d/#{key}/export?format=csv&id=#{key}"
+end
+
+def download_from_drive(key)
+  downloaded_file_name = "./#{key}.csv"
+  File.open(downloaded_file_name, "wb") do |saved_file|
+    # the following "open" is provided by open-uri
+    open(drive_download_url(key), "rb") do |read_file|
+      saved_file.write(read_file.read)
+    end
+  end
+  downloaded_file_name
 end
 
 def find_locales(row)
@@ -58,9 +78,11 @@ end
 def parse_key(row)
   key = row.field(csv_wording_key_column)
   plural_prefix = key.match(plural_regexp)
-  plural_identifier = nil
-  numeral_key = :singular
-  unless plural_prefix.nil?
+
+  if plural_prefix.nil?
+    plural_identifier = nil
+    numeral_key = :singular
+  else
     key.slice!(plural_prefix[0])
     plural_identifier = plural_prefix[1]
     numeral_key = :plural
@@ -80,7 +102,7 @@ def parse_row(row)
       @logger.debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
       value = { key_infos.dig(:plural_identifier) => row[locale] }
     end
-      memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
+    memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
   end
 end
 
@@ -92,31 +114,12 @@ def extract_data(file_name)
       next
     elsif validity_status == -1
       exit
+    else
+      find_locales(row) if @locales.nil?
+      data.deep_merge!(parse_row(row))
     end
-    find_locales(row) if @locales.nil?
-    data.deep_merge!(parse_row(row))
   end
   data
-end
-
-def export(data)
-  @logger.debug "GENERATING WORDING FILES..."
-  @locales.each do |locale|
-    has_wording = data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
-    next unless has_wording
-    @logger.debug "******* #{locale.upcase} *******"
-    export_dir = locale_dir(locale)
-    write_to_android(export_dir, locale, data)
-    @logger.debug "Android ---> DONE!"
-    write_to_ios_singular(export_dir, locale, data)
-    @logger.debug "iOS singular ---> DONE!"
-    write_to_ios_plural(export_dir,locale, data)
-    @logger.debug "iOS plural ---> DONE!"
-    write_to_yml(export_dir, locale, data)
-    @logger.debug "YML ---> DONE!"
-    write_to_json(export_dir, locale, data)
-    @logger.debug "JSON ---> DONE!"
-  end
 end
 
 def write_to_ios_singular(export_dir,locale, data)
@@ -134,6 +137,7 @@ def write_to_ios_singular(export_dir,locale, data)
       file.puts "\"#{key}\" = \"#{value}\";\n"
     end
   end
+  @logger.debug "iOS singular ---> DONE!"
 end
 
 def write_to_ios_plural(export_dir,locale, data)
@@ -173,6 +177,7 @@ def write_to_ios_plural(export_dir,locale, data)
   export_dir.join("Localizable.stringsdict").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
+  @logger.debug "iOS plural ---> DONE!"
 end
 
 def convertStringToAndroid(value)
@@ -213,26 +218,7 @@ def write_to_android(export_dir, locale, data)
   export_dir.join("strings.xml").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
-end
-
-def angular_substitution_format(value)
-  value.gsub(/(%(\d+\$)?@)/, '{\2s}')
-end
-
-def write_to_json(export_dir, locale, data)
-  write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
-    file.puts json_data.to_json
-  end
-end
-
-def yml_substitution_format(value)
-  value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
-end
-
-def write_to_yml(export_dir, locale, data)
-  write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
-    file.puts yml_data.to_yaml
-  end
+  @logger.debug "Android ---> DONE!"
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
@@ -256,32 +242,87 @@ def write_to(export_dir, locale, data, export_extension, substitution_format)
   end
 end
 
-# MAIN
-# Parse options
-options = { debug: false }
-OptionParser.new do |opt|
-  opt.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
-  opt.on("-d", "--debug", "running for debug mode") do
-    options[:debug] = true
-  end
-  opt.on("-h", "--help", "Prints help") do
-    puts "Usage: ruby exportCSVStrings.rb [options] file name(s)"
-    exit
-  end
-end.parse!
+def angular_substitution_format(value)
+  value.gsub(/(%(\d+\$)?@)/, '{\2s}')
+end
 
-# Process
-if ARGV.size.zero?
-  puts "[COMPLETE] That was quick, you didn't provide any file to parse"
-else
+def write_to_json(export_dir, locale, data)
+  write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
+    file.puts json_data.to_json
+  end
+  @logger.debug "JSON ---> DONE!"
+end
+
+def yml_substitution_format(value)
+  value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
+end
+
+def write_to_yml(export_dir, locale, data)
+  write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
+    file.puts yml_data.to_yaml
+  end
+  @logger.debug "YML ---> DONE!"
+end
+
+def export(data)
+  @logger.debug "GENERATING WORDING FILES..."
+  @locales.each do |locale|
+    has_wording = data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
+    next unless has_wording
+    @logger.debug "******* #{locale.upcase} *******"
+    export_dir = locale_dir(locale)
+    write_to_android(export_dir, locale, data)
+    write_to_ios_singular(export_dir, locale, data)
+    write_to_ios_plural(export_dir,locale, data)
+    write_to_yml(export_dir, locale, data)
+    write_to_json(export_dir, locale, data)
+  end
+end
+
+def parse_options
+  options = { debug: false }
+  OptionParser.new do |opt|
+    opt.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
+    opt.on("-d", "--debug", "running for debug mode") do
+      options[:debug] = true
+    end
+    opt.on("-h", "--help", "Prints help") do
+      puts "Usage: ruby exportCSVStrings.rb [options] file name(s)"
+      exit
+    end
+    opt.on("-k", "--drive-key", "Download spreadsheet from google drive") do
+      options[:drive_key] = true
+    end
+  end.parse!
+  options
+end
+
+def initialize_vars(options)
   @logger = Logger.new(STDOUT)
   @logger.level = options[:debug]? Logger::DEBUG : Logger::INFO
   @locales = nil
+end
+
+def file_to_parse(options, arg)
+  file_name = arg
+  if options[:drive_key]
+    @logger.info "Downloading file from google drive..."
+    file_name = download_from_drive(arg)
+  end
+  file_name
+end
+
+# MAIN
+if ARGV.size.zero?
+  puts "[COMPLETE] That was quick, you didn't provide any file to parse"
+else
+  options = parse_options
+  initialize_vars(options)
   @logger.info "OPTIONS : #{options}"
-  ARGV.each do |file_path|
-    @logger.info "********* PARSING #{file_path} *********"
-    @logger.info "Extracting data from file ..."
-    data = extract_data(file_path)
+  ARGV.each do |arg|
+    @logger.info "********* PARSING #{arg} *********"
+    @logger.info "Extracting data from file..."
+    data = extract_data(file_to_parse(options, arg))
     if data.empty?
       @logger.info "No data were found in the file - cannot start the file generation process"
     else
