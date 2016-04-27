@@ -104,17 +104,20 @@ def parse_key(row)
   { key: key.to_sym, numeral_key: numeral_key, plural_identifier: plural_identifier&.to_sym }
 end
 
+def wording_default(locale, key)
+  @logger.level == Logger::DEBUG ? "<[#{locale.upcase}] Missing translation for #{key}>" : ""
+end
+
 def parse_row(row)
   key_infos = parse_key(row)
   @locales.each_with_object({ key_infos.dig(:key) => {} }) do |locale, memo|
-    next unless row[locale]
     memo[key_infos.dig(:key)][locale.to_sym] = { key_infos.dig(:numeral_key) => {} } unless memo[key_infos.dig(:key)].key? locale.to_sym
     if key_infos.dig(:plural_identifier).nil?
       debug "Singular key ---> #{key_infos.dig(:key)}"
-      value = row[locale]
+      value = row[locale] || wording_default(locale, key_infos.dig(:key))
     else
       debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
-      value = { key_infos.dig(:plural_identifier) => row[locale] }
+      value = { key_infos.dig(:plural_identifier) => row[locale] || wording_default(locale, "#{key_infos.dig(:key)} (#{key_infos.dig(:plural_identifier)})") }
     end
     memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
   end
