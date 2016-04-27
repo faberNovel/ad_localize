@@ -1,18 +1,20 @@
 #!/usr/bin/env ruby
 #encoding: utf-8
 
+require 'rubygems'
+require 'bundler/setup'
 require 'csv'
-require 'rexml/document'
 require 'optparse'
-require 'json'
 require 'yaml'
-require 'byebug'
 require 'pathname'
 require 'fileutils'
 require 'logger'
+require 'open-uri'
+require 'json'
+require 'byebug'
 require 'nokogiri'
 require 'active_support'
-require 'open-uri'
+require 'colorize'
 
 ############################################################
 ## @Requirement : csv wording keys must be in snake case  ##
@@ -28,6 +30,18 @@ end
 
 def plural_regexp
   /\#\#\{(\w+)\}/
+end
+
+def info(log)
+  @logger.info log.black
+end
+
+def debug(log)
+  @logger.debug log.black
+end
+
+def error(log)
+  @logger.error log.red
 end
 
 def drive_download_url(key)
@@ -48,7 +62,7 @@ end
 def find_locales(row)
   wording_key_index = row.index(csv_wording_key_column)
   @locales = row.headers.slice((wording_key_index+1)..-1)
-  @logger.debug "DETECTED LOCALES : #{@locales}"
+  debug "DETECTED LOCALES : #{@locales}"
 end
 
 def locale_dir(locale)
@@ -66,10 +80,10 @@ def check_row(row)
   valid_row = 1
   # Check non empty row
   if row.field(csv_wording_key_column).nil?
-    @logger.error("Missing key in line #{$.}") unless row.fields.all?(&:nil?)
+    error("Missing key in line #{$.}") unless row.fields.all?(&:nil?)
     valid_row = 0
   elsif not row.headers.include?(csv_wording_key_column)
-    @logger.error "[CSV FORMAT] #{file_name} is not a valid file"
+    error "[CSV FORMAT] #{file_name} is not a valid file"
     valid_row = -1
   end
   return valid_row
@@ -96,10 +110,10 @@ def parse_row(row)
     next unless row[locale]
     memo[key_infos.dig(:key)][locale.to_sym] = { key_infos.dig(:numeral_key) => {} } unless memo[key_infos.dig(:key)].key? locale.to_sym
     if key_infos.dig(:plural_identifier).nil?
-      @logger.debug "Singular key ---> #{key_infos.dig(:key)}"
+      debug "Singular key ---> #{key_infos.dig(:key)}"
       value = row[locale]
     else
-      @logger.debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
+      debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
       value = { key_infos.dig(:plural_identifier) => row[locale] }
     end
     memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
@@ -126,7 +140,7 @@ def write_to_ios_singular(export_dir,locale, data)
   locale_sym = locale.to_sym
   singulars = data.select {|key, wording| wording.dig(locale_sym)&.key? :singular}
   if singulars.empty?
-    @logger.info "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found"
+    info "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found"
     return true
   end
 
@@ -137,14 +151,14 @@ def write_to_ios_singular(export_dir,locale, data)
       file.puts "\"#{key}\" = \"#{value}\";\n"
     end
   end
-  @logger.debug "iOS singular ---> DONE!"
+  debug "iOS singular ---> DONE!"
 end
 
 def write_to_ios_plural(export_dir,locale, data)
   locale_sym = locale.to_sym
   plurals = data.select {|key, wording| wording[locale_sym]&.key? :plural}
   if plurals.empty?
-    @logger.info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plural keys were found"
+    info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plural keys were found"
     return true
   end
 
@@ -177,7 +191,7 @@ def write_to_ios_plural(export_dir,locale, data)
   export_dir.join("Localizable.stringsdict").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
-  @logger.debug "iOS plural ---> DONE!"
+  debug "iOS plural ---> DONE!"
 end
 
 def convertStringToAndroid(value)
@@ -218,7 +232,7 @@ def write_to_android(export_dir, locale, data)
   export_dir.join("strings.xml").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
-  @logger.debug "Android ---> DONE!"
+  debug "Android ---> DONE!"
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
@@ -250,7 +264,7 @@ def write_to_json(export_dir, locale, data)
   write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
     file.puts json_data.to_json
   end
-  @logger.debug "JSON ---> DONE!"
+  debug "JSON ---> DONE!"
 end
 
 def yml_substitution_format(value)
@@ -261,15 +275,15 @@ def write_to_yml(export_dir, locale, data)
   write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
     file.puts yml_data.to_yaml
   end
-  @logger.debug "YML ---> DONE!"
+  debug "YML ---> DONE!"
 end
 
 def export(data)
-  @logger.debug "GENERATING WORDING FILES..."
+  debug "GENERATING WORDING FILES..."
   @locales.each do |locale|
     has_wording = data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
     next unless has_wording
-    @logger.debug "******* #{locale.upcase} *******"
+    debug "******* #{locale.upcase} *******"
     export_dir = locale_dir(locale)
     write_to_android(export_dir, locale, data)
     write_to_ios_singular(export_dir, locale, data)
@@ -311,7 +325,7 @@ end
 def file_to_parse(options, arg)
   file_name = arg
   if options[:drive_key]
-    @logger.info "Downloading file from google drive..."
+    info "Downloading file from google drive..."
     file_name = download_from_drive(arg)
     unless is_csv(file_name)
       error "The downloaded file is not a csv. Check that the spreadsheet is readable with shareable link"
@@ -327,13 +341,13 @@ if ARGV.size.zero?
 else
   options = parse_options
   initialize_vars(options)
-  @logger.info "OPTIONS : #{options}"
+  info "OPTIONS : #{options}"
   ARGV.each do |arg|
-    @logger.info "********* PARSING #{arg} *********"
-    @logger.info "Extracting data from file..."
+    info "********* PARSING #{arg} *********"
+    info "Extracting data from file..."
     data = extract_data(file_to_parse(options, arg))
     if data.empty?
-      @logger.info "No data were found in the file - cannot start the file generation process"
+      error "No data were found in the file - cannot start the file generation process"
     else
       export(data)
     end
