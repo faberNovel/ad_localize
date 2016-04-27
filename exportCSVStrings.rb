@@ -303,11 +303,20 @@ def initialize_vars(options)
   @locales = nil
 end
 
+def is_csv(file)
+  valid_content_types = %w(text/csv text/plain)
+  valid_content_types.include? `file --brief --mime-type #{file}`.strip
+end
+
 def file_to_parse(options, arg)
   file_name = arg
   if options[:drive_key]
     @logger.info "Downloading file from google drive..."
     file_name = download_from_drive(arg)
+    unless is_csv(file_name)
+      error "The downloaded file is not a csv. Check that the spreadsheet is readable with shareable link"
+      exit
+    end
   end
   file_name
 end
