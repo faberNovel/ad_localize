@@ -32,16 +32,16 @@ def plural_regexp
   /\#\#\{(\w+)\}/
 end
 
-def info(log)
-  @logger.info log.black
+def black_log(level, log)
+  @logger.add(level, log.black)
 end
 
-def debug(log)
-  @logger.debug log.black
+def yellow_log(level, log)
+  @logger.add(level, log.yellow)
 end
 
-def error(log)
-  @logger.error log.red
+def red_log(level, log)
+  @logger.add(level, log.red)
 end
 
 def drive_download_url(key)
@@ -62,7 +62,7 @@ end
 def find_locales(row)
   wording_key_index = row.index(csv_wording_key_column)
   @locales = row.headers.slice((wording_key_index+1)..-1)
-  debug "DETECTED LOCALES : #{@locales}"
+  black_log Logger::DEBUG, "DETECTED LOCALES : #{@locales}"
 end
 
 def locale_dir(locale)
@@ -80,10 +80,10 @@ def check_row(row)
   valid_row = 1
   # Check non empty row
   if row.field(csv_wording_key_column).nil?
-    error("Missing key in line #{$.}") unless row.fields.all?(&:nil?)
+    red_log(Logger::ERROR, "Missing key in line #{$.}") unless row.fields.all?(&:nil?)
     valid_row = 0
   elsif not row.headers.include?(csv_wording_key_column)
-    error "[CSV FORMAT] #{file_name} is not a valid file"
+    red_log Logger::ERROR, "[CSV FORMAT] #{file_name} is not a valid file"
     valid_row = -1
   end
   return valid_row
@@ -113,10 +113,18 @@ def parse_row(row)
   @locales.each_with_object({ key_infos.dig(:key) => {} }) do |locale, memo|
     memo[key_infos.dig(:key)][locale.to_sym] = { key_infos.dig(:numeral_key) => {} } unless memo[key_infos.dig(:key)].key? locale.to_sym
     if key_infos.dig(:plural_identifier).nil?
-      debug "Singular key ---> #{key_infos.dig(:key)}"
+      if row[locale]
+        black_log Logger::DEBUG, "[#{locale.upcase}] Singular key ---> #{key_infos.dig(:key)}"
+      else
+        yellow_log Logger::WARN, "[#{locale.upcase}] Missing translation for #{key_infos.dig(:key)}"
+      end
       value = row[locale] || wording_default(locale, key_infos.dig(:key))
     else
-      debug "Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
+      if row[locale]
+        black_log Logger::DEBUG, "[#{locale.upcase}] Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{key_infos.dig(:key)}"
+      else
+        yellow_log Logger::WARN, "[#{locale.upcase}] Missing translation for #{key_infos.dig(:key)} (#{key_infos.dig(:plural_identifier)})"
+      end
       value = { key_infos.dig(:plural_identifier) => row[locale] || wording_default(locale, "#{key_infos.dig(:key)} (#{key_infos.dig(:plural_identifier)})") }
     end
     memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
@@ -143,7 +151,7 @@ def write_to_ios_singular(export_dir,locale, data)
   locale_sym = locale.to_sym
   singulars = data.select {|key, wording| wording.dig(locale_sym)&.key? :singular}
   if singulars.empty?
-    info "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found"
+    black_log Logger::INFO, "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found"
     return true
   end
 
@@ -154,14 +162,14 @@ def write_to_ios_singular(export_dir,locale, data)
       file.puts "\"#{key}\" = \"#{value}\";\n"
     end
   end
-  debug "iOS singular ---> DONE!"
+  black_log Logger::DEBUG, "iOS singular ---> DONE!"
 end
 
 def write_to_ios_plural(export_dir,locale, data)
   locale_sym = locale.to_sym
   plurals = data.select {|key, wording| wording[locale_sym]&.key? :plural}
   if plurals.empty?
-    info "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plural keys were found"
+    black_log Logger::INFO, "Cannot generate Localizable.stringsdict for #{locale.upcase} - no plural keys were found"
     return true
   end
 
@@ -194,7 +202,7 @@ def write_to_ios_plural(export_dir,locale, data)
   export_dir.join("Localizable.stringsdict").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
-  debug "iOS plural ---> DONE!"
+  black_log Logger::DEBUG, "iOS plural ---> DONE!"
 end
 
 def convertStringToAndroid(value)
@@ -235,7 +243,7 @@ def write_to_android(export_dir, locale, data)
   export_dir.join("strings.xml").open("w") do |file|
     file.puts xml_doc.to_xml(indent: 4)
   end
-  debug "Android ---> DONE!"
+  black_log Logger::DEBUG, "Android ---> DONE!"
 end
 
 def write_to(export_dir, locale, data, export_extension, substitution_format)
@@ -267,7 +275,7 @@ def write_to_json(export_dir, locale, data)
   write_to(export_dir, locale, data, "json", "angular") do |json_data, file|
     file.puts json_data.to_json
   end
-  debug "JSON ---> DONE!"
+  black_log Logger::DEBUG, "JSON ---> DONE!"
 end
 
 def yml_substitution_format(value)
@@ -278,15 +286,15 @@ def write_to_yml(export_dir, locale, data)
   write_to(export_dir, locale, data, "yml", "yml") do |yml_data, file|
     file.puts yml_data.to_yaml
   end
-  debug "YML ---> DONE!"
+  black_log Logger::DEBUG, "YML ---> DONE!"
 end
 
 def export(data)
-  debug "GENERATING WORDING FILES..."
+  black_log Logger::DEBUG, "GENERATING WORDING FILES..."
   @locales.each do |locale|
     has_wording = data.select{ |key, wording| wording.key? locale.to_sym }.count > 0
     next unless has_wording
-    debug "******* #{locale.upcase} *******"
+    black_log Logger::DEBUG, "******* #{locale.upcase} *******"
     export_dir = locale_dir(locale)
     write_to_android(export_dir, locale, data)
     write_to_ios_singular(export_dir, locale, data)
@@ -300,11 +308,11 @@ def parse_options
   options = { debug: false }
   OptionParser.new do |opt|
     opt.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
-    opt.on("-d", "--debug", "running for debug mode") do
+    opt.on("-d", "--debug", "running in debug mode") do
       options[:debug] = true
     end
     opt.on("-h", "--help", "Prints help") do
-      puts "Usage: ruby exportCSVStrings.rb [options] file name(s)"
+      puts "Usage: ruby exportCSVStrings.rb [options] file name(s)\n-d, --debug : running for debug mode\n-k, --drive-key : Download spreadsheet from google drive"
       exit
     end
     opt.on("-k", "--drive-key", "Download spreadsheet from google drive") do
@@ -328,10 +336,10 @@ end
 def file_to_parse(options, arg)
   file_name = arg
   if options[:drive_key]
-    info "Downloading file from google drive..."
+    black_log Logger::INFO, "Downloading file from google drive..."
     file_name = download_from_drive(arg)
     unless is_csv(file_name)
-      error "The downloaded file is not a csv. Check that the spreadsheet is readable with shareable link"
+      red_log Logger::ERROR, "The downloaded file is not a csv. Check that the spreadsheet is readable with shareable link"
       exit
     end
   end
@@ -344,13 +352,13 @@ if ARGV.size.zero?
 else
   options = parse_options
   initialize_vars(options)
-  info "OPTIONS : #{options}"
+  black_log Logger::INFO, "OPTIONS : #{options}"
   ARGV.each do |arg|
-    info "********* PARSING #{arg} *********"
-    info "Extracting data from file..."
+    black_log Logger::INFO, "********* PARSING #{arg} *********"
+    black_log Logger::INFO, "Extracting data from file..."
     data = extract_data(file_to_parse(options, arg))
     if data.empty?
-      error "No data were found in the file - cannot start the file generation process"
+      red_log Logger::ERROR, "No data were found in the file - cannot start the file generation process"
     else
       export(data)
     end
