@@ -108,6 +108,14 @@ def wording_default(locale, key)
   @logger.level == Logger::DEBUG ? "<[#{locale.upcase}] Missing translation for #{key}>" : ""
 end
 
+def check_arguments(value, locale, key)
+  formatted_arguments = value&.scan(/%(\d$)?@/) || []
+  if formatted_arguments.size >= 2
+    is_all_ordered = formatted_arguments.inject(true){|is_ordered, match| is_ordered &&= (not match.first.nil?) }
+    red_log Logger::WARN, "[#{locale.upcase}] Multiple format specifier for #{key} with no order" unless is_all_ordered
+  end
+end
+
 def parse_row(row)
   key_infos = parse_key(row)
   @locales.each_with_object({ key_infos.dig(:key) => {} }) do |locale, memo|
@@ -127,6 +135,7 @@ def parse_row(row)
       end
       value = { key_infos.dig(:plural_identifier) => row[locale] || wording_default(locale, "#{key_infos.dig(:key)} (#{key_infos.dig(:plural_identifier)})") }
     end
+    check_arguments(row[locale], locale, key_infos.dig(:key))
     memo[key_infos.dig(:key)][locale.to_sym][key_infos.dig(:numeral_key)] = value
   end
 end
