@@ -1,3 +1,4 @@
+require 'json'
 require_relative 'platform_formatter'
 
 module Internationalize::Platform

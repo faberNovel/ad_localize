@@ -1,7 +1,6 @@
 require 'pathname'
 require 'nokogiri'
 require 'fileutils'
-require 'json'
 
 module Internationalize::Platform
   class PlatformFormatter
