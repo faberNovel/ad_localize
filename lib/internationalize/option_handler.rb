@@ -20,6 +20,7 @@ module Internationalize
           end
           opts.on("-d", "--debug", "Run in debug mode") do
             args[:debug] = true
+            LOGGER.debug!
           end
           opts.on("-k", "--drive-key key1,key2", Array, "Use google drive spreadsheets. Keys must be separated by a comma") do |keys|
             args[:drive_keys] = filter_option_args("-k", keys) { |key| !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) and (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length)) }
