@@ -23,8 +23,8 @@ module Internationalize::Platform
       locale = locale.to_sym
 
       singulars.each do |key, locales_wording|
-        value = locales_wording.dig(locale, SINGULAR_KEY_SYMBOL)
-        export_dir(locale).join("Localizable.strings").open("a") do |file|
+        value = locales_wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)
+        export_dir(locale).join(Internationalize::Constant::IOS_SINGULAR_EXPORT_FILENAME).open("a") do |file|
           file.puts "\"#{key}\" = \"#{value}\";\n"
         end
       end
@@ -60,7 +60,7 @@ module Internationalize::Platform
           }
         }
       end
-      export_dir(locale).join("Localizable.stringsdict").open("w") do |file|
+      export_dir(locale).join(Internationalize::Constant::IOS_PLURAL_EXPORT_FILENAME).open("w") do |file|
         file.puts xml_doc.to_xml(indent: 4)
       end
       Internationalize::LOGGER.log(:debug, :black, "iOS plural ---> DONE!")

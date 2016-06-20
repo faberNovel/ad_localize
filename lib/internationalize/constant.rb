@@ -8,5 +8,8 @@ module Internationalize
     SINGULAR_KEY_SYMBOL = :singular
     CONFIG = YAML.load_file(Pathname::pwd + 'config.yml')
     EXPORT_FOLDER = 'exports'
+    IOS_SINGULAR_EXPORT_FILENAME = "Localizable.strings"
+    IOS_PLURAL_EXPORT_FILENAME = "Localizable.stringsdict"
+    ANDROID_EXPORT_FILENAME = "strings.xml"
   end
 end
