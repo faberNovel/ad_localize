@@ -14,14 +14,14 @@ module Internationalize::Platform
       xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
         xml.resources{
           data.each do |key, wording|
-            if wording.dig(locale)&.key? :singular
+            if wording.dig(locale)&.key? Internationalize::Constant::SINGULAR_KEY_SYMBOL
               xml.string(name: key) {
-                xml.text(ios_converter(wording.dig(locale, :singular)))
+                xml.text(ios_converter(wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)))
               }
             end
-            if wording.dig(locale)&.key? :plural
+            if wording.dig(locale)&.key? Internationalize::Constant::PLURAL_KEY_SYMBOL
               xml.plurals(name: key) {
-                wording.dig(locale, :plural).each do |plural_type, plural_text|
+                wording.dig(locale, Internationalize::Constant::PLURAL_KEY_SYMBOL).each do |plural_type, plural_text|
                   xml.item(quantity: plural_type) {
                     xml.text(ios_converter(plural_text))
                   }
