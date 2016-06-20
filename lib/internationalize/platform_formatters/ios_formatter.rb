@@ -11,7 +11,7 @@ module Internationalize::Platform
       [Internationalize::Constant::PLURAL_KEY_SYMBOL, Internationalize::Constant::SINGULAR_KEY_SYMBOL].each do |numeral_key|
         numeral_data = data.select {|key, wording| wording.dig(locale.to_sym)&.key? numeral_key}
         if numeral_data.empty?
-          Internationalize::LOGGER.log(:info, :black, "Not enough content to generate Localizable.strings for #{locale.upcase} - no singular keys were found")
+          Internationalize::LOGGER.log(:info, :black, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
         else
           send("write_#{numeral_key}", locale, numeral_data)
         end
