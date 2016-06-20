@@ -8,7 +8,7 @@ module Internationalize
 
     class << self
       def parse
-        args = { debug: false , drive_keys: [], only: nil}
+        args = { debug: false, only: nil}
 
         opt_parser = OptionParser.new do |opts|
           opts.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
@@ -22,8 +22,9 @@ module Internationalize
             args[:debug] = true
             LOGGER.debug!
           end
-          opts.on("-k", "--drive-key key1,key2", Array, "Use google drive spreadsheets. Keys must be separated by a comma") do |keys|
-            args[:drive_keys] = filter_option_args("-k", keys) { |key| !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) and (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length)) }
+          opts.on("-k", "--drive-key #{GOOGLE_DRIVE_DOCUMENT_ID.dig(:length)}_characters", String, "Use google drive spreadsheets") do |key|
+            is_valid_drive_key = !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) && (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length))
+            args[:drive_key] = is_valid_drive_key ? key : nil
           end
           opts.on("-o", "--only platform1,platform2", Array, "Only generate localisation files for the specified platforms. Supported platforms : #{Constant::SUPPORTED_PLATFORMS.join(', ')}") do |platforms|
             args[:only] = filter_option_args("-o", platforms) { |platform| !!Constant::SUPPORTED_PLATFORMS.index(platform) }

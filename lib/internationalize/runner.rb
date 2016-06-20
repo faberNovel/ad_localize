@@ -21,26 +21,46 @@ module Internationalize
 
     def run
       LOGGER.log(:info, :black, "OPTIONS : #{options}")
+      input_files = (ARGV + [options.dig(:drive_key)]).compact # drive_key can be nil
+      if input_files.length.zero?
+        LOGGER.log(:error, :red, "No CSV to parse. Use option -h to see how to use this script")
+      else
+        begin
+          file_to_parse = ARGV.first
+          LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
+          if ARGV.empty?
+            options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key)) if options.dig(:drive_key)
+            file_to_parse = options.dig(:drive_file)
+          end
+          if CsvFileManager.csv?(file_to_parse)
+            export(file_to_parse)
+          else
+            LOGGER.log(:error, :red, "#{file_to_parse} is not a csv")
+          end
+          CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
+        rescue => e
+          LOGGER.log(:error, :red, e.message)
+        end
+      end
+    end
+
+    private
+    def export(file)
+      LOGGER.log(:info, :black, "********* PARSING #{file} *********")
+      LOGGER.log(:info, :black, "Extracting data from file...")
       parser = CsvParser.new
-      options[:drive_files] = options.dig(:drive_keys).map { |key| CsvFileManager.download_from_drive(key) }
-      csvs = CsvFileManager.select_csvs(options.dig(:drive_files) + ARGV)
-      csvs.each do |file|
-        LOGGER.log(:info, :black, "********* PARSING #{file} *********")
-        LOGGER.log(:info, :black, "Extracting data from file...")
-        data = parser.extract_data(file)
-        if data.empty?
-          LOGGER.log(:error, :red, "No data were found in the file - cannot start the file generation process")
-        else
-          export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
-          export_platforms.each do |platform|
-            platform_formatter = "Internationalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(parser.locales.first, options.dig(:output_path))
-            parser.locales.each do |locale|
-              platform_formatter.export(locale, data)
-            end
+      data = parser.extract_data(file)
+      if data.empty?
+        LOGGER.log(:error, :red, "No data were found in the file - cannot start the file generation process")
+      else
+        export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
+        export_platforms.each do |platform|
+          platform_formatter = "Internationalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(parser.locales.first, options.dig(:output_path))
+          parser.locales.each do |locale|
+            platform_formatter.export(locale, data)
           end
         end
       end
-      options[:drive_files].each{ |file| Pathname.new(file).delete }
     end
   end
 end

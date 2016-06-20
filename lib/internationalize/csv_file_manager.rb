@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'pathname'
 
 module Internationalize
   class CsvFileManager
@@ -27,6 +28,10 @@ module Internationalize
           LOGGER.log(:error, :red, "#{file} is not a csv. It will be ignored") unless self.csv?(file)
           self.csv?(file)
         end
+      end
+
+      def delete_drive_file(file)
+        Pathname.new(file).delete
       end
 
       private
