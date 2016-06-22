@@ -4,7 +4,7 @@ require_relative 'constant'
 
 module Internationalize
   class OptionHandler
-    GOOGLE_DRIVE_DOCUMENT_ID = { length: 32, regexp: /\A\w+\Z/ }
+    GOOGLE_DRIVE_DOCUMENT_ID = { length: 32, regexp: /\A[\w-]+\Z/ }
 
     class << self
       def parse
