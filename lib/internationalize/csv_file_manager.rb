@@ -7,19 +7,25 @@ module Internationalize
 
     class << self
       def csv?(file)
-        CSV_CONTENT_TYPES.include? `file --brief --mime-type #{file}`.strip
+        file.nil? ? false : CSV_CONTENT_TYPES.include?(`file --brief --mime-type #{file}`.strip)
       end
 
       # Returns the downloaded file name (it is located in the current directory)
       def download_from_drive(key)
         LOGGER.log(:info, :black, "Downloading file from google drive...")
-
-        File.open("./#{key}.csv", "wb") do |saved_file|
-          # the following "open" is provided by open-uri
-          open(drive_download_url(key), "rb") do |read_file|
-            saved_file.write(read_file.read)
+        download_string_path = "./#{key}.csv"
+        begin
+          File.open(download_string_path, "wb") do |saved_file|
+            # the following "open" is provided by open-uri
+            open(drive_download_url(key), "rb") do |read_file|
+              saved_file.write(read_file.read)
+            end
+            File.basename saved_file
           end
-          File.basename saved_file
+        rescue => e
+          delete_drive_file(download_string_path)
+          LOGGER.log(:error, :red, e.message)
+          exit
         end
       end
 
@@ -31,7 +37,7 @@ module Internationalize
       end
 
       def delete_drive_file(file)
-        Pathname.new(file).delete
+        Pathname.new(file).delete unless file.nil?
       end
 
       private

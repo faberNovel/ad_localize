@@ -27,22 +27,14 @@ module Internationalize
       if input_files.length.zero?
         LOGGER.log(:error, :red, "No CSV to parse. Use option -h to see how to use this script")
       else
-        begin
-          file_to_parse = ARGV.first
-          LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
-          if ARGV.empty?
-            options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key)) if options.dig(:drive_key)
-            file_to_parse = options.dig(:drive_file)
-          end
-          if CsvFileManager.csv?(file_to_parse)
-            export(file_to_parse)
-          else
-            LOGGER.log(:error, :red, "#{file_to_parse} is not a csv")
-          end
-          CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
-        rescue => e
-          LOGGER.log(:error, :red, e.message)
+        file_to_parse = ARGV.first
+        LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
+        if ARGV.empty?
+          options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key))
+          file_to_parse = options.dig(:drive_file)
         end
+        CsvFileManager.csv?(file_to_parse) ? export(file_to_parse) : LOGGER.log(:error, :red, "#{file_to_parse} is not a csv")
+        CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
       end
     end
 
