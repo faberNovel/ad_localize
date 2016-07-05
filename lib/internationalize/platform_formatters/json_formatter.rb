@@ -7,7 +7,7 @@ module Internationalize::Platform
       :json
     end
 
-    def export(locale, data, export_extension="json", substitution_format="angular")
+    def export(locale, data, export_extension = "json", substitution_format = "angular")
       super(locale, data, export_extension, substitution_format) do |json_data, file|
         file.puts json_data.to_json
       end

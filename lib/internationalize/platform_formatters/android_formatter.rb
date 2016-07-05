@@ -6,7 +6,7 @@ module Internationalize::Platform
       :android
     end
 
-    def export(locale, data, export_extension=nil, substitution_format=nil)
+    def export(locale, data, export_extension = nil, substitution_format = nil)
       locale = locale.to_sym
       export_dir_suffix = (locale == default_locale) ? "" : "-#{locale.downcase}"
       create_locale_dir(export_dir_suffix)

@@ -6,7 +6,7 @@ module Internationalize::Platform
       :ios
     end
 
-    def export(locale, data, export_extension=nil, substitution_format=nil)
+    def export(locale, data, export_extension = nil, substitution_format = nil)
       create_locale_dir(locale)
       [Internationalize::Constant::PLURAL_KEY_SYMBOL, Internationalize::Constant::SINGULAR_KEY_SYMBOL].each do |numeral_key|
         numeral_data = data.select {|key, wording| wording.dig(locale.to_sym)&.key? numeral_key}

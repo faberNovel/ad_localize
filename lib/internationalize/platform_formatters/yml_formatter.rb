@@ -7,7 +7,7 @@ module Internationalize::Platform
       :yml
     end
 
-    def export(locale, data, export_extension="yml", substitution_format="yml")
+    def export(locale, data, export_extension = "yml", substitution_format = "yml")
       super(locale, data, export_extension, substitution_format) do |yml_data, file|
         file.puts yml_data.to_yaml
       end
