@@ -8,7 +8,7 @@ module Internationalize::Platform
 
     def export(locale, data, export_extension=nil, substitution_format=nil)
       locale = locale.to_sym
-      export_dir_suffix = (locale == default_locale) ? "" : "-#{locale}"
+      export_dir_suffix = (locale == default_locale) ? "" : "-#{locale.downcase}"
       create_locale_dir(export_dir_suffix)
 
       xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|

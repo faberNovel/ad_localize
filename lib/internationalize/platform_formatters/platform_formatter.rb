@@ -64,7 +64,7 @@ module Internationalize::Platform
     end
 
     def export_dir(locale)
-      platform_dir + Internationalize::Constant::CONFIG.dig("platforms", "export_directory_names", platform.to_s) % { locale: locale }
+      platform_dir + Internationalize::Constant::CONFIG.dig("platforms", "export_directory_names", platform.to_s) % { locale: locale.downcase }
     end
 
     def create_locale_dir(locale)
