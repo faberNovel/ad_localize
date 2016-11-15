@@ -47,7 +47,7 @@ module Internationalize::Platform
       processedValue = processedValue.gsub(/&(?!(?:amp|lt|gt|quot|apos);)/, '&amp;')
       processedValue = processedValue.gsub(/(%(\d+\$)?@)/, '%\2s')
       processedValue = processedValue.gsub(/(%(\d+\$)?i)/, '%\2d')
-      processedValue = processedValue.gsub(/%(?!(\d+\$)?[sd])/, '\%%')
+      processedValue = processedValue.gsub(/%(?!(\d+\$)?[sd])/, '%%')
       processedValue = processedValue.gsub("\\U", "\\u")
       value = "\"#{processedValue}\""
     end
