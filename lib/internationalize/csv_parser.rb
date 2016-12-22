@@ -91,7 +91,7 @@ module Internationalize
         numeral_key = Constant::SINGULAR_KEY_SYMBOL
       else
         numeral_key = Constant::PLURAL_KEY_SYMBOL
-        key = plural_prefix.post_match
+        key = plural_prefix.pre_match
         plural_identifier = plural_prefix.captures&.first
         LOGGER.log(:debug, :red, "Invalid key #{key}") if key.nil?
         LOGGER.log(:debug, :red, "Empty plural prefix!") if plural_identifier.nil?
