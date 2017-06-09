@@ -11,7 +11,7 @@ module Internationalize
         args = { debug: false, only: nil}
 
         opt_parser = OptionParser.new do |opts|
-          opts.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
+          opts.banner = "Usage: ruby bin/export [options] file(s)"
 
 
           opts.on("-h", "--help", "Prints help") do
