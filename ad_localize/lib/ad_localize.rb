@@ -4,12 +4,13 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'byebug'
 require 'fileutils'
-require_relative 'ad_logger'
-require_relative 'constant'
-require_relative 'option_handler'
-require_relative 'csv_parser'
-require_relative 'csv_file_manager'
-Internationalize::Constant::SUPPORTED_PLATFORMS.each { |platform| require_relative "platform_formatters/#{platform}_formatter" }
+require_relative "ad_localize/version"
+require_relative 'ad_localize/ad_logger'
+require_relative 'ad_localize/constant'
+require_relative 'ad_localize/option_handler'
+require_relative 'ad_localize/csv_parser'
+require_relative 'ad_localize/csv_file_manager'
+Internationalize::Constant::SUPPORTED_PLATFORMS.each { |platform| require_relative "ad_localize/platform_formatters/#{platform}_formatter" }
 
 module Internationalize
   LOGGER = ADLogger.new
