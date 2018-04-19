@@ -1,0 +1,9 @@
+ad_localize/.bundle/
+ad_localize/.yardoc
+ad_localize/_yardoc/
+ad_localize/coverage/
+ad_localize/doc/
+ad_localize/pkg/
+ad_localize/spec/reports/
+ad_localize/tmp/
+.idea
