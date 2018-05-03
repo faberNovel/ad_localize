@@ -24,8 +24,12 @@ module Internationalize::Platform
 
       singulars.each do |key, locales_wording|
         value = locales_wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)
+        comment = locales_wording.dig(locale, Internationalize::Constant::COMMENT_KEY_SYMBOL)
         export_dir(locale).join(Internationalize::Constant::IOS_SINGULAR_EXPORT_FILENAME).open("a") do |file|
-          file.puts "\"#{key}\" = \"#{value}\";\n"
+          line =  "\"#{key}\" = \"#{value}\";"
+          line << " // #{comment}" unless comment.nil?
+          line << "\n"
+          file.puts line
         end
       end
       Internationalize::LOGGER.log(:debug, :black, "iOS singular ---> DONE!")
@@ -48,11 +52,9 @@ module Internationalize::Platform
                   xml.string "NSStringPluralRuleType"
                   xml.key "NSStringFormatValueTypeKey"
                   xml.string "d"
-                  translations[locale].each do |wording_type, wording_value|
-                    wording_value.each do |plural_identifier, plural_value|
-                      xml.key plural_identifier
-                      xml.string plural_value
-                    end
+                  translations[locale][Internationalize::Constant::PLURAL_KEY_SYMBOL].each do |wording_type, wording_value|
+                    xml.key wording_type
+                    xml.string wording_value
                   end
                 }
               }
