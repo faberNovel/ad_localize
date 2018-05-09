@@ -1,4 +1,4 @@
-require 'ad_localize/version'
+require_relative 'lib/ad_localize/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'ad_localize'

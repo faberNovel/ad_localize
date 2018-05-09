@@ -4,7 +4,6 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'byebug'
 require 'fileutils'
-require_relative "ad_localize/version"
 require_relative 'ad_localize/ad_logger'
 require_relative 'ad_localize/constant'
 require_relative 'ad_localize/option_handler'
