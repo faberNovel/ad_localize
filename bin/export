@@ -1,5 +1,5 @@
 #! /usr/local/rubybook/bin/ruby
 
-require_relative '../lib/ad_localize'
+require_relative '../ad_localize/lib/ad_localize'
 runner = Internationalize::Runner.new
 runner.run
