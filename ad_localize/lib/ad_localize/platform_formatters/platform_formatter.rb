@@ -59,7 +59,7 @@ module Internationalize::Platform
       if platform_dir.directory?
         FileUtils.rm_rf("#{platform_dir}/.", secure: true)
       else
-        platform_dir.mkdir
+        platform_dir.mkpath
       end
     end
 
