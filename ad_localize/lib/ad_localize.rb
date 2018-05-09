@@ -21,15 +21,15 @@ module Internationalize
       @options = OptionHandler.parse
     end
 
-    def run
+    def run(args = ARGV)
       LOGGER.log(:info, :black, "OPTIONS : #{options}")
-      input_files = (ARGV + [options.dig(:drive_key)]).compact # drive_key can be nil
+      input_files = (args + [options.dig(:drive_key)]).compact # drive_key can be nil
       if input_files.length.zero?
         LOGGER.log(:error, :red, "No CSV to parse. Use option -h to see how to use this script")
       else
-        file_to_parse = ARGV.first
+        file_to_parse = args.first
         LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
-        if ARGV.empty?
+        if args.empty?
           options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key))
           file_to_parse = options.dig(:drive_file)
         end
