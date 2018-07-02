@@ -7,7 +7,7 @@ module Internationalize
 
     class << self
       def csv?(file)
-        file.nil? ? false : CSV_CONTENT_TYPES.include?(`file --brief --mime-type '#{file}'`.strip)
+        !file.nil? && CSV_CONTENT_TYPES.include?(`file --brief --mime-type '#{file}'`.strip)
       end
 
       # Returns the downloaded file name (it is located in the current directory)

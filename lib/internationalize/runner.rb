@@ -33,7 +33,7 @@ module Internationalize
           options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key))
           file_to_parse = options.dig(:drive_file)
         end
-        CsvFileManager.csv?(file_to_parse) ? export(file_to_parse) : LOGGER.log(:error, :red, "#{file_to_parse} is not a csv")
+        CsvFileManager.csv?(file_to_parse) ? export(file_to_parse) : LOGGER.log(:error, :red, "#{file_to_parse} is not a csv or is not accessible to anyone with the link")
         CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
       end
     end
