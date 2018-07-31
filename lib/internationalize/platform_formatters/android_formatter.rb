@@ -12,22 +12,13 @@ module Internationalize::Platform
       create_locale_dir(export_dir_suffix)
 
       xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
-        xml.resources{
+        xml.resources {
           data.each do |key, wording|
-            if wording.dig(locale)&.key? Internationalize::Constant::SINGULAR_KEY_SYMBOL
-              xml.string(name: key) {
-                xml.text(ios_converter(wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)))
-              }
-            end
-            if wording.dig(locale)&.key? Internationalize::Constant::PLURAL_KEY_SYMBOL
-              xml.plurals(name: key) {
-                wording.dig(locale, Internationalize::Constant::PLURAL_KEY_SYMBOL).each do |plural_type, plural_text|
-                  xml.item(quantity: plural_type) {
-                    xml.text(ios_converter(plural_text))
-                  }
-                end
-              }
-            end
+            singular_wording = wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)
+            add_singular_wording_to_xml(key, singular_wording, xml) unless singular_wording.blank?
+
+            plural_wording = wording.dig(locale, Internationalize::Constant::PLURAL_KEY_SYMBOL)
+            add_plural_wording_to_xml(key, plural_wording, xml) unless plural_wording.blank?
           end
         }
       end
@@ -49,7 +40,31 @@ module Internationalize::Platform
       processedValue = processedValue.gsub(/(%((\d+\$)?(\d+)?)i)/, '%\2d') # should match values like %i, %3$i, %01i, %1$02i
       processedValue = processedValue.gsub(/%(?!((\d+\$)?(s|(\d+)?d)))/, '%%') # negative lookahead: identifies when user really wants to display a %
       processedValue = processedValue.gsub("\\U", "\\u")
-      value = "\"#{processedValue}\""
+      "\"#{processedValue}\""
+    end
+
+    def add_singular_wording_to_xml(key, text, xml)
+      xml.string(name: key) {
+        add_wording_text_to_xml(text, xml)
+      }
+    end
+
+    def add_plural_wording_to_xml(key, plural_hash, xml)
+      xml.plurals(name: key) {
+        plural_hash.each do |plural_type, plural_text|
+          next if plural_text.blank?
+          xml.item(quantity: plural_type) {
+            add_wording_text_to_xml(plural_text, xml)
+          }
+        end
+      }
+    end
+
+    def add_wording_text_to_xml(wording_text, xml)
+      raise 'Wording text should not be empty' if wording_text.blank?
+      xml.text(
+        ios_converter(wording_text)
+      )
     end
   end
 end
