@@ -43,7 +43,7 @@ module Internationalize::Platform
         yield(formatted_data, file)
       end
 
-      Internationalize::LOGGER.log(:debug, :black, "#{platform.to_s.upcase} ---> DONE!")
+      Internationalize::LOGGER.log(:debug, :black, "#{platform.to_s.upcase} [#{locale}] ---> DONE!")
     end
 
     protected

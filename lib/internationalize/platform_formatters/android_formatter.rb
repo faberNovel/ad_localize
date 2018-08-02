@@ -26,7 +26,7 @@ module Internationalize::Platform
       export_dir(export_dir_suffix).join(Internationalize::Constant::ANDROID_EXPORT_FILENAME).open("w") do |file|
         file.puts xml_doc.to_xml(indent: 4)
       end
-      Internationalize::LOGGER.log(:debug, :black, "Android ---> DONE!")
+      Internationalize::LOGGER.log(:debug, :black, "Android [#{locale}] ---> DONE!")
     end
 
     private

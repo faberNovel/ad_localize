@@ -32,7 +32,7 @@ module Internationalize::Platform
           file.puts line
         end
       end
-      Internationalize::LOGGER.log(:debug, :black, "iOS singular ---> DONE!")
+      Internationalize::LOGGER.log(:debug, :black, "iOS singular [#{locale}] ---> DONE!")
     end
 
     def write_plural(locale, plurals)
@@ -65,7 +65,7 @@ module Internationalize::Platform
       export_dir(locale).join(Internationalize::Constant::IOS_PLURAL_EXPORT_FILENAME).open("w") do |file|
         file.puts xml_doc.to_xml(indent: 4)
       end
-      Internationalize::LOGGER.log(:debug, :black, "iOS plural ---> DONE!")
+      Internationalize::LOGGER.log(:debug, :black, "iOS plural [#{locale}] ---> DONE!")
     end
   end
 end
