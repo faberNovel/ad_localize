@@ -1,4 +1,0 @@
-#! /usr/local/rubybook/bin/ruby
-
-require_relative '../ad_localize/lib/ad_localize'
-AdLocalize.run

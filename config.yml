@@ -1,4 +1,0 @@
-platforms:
-  export_directory_names:
-    ios: "%{locale}.lproj"
-    android: "values%{locale}"
