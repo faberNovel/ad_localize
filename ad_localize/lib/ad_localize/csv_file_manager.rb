@@ -1,7 +1,4 @@
-require 'open-uri'
-require 'pathname'
-
-module Internationalize
+module AdLocalize
   class CsvFileManager
     CSV_CONTENT_TYPES = %w(text/csv text/plain)
 

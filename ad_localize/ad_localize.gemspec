@@ -1,4 +1,4 @@
-require_relative 'lib/ad_localize/version'
+require File.expand_path("../lib/ad_localize/version", __FILE__)
 
 Gem::Specification.new do |spec|
   spec.name          = 'ad_localize'
@@ -30,13 +30,12 @@ Gem::Specification.new do |spec|
     lib/ad_localize/option_handler.rb
     lib/ad_localize/csv_parser.rb
     lib/ad_localize/csv_file_manager.rb
-    lib/ad_localize/version.rb
     lib/ad_localize/runner.rb
-    lib/ad_localize/platform_formatters/android_formatter.rb
-    lib/ad_localize/platform_formatters/ios_formatter.rb
-    lib/ad_localize/platform_formatters/json_formatter.rb
-    lib/ad_localize/platform_formatters/platform_formatter.rb
-    lib/ad_localize/platform_formatters/yml_formatter.rb
+    lib/ad_localize/platform/android_formatter.rb
+    lib/ad_localize/platform/ios_formatter.rb
+    lib/ad_localize/platform/json_formatter.rb
+    lib/ad_localize/platform/platform_formatter.rb
+    lib/ad_localize/platform/yml_formatter.rb
   )
   spec.require_paths = ['lib']
 

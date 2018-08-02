@@ -1,4 +1,4 @@
-module Internationalize
+module AdLocalize
   class Runner
     attr_accessor :options
 
@@ -34,7 +34,7 @@ module Internationalize
       else
         export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
         export_platforms.each do |platform|
-          platform_formatter = "Internationalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(parser.locales.first, options.dig(:output_path))
+          platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(parser.locales.first, options.dig(:output_path))
           parser.locales.each do |locale|
             platform_formatter.export(locale, data)
           end

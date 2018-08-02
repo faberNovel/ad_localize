@@ -4,16 +4,31 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'byebug'
 require 'fileutils'
-require_relative 'ad_localize/ad_logger'
-require_relative 'ad_localize/constant'
-require_relative 'ad_localize/option_handler'
-require_relative 'ad_localize/csv_parser'
-require_relative 'ad_localize/csv_file_manager'
-Internationalize::Constant::SUPPORTED_PLATFORMS.each { |platform| require_relative "ad_localize/platform_formatters/#{platform}_formatter" }
-require_relative 'ad_localize/runner'
+require 'pathname'
+require 'yaml'
+require 'logger'
+require 'colorize'
+require 'csv'
+require 'active_support'
+require 'open-uri'
+require 'optparse'
+require 'json'
+require 'nokogiri'
 
-module Internationalize
-  LOGGER = ADLogger.new
+require 'ad_localize/ad_logger'
+require 'ad_localize/constant'
+require 'ad_localize/csv_file_manager'
+require 'ad_localize/csv_parser'
+require 'ad_localize/option_handler'
+require 'ad_localize/runner'
+require 'ad_localize/platform/platform_formatter'
+require 'ad_localize/platform/android_formatter'
+require 'ad_localize/platform/ios_formatter'
+require 'ad_localize/platform/json_formatter'
+require 'ad_localize/platform/yml_formatter'
+
+module AdLocalize
+  LOGGER = AdLogger.new
 
   def self.run
     Runner.new.run

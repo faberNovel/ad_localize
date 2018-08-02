@@ -1,7 +1,4 @@
-require 'pathname'
-require 'yaml'
-
-module Internationalize
+module AdLocalize
   module Constant
     SUPPORTED_PLATFORMS = %w(ios android yml json)
     PLURAL_KEY_SYMBOL = :plural

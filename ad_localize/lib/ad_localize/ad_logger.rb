@@ -1,8 +1,5 @@
-require 'logger'
-require 'colorize'
-
-module Internationalize
-  class ADLogger
+module AdLocalize
+  class AdLogger
     SEVERITY = { debug: Logger::DEBUG , info: Logger::INFO, warn: Logger::WARN, error: Logger::ERROR, fatal: Logger::FATAL, unknown: Logger::UNKNOWN }
     AUTHORIZED_COLORS  = [:black, :yellow, :red, :blue, :green]
 
