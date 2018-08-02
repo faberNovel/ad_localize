@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
     lib/ad_localize/csv_parser.rb
     lib/ad_localize/csv_file_manager.rb
     lib/ad_localize/version.rb
+    lib/ad_localize/runner.rb
     lib/ad_localize/platform_formatters/android_formatter.rb
     lib/ad_localize/platform_formatters/ios_formatter.rb
     lib/ad_localize/platform_formatters/json_formatter.rb
