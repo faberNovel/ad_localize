@@ -7,3 +7,6 @@ ad_localize/pkg/
 ad_localize/spec/reports/
 ad_localize/tmp/
 .idea
+.byebug_history
+.ruby-version
+
