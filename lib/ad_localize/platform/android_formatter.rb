@@ -1,6 +1,4 @@
-require_relative 'platform_formatter'
-
-module Internationalize::Platform
+module AdLocalize::Platform
   class AndroidFormatter < PlatformFormatter
     def platform
       :android
@@ -14,19 +12,19 @@ module Internationalize::Platform
       xml_doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
         xml.resources {
           data.each do |key, wording|
-            singular_wording = wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)
+            singular_wording = wording.dig(locale, AdLocalize::Constant::SINGULAR_KEY_SYMBOL)
             add_singular_wording_to_xml(key, singular_wording, xml) unless singular_wording.blank?
 
-            plural_wording = wording.dig(locale, Internationalize::Constant::PLURAL_KEY_SYMBOL)
+            plural_wording = wording.dig(locale, AdLocalize::Constant::PLURAL_KEY_SYMBOL)
             add_plural_wording_to_xml(key, plural_wording, xml) unless plural_wording.blank?
           end
         }
       end
 
-      export_dir(export_dir_suffix).join(Internationalize::Constant::ANDROID_EXPORT_FILENAME).open("w") do |file|
+      export_dir(export_dir_suffix).join(AdLocalize::Constant::ANDROID_EXPORT_FILENAME).open("w") do |file|
         file.puts xml_doc.to_xml(indent: 4)
       end
-      Internationalize::LOGGER.log(:debug, :black, "Android [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "Android [#{locale}] ---> DONE!")
     end
 
     private

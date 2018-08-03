@@ -1,0 +1,3 @@
+#! /usr/bin/env ruby
+require 'ad_localize'
+AdLocalize.run

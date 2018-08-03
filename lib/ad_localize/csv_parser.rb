@@ -1,7 +1,4 @@
-require 'csv'
-require 'active_support'
-
-module Internationalize
+module AdLocalize
   class CsvParser
     CSV_WORDING_KEYS_COLUMN = "key"
     PLURAL_KEY_REGEXP = /\#\#\{(\w+)\}/
