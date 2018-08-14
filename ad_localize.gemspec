@@ -13,7 +13,8 @@ Gem::Specification.new do |spec|
     'Vincent Brison',
     'Joanna Vigné',
     'Nicolas Braun',
-    'Corentin Huard'
+    'Corentin Huard',
+    'Claire Peyron'
   ]
   spec.email         = ['joanna.vigne@fabernovel.com', 'hugo.hache@fabernovel.com', 'edouard.siegel@fabernovel.com']
 
