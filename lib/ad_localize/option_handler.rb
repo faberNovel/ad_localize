@@ -22,6 +22,9 @@ module AdLocalize
             is_valid_drive_key = !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) && (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length))
             args[:drive_key] = is_valid_drive_key ? key : nil
           end
+          opts.on("-s", "--drive-sheet SHEET_ID", String, "Use a specific sheet id for Google Drive spreadsheets with several sheets") do |value|
+            args[:sheet_id] = value
+          end
           opts.on("-o", "--only platform1,platform2", Array, "Only generate localisation files for the specified platforms. Supported platforms : #{Constant::SUPPORTED_PLATFORMS.join(', ')}") do |platforms|
             args[:only] = filter_option_args("-o", platforms) { |platform| !!Constant::SUPPORTED_PLATFORMS.index(platform) }
           end
