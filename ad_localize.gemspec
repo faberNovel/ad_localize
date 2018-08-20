@@ -45,7 +45,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'byebug', '~> 10.0'
   spec.add_dependency 'json', '~> 1.8', '>= 1.8.3'
   spec.add_dependency 'nokogiri', '~> 1.8', '>= 1.8.2'
-  spec.add_dependency 'activesupport', '~> 5.1', '>= 5.1.5'
+  spec.add_dependency 'activesupport', '>=4.2.10'
   spec.add_dependency 'colorize', '~> 0.8.1'
 
   spec.executables << 'ad_localize'
