@@ -27,10 +27,15 @@ Or install it yourself as:
 
     $ bundle exec ad_localize -h
 
-* Export wording from a google drive spreadsheets, using the file key
+* Export wording from a google drive spreadsheet, using the file key
 
 
     $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
+
+* Export wording from a google drive spreadsheet, using the file key and specifying a sheet (useful when your file has multiple sheets)
+
+
+    $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-sheet-id>
 
 * Only generate wording files for the specified platforms
 
@@ -42,7 +47,7 @@ Or install it yourself as:
 
     $ bundle exec ad_localize -t <path-to-the-output-directory>
 
-* Run in debug mode. In this mode, logs are more verbase and missing values are replaced with "<Missing Translation>"
+* Run in debug mode. In this mode, logs are more verbose and missing values are replaced with "<Missing Translation>"
 
 
     $ bundle exec ad_localize -d
@@ -69,7 +74,7 @@ In iOS (and only iOS) you can add a comment to a missing translation.
 | player_time_live | Live	| bypass-unused-error	| Live | bypass-unused-error |
 | seconds | secondes |  | seconds | bypass-untranslated-error |
 
-The comment will be written in the output files  such as below :
+The comment will be written in the output files  such as below:
 
 ```
 "player_time_live" = "Live"; // bypass-unused-error
@@ -80,7 +85,7 @@ The comment will be written in the output files  such as below :
 
 The output folder name is `exports` and it contains a folder for each platform and each locale. In the best case, you just have to replace your existing files with the new ones.
 
-Eg :
+Eg:
 ```
 exports/
 ├── android
@@ -107,7 +112,7 @@ exports/
 
 Plurals are supported for iOS and Android.
 
-Syntax for plural keys in the CSV file :
+Syntax for plural keys in the CSV file:
 
        key##{few}
        key##{one}
