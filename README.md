@@ -11,46 +11,47 @@ gem 'ad_localize'
 ```
 
 And then execute:
-
-    $ bundle install
+```
+$ bundle install
+```
 
 Or install it yourself as:
-
-    $ gem install ad_localize
+```
+$ gem install ad_localize
+```
 
 ## Usage
 
 ### Command Line
 
 * Display help
-
-
-    $ bundle exec ad_localize -h
+```
+$ bundle exec ad_localize -h
+```
 
 * Export wording from a google drive spreadsheet, using the file key
-
-
-    $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
-
+```
+$ bundle exec ad_localize -k <your-spreadsheet-drive-key>
+```
 * Export wording from a google drive spreadsheet, using the file key and specifying a sheet (useful when your file has multiple sheets)
-
-
-    $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-sheet-id>
+```
+$ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-sheet-id>
+```
 
 * Only generate wording files for the specified platforms
-
-
-    $ bundle exec ad_localize -o ios
+```
+$ bundle exec ad_localize -o ios
+```
 
 * Choose the path of the output directory
-
-
-    $ bundle exec ad_localize -t <path-to-the-output-directory>
+```
+$ bundle exec ad_localize -t <path-to-the-output-directory>
+```
 
 * Run in debug mode. In this mode, logs are more verbose and missing values are replaced with "<Missing Translation>"
-
-
-    $ bundle exec ad_localize -d
+```
+$ bundle exec ad_localize -d
+```
 
 ### CSV file
 #### General syntax rules
@@ -71,7 +72,7 @@ In iOS (and only iOS) you can add a comment to a missing translation.
 
 | key | fr | comment fr | en | comment en |
 | --- | --- | --- | --- | --- |
-| player_time_live | Live	| bypass-unused-error	| Live | bypass-unused-error |
+| player_time_live | Live | bypass-unused-error | Live | bypass-unused-error |
 | seconds | secondes |  | seconds | bypass-untranslated-error |
 
 The comment will be written in the output files  such as below:
