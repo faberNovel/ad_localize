@@ -40,7 +40,7 @@ module AdLocalize
       private
       def drive_download_url(key, sheet)
         query_id = sheet ? "gid=#{sheet}" : "id=#{key}"
-        "https://docs.google.com/spreadsheets/d/#{key}/export?format=csv&{query_id}"
+        "https://docs.google.com/spreadsheets/d/#{key}/export?format=csv&#{query_id}"
       end
     end
   end
