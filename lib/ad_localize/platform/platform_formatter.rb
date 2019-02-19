@@ -27,7 +27,7 @@ module AdLocalize::Platform
           hash_acc[locale.to_s][key.to_s] = value
         end
         if wording.dig(locale)&.key? :plural
-          hash_acc[locale.to_s][key.to_s] = {} unless hash_acc[locale.to_s].key? key.to_s
+          hash_acc[locale.to_s][key.to_s] = {}
           wording.dig(locale, :plural).each do |plural_type, plural_text|
             value = ios_converter(plural_text)
             hash_acc[locale.to_s][key.to_s][plural_type.to_s] = value
