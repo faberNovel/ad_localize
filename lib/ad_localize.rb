@@ -28,8 +28,4 @@ module AdLocalize
   class Error < StandardError; end
 
   LOGGER = AdLogger.new
-
-  def self.run
-    Runner.new.run
-  end
 end
