@@ -13,7 +13,10 @@ module AdLocalize::Platform
         xml.resources {
           data.each do |key, wording|
             singular_wording = wording.dig(locale, AdLocalize::Constant::SINGULAR_KEY_SYMBOL)
-            add_singular_wording_to_xml(key, singular_wording, xml) unless singular_wording.blank?
+            unless singular_wording.blank?
+              comment = wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
+              add_singular_wording_to_xml(key, singular_wording, xml, comment: comment)
+            end
 
             plural_wording = wording.dig(locale, AdLocalize::Constant::PLURAL_KEY_SYMBOL)
             add_plural_wording_to_xml(key, plural_wording, xml) unless plural_wording.blank?
@@ -41,7 +44,8 @@ module AdLocalize::Platform
       "\"#{processedValue}\""
     end
 
-    def add_singular_wording_to_xml(key, text, xml)
+    def add_singular_wording_to_xml(key, text, xml, comment: nil)
+      xml.comment(comment) unless comment.blank?
       xml.string(name: key) {
         add_wording_text_to_xml(text, xml)
       }
