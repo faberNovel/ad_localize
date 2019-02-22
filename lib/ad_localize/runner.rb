@@ -30,7 +30,7 @@ module AdLocalize
       parser = CsvParser.new
       data = parser.extract_data(file)
       if data.empty?
-        LOGGER.log(:error, :red, "No data were found in the file - cannot start the file generation process")
+        LOGGER.log(:error, :red, "No data were found in the file - check if there is a key column in the file")
       else
         export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
         export_platforms.each do |platform|
