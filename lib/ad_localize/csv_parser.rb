@@ -24,10 +24,12 @@ module AdLocalize
           data.deep_merge!(row_data) unless row_data.nil?
         end
       end
+      remove_numeral_conflicts!(data)
       data
     end
 
     private
+
     # Returns 1 if row is ok, 0 if row there are missing information and -1 if row is not a csv row
     def check_row(row)
       valid_row = 1
@@ -121,6 +123,17 @@ module AdLocalize
       if formatted_arguments.size >= 2
         is_all_ordered = formatted_arguments.inject(true){ |is_ordered, match| is_ordered &&= !match.join.empty? }
         LOGGER.log(:warn, :red, "[#{locale.upcase}] Multiple arguments for #{key} but no order") unless is_all_ordered
+      end
+    end
+
+    def remove_numeral_conflicts!(data)
+      data.select do |_, wording|
+        wording.values.any? { |translation| (translation.keys & [:plural, :singular]).size == 2 }
+      end.keys.each do |key|
+        AdLocalize::LOGGER.log(:warn, :yellow, "Key \"#{key}\" is duplicated in singular and plural." \
+          "The singular wording will be ignored. You should keep one version of the key (singular or plural)"
+        )
+        data[key].values.each { |wording| wording.delete(:singular) }
       end
     end
   end
