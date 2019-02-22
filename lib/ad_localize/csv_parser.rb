@@ -1,7 +1,4 @@
-require 'csv'
-require 'active_support'
-
-module Internationalize
+module AdLocalize
   class CsvParser
     CSV_WORDING_KEYS_COLUMN = "key"
     PLURAL_KEY_REGEXP = /\#\#\{(\w+)\}/
@@ -46,8 +43,12 @@ module Internationalize
     end
 
     def find_locales(row)
-      ignore_before_index = row.index(CSV_WORDING_KEYS_COLUMN)
-      self.locales = row.headers.slice((ignore_before_index+1)..-1).compact if row.length > ignore_before_index
+      wording_key_column_index = row.index(CSV_WORDING_KEYS_COLUMN)
+      if row.length > wording_key_column_index
+        self.locales = row.headers.slice((wording_key_column_index+1)..-1).compact.reject do |header|
+          header.to_s.include? Constant::COMMENT_KEY_COLUMN_IDENTIFIER
+        end
+      end
       if locales.empty?
         raise 'NO DETECTED LOCALES'
       else
@@ -78,6 +79,8 @@ module Internationalize
 
         check_wording_parameters(row[locale], locale, current_key)
         output[current_key][locale.to_sym][key_infos.dig(:numeral_key)] = value
+        locale_comment_column = "#{Constant::COMMENT_KEY_COLUMN_IDENTIFIER} #{locale}"
+        output[current_key][locale.to_sym][Constant::COMMENT_KEY_SYMBOL] = row[locale_comment_column] unless locale_comment_column.blank? and row[locale_comment_column].blank?
       end
     end
 

@@ -1,5 +1,0 @@
-#! /usr/local/rubybook/bin/ruby
-
-require_relative '../lib/internationalize/runner'
-runner = Internationalize::Runner.new
-runner.run

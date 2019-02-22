@@ -1,23 +1,20 @@
-require 'open-uri'
-require 'pathname'
-
-module Internationalize
+module AdLocalize
   class CsvFileManager
     CSV_CONTENT_TYPES = %w(text/csv text/plain)
 
     class << self
       def csv?(file)
-        file.nil? ? false : CSV_CONTENT_TYPES.include?(`file --brief --mime-type #{file}`.strip)
+        !file.nil? && CSV_CONTENT_TYPES.include?(`file --brief --mime-type '#{file}'`.strip)
       end
 
       # Returns the downloaded file name (it is located in the current directory)
-      def download_from_drive(key)
+      def download_from_drive(key, sheet)
         LOGGER.log(:info, :black, "Downloading file from google drive...")
         download_string_path = "./#{key}.csv"
         begin
           File.open(download_string_path, "wb") do |saved_file|
             # the following "open" is provided by open-uri
-            open(drive_download_url(key), "rb") do |read_file|
+            open(drive_download_url(key, sheet), "rb") do |read_file|
               saved_file.write(read_file.read)
             end
             File.basename saved_file
@@ -41,8 +38,9 @@ module Internationalize
       end
 
       private
-      def drive_download_url(key)
-        "https://docs.google.com/spreadsheets/d/#{key}/export?format=csv&id=#{key}"
+      def drive_download_url(key, sheet)
+        query_id = sheet ? "gid=#{sheet}" : "id=#{key}"
+        "https://docs.google.com/spreadsheets/d/#{key}/export?format=csv&#{query_id}"
       end
     end
   end

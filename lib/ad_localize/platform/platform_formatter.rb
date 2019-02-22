@@ -1,8 +1,4 @@
-require 'pathname'
-require 'nokogiri'
-require 'fileutils'
-
-module Internationalize::Platform
+module AdLocalize::Platform
   class PlatformFormatter
     PLURAL_KEY_SYMBOL = :plural
     SINGULAR_KEY_SYMBOL = :singular
@@ -31,7 +27,7 @@ module Internationalize::Platform
           hash_acc[locale.to_s][key.to_s] = value
         end
         if wording.dig(locale)&.key? :plural
-          hash_acc[locale.to_s][key.to_s] = {} unless hash_acc[locale.to_s].key? key.to_s
+          hash_acc[locale.to_s][key.to_s] = {}
           wording.dig(locale, :plural).each do |plural_type, plural_text|
             value = ios_converter(plural_text)
             hash_acc[locale.to_s][key.to_s][plural_type.to_s] = value
@@ -43,7 +39,7 @@ module Internationalize::Platform
         yield(formatted_data, file)
       end
 
-      Internationalize::LOGGER.log(:debug, :black, "#{platform.to_s.upcase} ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "#{platform.to_s.upcase} [#{locale}] ---> DONE!")
     end
 
     protected
@@ -51,7 +47,7 @@ module Internationalize::Platform
       if output_path
         Pathname.new(output_path)
       else
-        Pathname::pwd.join(Internationalize::Constant::EXPORT_FOLDER)
+        Pathname::pwd.join(AdLocalize::Constant::EXPORT_FOLDER)
       end
     end
 
@@ -59,12 +55,12 @@ module Internationalize::Platform
       if platform_dir.directory?
         FileUtils.rm_rf("#{platform_dir}/.", secure: true)
       else
-        platform_dir.mkdir
+        platform_dir.mkpath
       end
     end
 
     def export_dir(locale)
-      platform_dir + Internationalize::Constant::CONFIG.dig("platforms", "export_directory_names", platform.to_s) % { locale: locale.downcase }
+      platform_dir + AdLocalize::Constant::CONFIG.dig(:platforms, :export_directory_names, platform.to_sym) % { locale: locale.downcase }
     end
 
     def create_locale_dir(locale)

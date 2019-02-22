@@ -1,7 +1,4 @@
-require 'json'
-require_relative 'platform_formatter'
-
-module Internationalize::Platform
+module AdLocalize::Platform
   class JsonFormatter < PlatformFormatter
     def platform
       :json

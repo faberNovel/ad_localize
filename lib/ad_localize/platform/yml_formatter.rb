@@ -1,7 +1,4 @@
-require 'yaml'
-require_relative 'platform_formatter'
-
-module Internationalize::Platform
+module AdLocalize::Platform
   class YmlFormatter < PlatformFormatter
     def platform
       :yml

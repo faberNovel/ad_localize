@@ -1,8 +1,4 @@
-require 'optparse'
-require 'pathname'
-require_relative 'constant'
-
-module Internationalize
+module AdLocalize
   class OptionHandler
     GOOGLE_DRIVE_DOCUMENT_ID = { length: 32, regexp: /\A[\w-]+\Z/ }
 
@@ -11,7 +7,7 @@ module Internationalize
         args = { debug: false, only: nil}
 
         opt_parser = OptionParser.new do |opts|
-          opts.banner = "Usage: ruby exportCSVStrings.rb [options] file(s)"
+          opts.banner = "Usage: ruby bin/export [options] file(s)"
 
 
           opts.on("-h", "--help", "Prints help") do
@@ -25,6 +21,9 @@ module Internationalize
           opts.on("-k", "--drive-key #{GOOGLE_DRIVE_DOCUMENT_ID.dig(:length)}_characters", String, "Use google drive spreadsheets") do |key|
             is_valid_drive_key = !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) && (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length))
             args[:drive_key] = is_valid_drive_key ? key : nil
+          end
+          opts.on("-s", "--drive-sheet SHEET_ID", String, "Use a specific sheet id for Google Drive spreadsheets with several sheets") do |value|
+            args[:sheet_id] = value
           end
           opts.on("-o", "--only platform1,platform2", Array, "Only generate localisation files for the specified platforms. Supported platforms : #{Constant::SUPPORTED_PLATFORMS.join(', ')}") do |platforms|
             args[:only] = filter_option_args("-o", platforms) { |platform| !!Constant::SUPPORTED_PLATFORMS.index(platform) }

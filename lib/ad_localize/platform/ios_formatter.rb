@@ -1,6 +1,4 @@
-require_relative 'platform_formatter'
-
-module Internationalize::Platform
+module AdLocalize::Platform
   class IosFormatter < PlatformFormatter
     def platform
       :ios
@@ -8,10 +6,10 @@ module Internationalize::Platform
 
     def export(locale, data, export_extension = nil, substitution_format = nil)
       create_locale_dir(locale)
-      [Internationalize::Constant::PLURAL_KEY_SYMBOL, Internationalize::Constant::SINGULAR_KEY_SYMBOL].each do |numeral_key|
+      [AdLocalize::Constant::PLURAL_KEY_SYMBOL, AdLocalize::Constant::SINGULAR_KEY_SYMBOL].each do |numeral_key|
         numeral_data = data.select {|key, wording| wording.dig(locale.to_sym)&.key? numeral_key}
         if numeral_data.empty?
-          Internationalize::LOGGER.log(:info, :black, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
+          AdLocalize::LOGGER.log(:info, :black, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
         else
           send("write_#{numeral_key}", locale, numeral_data)
         end
@@ -23,12 +21,16 @@ module Internationalize::Platform
       locale = locale.to_sym
 
       singulars.each do |key, locales_wording|
-        value = locales_wording.dig(locale, Internationalize::Constant::SINGULAR_KEY_SYMBOL)
-        export_dir(locale).join(Internationalize::Constant::IOS_SINGULAR_EXPORT_FILENAME).open("a") do |file|
-          file.puts "\"#{key}\" = \"#{value}\";\n"
+        value = locales_wording.dig(locale, AdLocalize::Constant::SINGULAR_KEY_SYMBOL)
+        comment = locales_wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
+        export_dir(locale).join(AdLocalize::Constant::IOS_SINGULAR_EXPORT_FILENAME).open("a") do |file|
+          line =  "\"#{key}\" = \"#{value}\";"
+          line << " // #{comment}" unless comment.nil?
+          line << "\n"
+          file.puts line
         end
       end
-      Internationalize::LOGGER.log(:debug, :black, "iOS singular ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "iOS singular [#{locale}] ---> DONE!")
     end
 
     def write_plural(locale, plurals)
@@ -48,11 +50,9 @@ module Internationalize::Platform
                   xml.string "NSStringPluralRuleType"
                   xml.key "NSStringFormatValueTypeKey"
                   xml.string "d"
-                  translations[locale].each do |wording_type, wording_value|
-                    wording_value.each do |plural_identifier, plural_value|
-                      xml.key plural_identifier
-                      xml.string plural_value
-                    end
+                  translations[locale][AdLocalize::Constant::PLURAL_KEY_SYMBOL].each do |wording_type, wording_value|
+                    xml.key wording_type
+                    xml.string wording_value
                   end
                 }
               }
@@ -60,10 +60,10 @@ module Internationalize::Platform
           }
         }
       end
-      export_dir(locale).join(Internationalize::Constant::IOS_PLURAL_EXPORT_FILENAME).open("w") do |file|
+      export_dir(locale).join(AdLocalize::Constant::IOS_PLURAL_EXPORT_FILENAME).open("w") do |file|
         file.puts xml_doc.to_xml(indent: 4)
       end
-      Internationalize::LOGGER.log(:debug, :black, "iOS plural ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "iOS plural [#{locale}] ---> DONE!")
     end
   end
 end

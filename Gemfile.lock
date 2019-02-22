@@ -1,35 +1,51 @@
+PATH
+  remote: .
+  specs:
+    ad_localize (3.0.0)
+      activesupport (~> 4.2, >= 4.2.10)
+      colorize (~> 0.8)
+      nokogiri (~> 1.8, >= 1.8.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.5.1)
+    activesupport (4.2.11)
       i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    byebug (5.0.0)
-      columnize (= 0.9.0)
-    colorize (0.7.7)
-    columnize (0.9.0)
-    i18n (0.7.0)
-    json (1.8.3)
-    mini_portile2 (2.0.0)
-    minitest (5.8.4)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
-    thread_safe (0.3.5)
-    tzinfo (1.2.2)
+    ansi (1.5.0)
+    builder (3.2.3)
+    byebug (11.0.0)
+    colorize (0.8.1)
+    concurrent-ruby (1.1.4)
+    i18n (0.9.5)
+      concurrent-ruby (~> 1.0)
+    mini_portile2 (2.4.0)
+    minitest (5.11.3)
+    minitest-reporters (1.3.6)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
+    nokogiri (1.10.1)
+      mini_portile2 (~> 2.4.0)
+    rake (12.3.2)
+    ruby-progressbar (1.10.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
       thread_safe (~> 0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
-  byebug
-  colorize
-  json (~> 1.8, >= 1.8.3)
-  nokogiri (~> 1.6, >= 1.6.7.2)
+  ad_localize!
+  bundler (~> 2.0)
+  byebug (~> 11.0)
+  minitest (~> 5.11)
+  minitest-reporters (~> 1.3)
+  rake (~> 12.3)
 
 BUNDLED WITH
-   1.11.2
+   2.0.1
