@@ -15,7 +15,9 @@ module AdLocalize
       CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
         validity_status = check_row(row)
         if validity_status.zero?
-          LOGGER.log(:warn, :yellow, "Missing key in line #{$.}") unless row.fields.all?(&:nil?)
+          keys_column_index = row.index(CSV_WORDING_KEYS_COLUMN)
+          fields = row.fields
+          LOGGER.log(:warn, :yellow, "Missing key in line #{$.}") unless fields[keys_column_index...fields.count].all?(&:nil?)
           next
         elsif validity_status == -1
           LOGGER.log(:error, :red, "[CSV FORMAT] #{file_name} is not a valid file")
