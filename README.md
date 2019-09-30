@@ -97,10 +97,12 @@ exports/
 ├── ios
 │   ├── en.lproj
 │   │   ├── Localizable.strings
-│   │   └── Localizable.stringsdict
-│   └── fr.lproj
+│   │   ├── Localizable.stringsdict
+|   |   └── InfoPlist.strings
+│   └── fr.lproj
 │       ├── Localizable.strings
-│       └── Localizable.stringsdict
+│       ├── Localizable.stringsdict
+|       └── InfoPlist.strings
 ├── json
 │   ├── en.json
 │   └── fr.json
@@ -164,6 +166,16 @@ Sample of iOS output in .stringsdict
     </dict>
 </plist>
 ```
+
+## InfoPlist.strings
+
+_Only for iOS._
+
+Every key that matches the following formats will be added to the `InfoPlist.strings` file instead of `Localizable.strings`:
+* `NS...UsageDescription`
+* `CF...Name`
+
+Source: https://developer.apple.com/documentation/bundleresources/information_property_list
 
 ## Development
 
