@@ -6,7 +6,7 @@ module AdLocalize::Platform
 
     def export(locale, data, export_extension = nil, substitution_format = nil)
       create_locale_dir(locale)
-      [AdLocalize::Constant::PLURAL_KEY_SYMBOL, AdLocalize::Constant::SINGULAR_KEY_SYMBOL].each do |numeral_key|
+      [AdLocalize::Constant::PLURAL_KEY_SYMBOL, AdLocalize::Constant::SINGULAR_KEY_SYMBOL, AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL].each do |numeral_key|
         numeral_data = data.select {|key, wording| wording.dig(locale.to_sym)&.key? numeral_key}
         if numeral_data.empty?
           AdLocalize::LOGGER.log(:info, :black, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
@@ -18,19 +18,37 @@ module AdLocalize::Platform
 
     protected
     def write_singular(locale, singulars)
+      write_localizable(
+        locale,
+        singulars,
+        AdLocalize::Constant::SINGULAR_KEY_SYMBOL,
+        AdLocalize::Constant::IOS_SINGULAR_EXPORT_FILENAME
+      )
+    end
+
+    def write_info_plist(locale, singulars)
+      write_localizable(
+        locale,
+        singulars,
+        AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL,
+        AdLocalize::Constant::IOS_INFO_PLIST_EXPORT_FILENAME
+      )
+    end
+
+    def write_localizable(locale, singulars, key, filename)
       locale = locale.to_sym
 
       singulars.each do |key, locales_wording|
-        value = locales_wording.dig(locale, AdLocalize::Constant::SINGULAR_KEY_SYMBOL)
+        value = locales_wording.dig(locale, key)
         comment = locales_wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
-        export_dir(locale).join(AdLocalize::Constant::IOS_SINGULAR_EXPORT_FILENAME).open("a") do |file|
+        export_dir(locale).join(filename).open("a") do |file|
           line =  "\"#{key}\" = \"#{value}\";"
           line << " // #{comment}" unless comment.nil?
           line << "\n"
           file.puts line
         end
       end
-      AdLocalize::LOGGER.log(:debug, :black, "iOS singular [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "iOS #{key} [#{locale}] ---> DONE!")
     end
 
     def write_plural(locale, plurals)

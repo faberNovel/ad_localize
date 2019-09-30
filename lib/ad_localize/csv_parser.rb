@@ -2,6 +2,7 @@ module AdLocalize
   class CsvParser
     CSV_WORDING_KEYS_COLUMN = "key"
     PLURAL_KEY_REGEXP = /\#\#\{(\w+)\}/
+    INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)/ # see https://developer.apple.com/documentation/bundleresources/information_property_list
 
     attr_accessor :locales
 
@@ -77,6 +78,9 @@ module AdLocalize
             "[#{locale.upcase}] Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{current_key}",
             "[#{locale.upcase}] Missing translation for #{current_key} (#{key_infos.dig(:plural_identifier)})")
           value = { key_infos.dig(:plural_identifier) => row[locale] || default_wording(locale, "#{current_key} (#{key_infos.dig(:plural_identifier)})") }
+        elsif key_infos.dig(:numeral_key) == Constant::INFO_PLIST_KEY_SYMBOL
+          trace_wording(row[locale], "[#{locale.upcase}] Info.plist key ---> #{current_key}", "[#{locale.upcase}] Missing translation for #{current_key}")
+          value = row[locale] || default_wording(locale, current_key)
         else
           raise "Unknown numeral key #{key_infos.dig(:numeral_key)}"
         end
@@ -95,7 +99,11 @@ module AdLocalize
       invalid_plural = false
 
       if plural_prefix.nil?
-        numeral_key = Constant::SINGULAR_KEY_SYMBOL
+        if key.match(INFO_PLIST_KEY_REGEXP).nil?
+          numeral_key = Constant::SINGULAR_KEY_SYMBOL
+        else
+          numeral_key = Constant::INFO_PLIST_KEY_SYMBOL
+        end
       else
         numeral_key = Constant::PLURAL_KEY_SYMBOL
         key = plural_prefix.pre_match
