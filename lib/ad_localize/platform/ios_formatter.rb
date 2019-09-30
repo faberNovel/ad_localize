@@ -17,29 +17,30 @@ module AdLocalize::Platform
     end
 
     protected
+
     def write_singular(locale, singulars)
       write_localizable(
-        locale,
-        singulars,
-        AdLocalize::Constant::SINGULAR_KEY_SYMBOL,
-        AdLocalize::Constant::IOS_SINGULAR_EXPORT_FILENAME
+        locale: locale,
+        singulars: singulars,
+        wording_type: AdLocalize::Constant::SINGULAR_KEY_SYMBOL,
+        filename: AdLocalize::Constant::IOS_SINGULAR_EXPORT_FILENAME
       )
     end
 
     def write_info_plist(locale, singulars)
       write_localizable(
-        locale,
-        singulars,
-        AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL,
-        AdLocalize::Constant::IOS_INFO_PLIST_EXPORT_FILENAME
+        locale: locale,
+        singulars: singulars,
+        wording_type: AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL,
+        filename: AdLocalize::Constant::IOS_INFO_PLIST_EXPORT_FILENAME
       )
     end
 
-    def write_localizable(locale, singulars, key, filename)
+    def write_localizable(locale:, singulars:, wording_type:, filename:)
       locale = locale.to_sym
 
       singulars.each do |key, locales_wording|
-        value = locales_wording.dig(locale, key)
+        value = locales_wording.dig(locale, wording_type)
         comment = locales_wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
         export_dir(locale).join(filename).open("a") do |file|
           line =  "\"#{key}\" = \"#{value}\";"
@@ -48,7 +49,7 @@ module AdLocalize::Platform
           file.puts line
         end
       end
-      AdLocalize::LOGGER.log(:debug, :black, "iOS #{key} [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :black, "iOS #{wording_type} [#{locale}] ---> DONE!")
     end
 
     def write_plural(locale, plurals)
