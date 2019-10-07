@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!--Comment fr-->
+    <string name="delete">"Delete"</string>
+    <string name="send">"Send"</string>
+    <string name="send_again">"Send again"</string>
+    <string name="quit">"Quit"</string>
+    <string name="done">"Finish"</string>
+    <string name="save">"Save"</string>
+    <plurals name="assess_rate_trip_voiceover">
+        <item quantity="one">"Rate %1$s star"</item>
+        <item quantity="other">"Rate %1$s stars"</item>
+    </plurals>
+</resources>
