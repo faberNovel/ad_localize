@@ -1,7 +1,8 @@
 module AdLocalize
   class CsvParser
     CSV_WORDING_KEYS_COLUMN = "key"
-    PLURAL_KEY_REGEXP = /\#\#\{(\w+)\}/
+    PLURAL_KEY_REGEXP = /\#\#\{([A-Za-z]+)\}/
+    ADAPTIVE_KEY_REGEXP = /\#\#\{(\d+)\}/
     INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)/ # see https://developer.apple.com/documentation/bundleresources/information_property_list
 
     attr_accessor :locales
@@ -78,6 +79,11 @@ module AdLocalize
             "[#{locale.upcase}] Plural key ---> plural_identifier : #{key_infos.dig(:plural_identifier)}, key : #{current_key}",
             "[#{locale.upcase}] Missing translation for #{current_key} (#{key_infos.dig(:plural_identifier)})")
           value = { key_infos.dig(:plural_identifier) => row[locale] || default_wording(locale, "#{current_key} (#{key_infos.dig(:plural_identifier)})") }
+        elsif key_infos.dig(:numeral_key) == Constant::ADAPTIVE_KEY_SYMBOL
+          trace_wording(row[locale],
+            "[#{locale.upcase}] Adaptive key ---> adaptive_identifier : #{key_infos.dig(:adaptive_identifier)}, key : #{current_key}",
+            "[#{locale.upcase}] Missing translation for #{current_key} (#{key_infos.dig(:adaptive_identifier)})")
+          value = { key_infos.dig(:adaptive_identifier) => row[locale] || default_wording(locale, "#{current_key} (#{key_infos.dig(:adaptive_identifier)})") }
         elsif key_infos.dig(:numeral_key) == Constant::INFO_PLIST_KEY_SYMBOL
           trace_wording(row[locale], "[#{locale.upcase}] Info.plist key ---> #{current_key}", "[#{locale.upcase}] Missing translation for #{current_key}")
           value = row[locale] || default_wording(locale, current_key)
@@ -98,22 +104,31 @@ module AdLocalize
       plural_identifier = nil
       invalid_plural = false
 
-      if plural_prefix.nil?
-        if key.match(INFO_PLIST_KEY_REGEXP).nil?
-          numeral_key = Constant::SINGULAR_KEY_SYMBOL
-        else
-          numeral_key = Constant::INFO_PLIST_KEY_SYMBOL
-        end
-      else
+      adaptive_prefix = key.match(ADAPTIVE_KEY_REGEXP)
+      adaptive_identifier = nil
+      invalid_adaptive = false
+
+      if plural_prefix != nil
         numeral_key = Constant::PLURAL_KEY_SYMBOL
         key = plural_prefix.pre_match
         plural_identifier = plural_prefix.captures&.first
         LOGGER.log(:debug, :red, "Invalid key #{key}") if key.nil?
         LOGGER.log(:debug, :red, "Empty plural prefix!") if plural_identifier.nil?
         invalid_plural = plural_identifier.nil?
+      elsif adaptive_prefix != nil
+        numeral_key = Constant::ADAPTIVE_KEY_SYMBOL
+        key = adaptive_prefix.pre_match
+        adaptive_identifier = adaptive_prefix.captures&.first
+        LOGGER.log(:debug, :red, "Invalid key #{key}") if key.nil?
+        LOGGER.log(:debug, :red, "Empty adaptive prefix!") if adaptive_identifier.nil?
+        invalid_adaptive = adaptive_identifier.nil?
+      elsif key.match(INFO_PLIST_KEY_REGEXP) != nil
+        numeral_key = Constant::INFO_PLIST_KEY_SYMBOL
+      else
+        numeral_key = Constant::SINGULAR_KEY_SYMBOL
       end
 
-      (key.nil? or invalid_plural) ? nil : { key: key.to_sym, numeral_key: numeral_key, plural_identifier: plural_identifier&.to_sym }
+      (key.nil? or invalid_plural or invalid_adaptive) ? nil : { key: key.to_sym, numeral_key: numeral_key, plural_identifier: plural_identifier&.to_sym, adaptive_identifier: adaptive_identifier&.to_sym }
     end
 
     def default_wording(locale, key)
