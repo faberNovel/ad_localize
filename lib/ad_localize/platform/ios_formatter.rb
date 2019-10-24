@@ -43,7 +43,12 @@ module AdLocalize::Platform
         value = locales_wording.dig(locale, wording_type)
         comment = locales_wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
         export_dir(locale).join(filename).open("a") do |file|
-          line =  "\"#{key}\" = \"#{value}\";"
+          line = ""
+          if wording_type == AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL
+            line = "#{key} = \"#{value}\";"
+          else
+            line = "\"#{key}\" = \"#{value}\";"
+          end
           line << " // #{comment}" unless comment.nil?
           line << "\n"
           file.puts line
