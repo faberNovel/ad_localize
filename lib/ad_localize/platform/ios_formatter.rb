@@ -45,9 +45,9 @@ module AdLocalize::Platform
         export_dir(locale).join(filename).open("a") do |file|
           line = ""
           if wording_type == AdLocalize::Constant::INFO_PLIST_KEY_SYMBOL
-            line = "#{key} = \"#{value}\";"
+            line = %(#{key} = "#{value}";)
           else
-            line = "\"#{key}\" = \"#{value}\";"
+            line = %("#{key}" = "#{value}";)
           end
           line << " // #{comment}" unless comment.nil?
           line << "\n"
