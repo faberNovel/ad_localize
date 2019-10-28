@@ -37,24 +37,24 @@ class AdLocalizeTest < TestCase
   def ios_files
   	files = ["InfoPlist.strings", "Localizable.strings", "Localizable.stringsdict"]
   	languages
-  		.map { |x| "#{x}.lproj" }
+  		.map { |language| "#{language}.lproj" }
   		.product(files)
-  		.map { |x| "ios/#{x[0]}/#{x[1]}" }
+  		.map { |language_folder, file| "ios/#{language_folder}/#{file}" }
   end
 
   def android_files
   	languages
   		.each_with_index
-  		.map { |x, i| i == 0 ? "values" : "values-#{x}" }
-  		.map { |x| "android/#{x}/strings.xml" }
+  		.map { |language, i| i == 0 ? "values" : "values-#{language}" }
+  		.map { |language_folder| "android/#{language_folder}/strings.xml" }
   end
 
   def json_files
-  	languages.map { |x| "json/#{x}.json" }
+  	languages.map { |language| "json/#{language}.json" }
   end
 
   def yml_files
-  	languages.map { |x| "yml/#{x}.yml" }
+  	languages.map { |language| "yml/#{language}.yml" }
   end
 
   def languages
