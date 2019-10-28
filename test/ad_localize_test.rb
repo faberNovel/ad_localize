@@ -3,29 +3,40 @@ require 'fileutils'
 require 'diffy'
 
 class AdLocalizeTest < TestCase
+
+  def setup
+    # Remove exports if needed
+    FileUtils.rm_rf('exports')
+  end
+
+  def teardown
+    # Clean up
+    FileUtils.rm_rf('exports')
+  end
+
   test 'it has a version number' do
     refute_nil ::AdLocalize::VERSION
   end
 
   test 'it should export correct ios files' do
-    # Remove exports if needed
-    FileUtils.rm_rf('exports')
+    # Given
+    csv_file = "test/reference.csv"
+    reference_dir = "test/exports_reference"
+    assert(File.exist?(csv_file), "File does not exists #{csv_file}")
+    assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
     # When
     runner = AdLocalize::Runner.new
-    runner.run ["test/reference.csv"]
+    runner.run [csv_file]
 
     # Then
     all_files.each do |file|
-      reference_file = "test/exports_reference/#{file}"
+      reference_file = "#{reference_dir}/#{file}"
       generated_file = "exports/#{file}"
       assert(File.exist?(generated_file), "File does not exists #{generated_file}")
       diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
       assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
     end
-
-    # Clean up
-    FileUtils.rm_rf('exports')
   end
 
   private
