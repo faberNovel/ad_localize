@@ -18,10 +18,10 @@ class AdLocalizeTest < TestCase
     # Then
     all_files.each do |file|
       reference_file = "test/exports_reference/#{file}"
-      test_file = "exports/#{file}"
-      assert(File.exist?(test_file), "File does not exists #{test_file}")
-      diff = Diffy::Diff.new(reference_file, test_file, :source => 'files')
-      assert_empty(diff.to_s, "File #{file} do not match reference. Diff: \n\n#{diff}\n")
+      generated_file = "exports/#{file}"
+      assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+      diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+      assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
     end
 
     # Clean up
