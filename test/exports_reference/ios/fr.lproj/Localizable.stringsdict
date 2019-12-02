@@ -17,5 +17,17 @@
                 <string>Attribuer %1$@ étoiles</string>
             </dict>
         </dict>
+        <key>start_countdown</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>Commencer</string>
+                <key>25</key>
+                <string>Commencer</string>
+                <key>50</key>
+                <string>Commencer le compte à rebours</string>
+            </dict>
+        </dict>
     </dict>
 </plist>
