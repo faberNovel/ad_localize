@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'byebug', '~> 11.0'
   spec.add_development_dependency 'minitest-reporters', '~> 1.3'
+  spec.add_development_dependency 'diffy', '~> 3.3'
 
   spec.add_dependency 'activesupport', '~> 4.2' ,'>= 4.2.10' # Fastlane does not support activesupport 5
   spec.add_dependency 'nokogiri', '~> 1.8', '>= 1.8.2'

@@ -1,0 +1,11 @@
+---
+fr:
+  delete: Supprimer
+  send: Envoyer
+  send_again: Renvoyer
+  quit: Quitter
+  done: Terminer
+  save: Enregistrer
+  assess_rate_trip_voiceover:
+    one: Attribuer VARIABLE_TO_SET étoile
+    other: Attribuer VARIABLE_TO_SET étoiles
