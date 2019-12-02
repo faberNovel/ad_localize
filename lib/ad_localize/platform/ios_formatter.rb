@@ -115,7 +115,10 @@ module AdLocalize::Platform
       filename = export_dir(locale).join(AdLocalize::Constant::IOS_PLURAL_EXPORT_FILENAME)
       xml_doc = nil
       if File.exist?(filename)
-        xml_doc = Nokogiri::XML::Builder.with(Nokogiri::XML(open(filename)).css('plist>dict').first) do |xml|
+        xml_content = Nokogiri::XML(open(filename)) do |config|
+          config.default_xml.noblanks # minimify xml
+        end
+        xml_doc = Nokogiri::XML::Builder.with(xml_content.css('plist>dict').first) do |xml|
           yield(xml)
         end
       else
