@@ -57,7 +57,7 @@ module AdLocalize::Platform
             add_wording_text_to_xml(plural_text, xml)
           }
         end
-      }
+      } unless plural_hash.values.all? &:empty?
     end
 
     def add_wording_text_to_xml(wording_text, xml)
