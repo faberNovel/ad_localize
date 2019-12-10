@@ -177,6 +177,41 @@ Every key that matches the following formats will be added to the `InfoPlist.str
 
 Source: https://developer.apple.com/documentation/bundleresources/information_property_list
 
+## Adaptive strings
+
+_Only for iOS._
+
+Syntax for adaptive keys in the CSV file:
+
+       key##{20}
+       key##{25}
+       key##{50}
+       …
+
+Sample of iOS output in .stringsdict
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+    <dict>
+        <key>start_countdown</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>Start</string>
+                <key>25</key>
+                <string>Start countdown</string>
+                <key>50</key>
+                <string>Start countdown</string>
+            </dict>
+        </dict>
+    </dict>
+</plist>
+```
+
+Source: https://developer.apple.com/documentation/foundation/nsstring/1413104-variantfittingpresentationwidth
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
