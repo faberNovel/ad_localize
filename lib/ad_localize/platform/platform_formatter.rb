@@ -39,7 +39,7 @@ module AdLocalize::Platform
         yield(formatted_data, file)
       end
 
-      AdLocalize::LOGGER.log(:debug, :black, "#{platform.to_s.upcase} [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :green, "#{platform.to_s.upcase} [#{locale}] ---> DONE!")
     end
 
     protected

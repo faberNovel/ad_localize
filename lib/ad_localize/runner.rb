@@ -7,7 +7,7 @@ module AdLocalize
     end
 
     def run(args = ARGV)
-      LOGGER.log(:info, :black, "OPTIONS : #{options}")
+      LOGGER.log(:info, :green, "OPTIONS : #{options}")
       input_files = (args + [options.dig(:drive_key)]).compact # drive_key can be nil
       if input_files.length.zero?
         LOGGER.log(:error, :red, "No CSV to parse. Use option -h to see how to use this script")
@@ -24,9 +24,10 @@ module AdLocalize
     end
 
     private
+
     def export(file)
-      LOGGER.log(:info, :black, "********* PARSING #{file} *********")
-      LOGGER.log(:info, :black, "Extracting data from file...")
+      LOGGER.log(:info, :green, "********* PARSING #{file} *********")
+      LOGGER.log(:info, :green, "Extracting data from file...")
       parser = CsvParser.new
       data = parser.extract_data(file)
       if data.empty?
