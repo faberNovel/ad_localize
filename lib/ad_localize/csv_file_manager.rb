@@ -9,7 +9,7 @@ module AdLocalize
 
       # Returns the downloaded file name (it is located in the current directory)
       def download_from_drive(key, sheet)
-        LOGGER.log(:info, :black, "Downloading file from google drive...")
+        LOGGER.log(:info, :green, "Downloading file from google drive...")
         download_string_path = "./#{key}.csv"
         begin
           File.open(download_string_path, "wb") do |saved_file|

@@ -58,7 +58,7 @@ module AdLocalize
       if locales.empty?
         raise 'NO DETECTED LOCALES'
       else
-        LOGGER.log(:debug, :black, "DETECTED LOCALES : #{locales.join(', ')}")
+        LOGGER.log(:debug, :green, "DETECTED LOCALES : #{locales.join(', ')}")
       end
     end
 
@@ -137,7 +137,7 @@ module AdLocalize
 
     def trace_wording(wording, present_message, missing_message)
       if wording
-        LOGGER.log(:debug, :black, present_message)
+        LOGGER.log(:debug, :green, present_message)
       else
         LOGGER.log(:debug, :yellow, missing_message)
       end

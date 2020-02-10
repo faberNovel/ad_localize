@@ -15,7 +15,7 @@ module AdLocalize::Platform
       all_symbols.each do |numeral_key|
         numeral_data = data.select {|key, wording| wording.dig(locale.to_sym)&.key? numeral_key}
         if numeral_data.empty?
-          AdLocalize::LOGGER.log(:info, :black, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
+          AdLocalize::LOGGER.log(:info, :green, "[#{locale.upcase}] no #{numeral_key.to_s} keys were found to generate the file")
         else
           send("write_#{numeral_key}", locale, numeral_data)
         end
@@ -65,7 +65,7 @@ module AdLocalize::Platform
           }
         end
       end
-      AdLocalize::LOGGER.log(:debug, :black, "iOS plural [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :green, "iOS plural [#{locale}] ---> DONE!")
     end
 
     def write_adaptive(locale, adaptives)
@@ -108,7 +108,7 @@ module AdLocalize::Platform
           file.puts line
         end
       end
-      AdLocalize::LOGGER.log(:debug, :black, "iOS #{wording_type} [#{locale}] ---> DONE!")
+      AdLocalize::LOGGER.log(:debug, :green, "iOS #{wording_type} [#{locale}] ---> DONE!")
     end
 
     def append_to_localizable_plist(locale)
