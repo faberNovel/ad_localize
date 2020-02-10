@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2019-02-10
+### Added
+  - improve React support using keys with dots to generate nested JSON files by [@epaillous](https://github.com/epaillous)
+
 ## [3.2.0] - 2019-12-10
 ### Added
   - Add tests to compare reference exports by [@felginep](https://github.com/felginep)
