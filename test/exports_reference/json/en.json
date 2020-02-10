@@ -1,1 +1,1 @@
-{"en":{"delete":"Delete","send":"Send","send_again":"Send again","quit":"Quit","done":"Finish","save":"Save","assess_rate_trip_voiceover":{"one":"Rate VARIABLE_TO_SET star","other":"Rate VARIABLE_TO_SET stars"}}}
+{"en":{"delete":"Delete","send":"Send","send_again":"Send again","quit":"Quit","done":"Finish","save":"Save","assess_rate_trip_voiceover":{"one":"Rate %1$@ star","other":"Rate %1$@ stars"}}}
