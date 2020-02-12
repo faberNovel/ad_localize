@@ -5,14 +5,15 @@ module AdLocalize::Platform
     end
 
     def export(locale, data, export_extension = "yml", substitution_format = "yml")
-      super(locale, data, export_extension, substitution_format) do |yml_data, file|
+      locale = locale.to_sym
+      yml_data = build_platform_data_splitting_on_dots(locale, data)
+
+      platform_dir.join("#{locale.to_s}.#{export_extension}").open("w") do |file|
         file.puts yml_data.to_yaml
       end
+
+      AdLocalize::LOGGER.log(:debug, :green, "YAML [#{locale}] ---> DONE!")
     end
 
-    protected
-    def ios_converter(value)
-      value.gsub(/(%(?!)?(\d+\$)?[@isd])/, "VARIABLE_TO_SET")
-    end
   end
 end
