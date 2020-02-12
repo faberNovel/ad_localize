@@ -16,3 +16,7 @@
 ,start_countdown##{20},Commencer,,Start,
 ,start_countdown##{25},Commencer,,Start countdown,
 ,start_countdown##{50},Commencer le compte à rebours,,Start countdown,
+#DotsKeys,,,,,
+,login.title,Login,,Login,
+,login.email.title,Email,,Email,
+,login.password,Mot de passe,,Password,
