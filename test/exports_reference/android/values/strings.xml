@@ -11,4 +11,7 @@
         <item quantity="one">"Attribuer %1$s étoile"</item>
         <item quantity="other">"Attribuer %1$s étoiles"</item>
     </plurals>
+    <string name="login.title">"Login"</string>
+    <string name="login.email.title">"Email"</string>
+    <string name="login.password">"Mot de passe"</string>
 </resources>

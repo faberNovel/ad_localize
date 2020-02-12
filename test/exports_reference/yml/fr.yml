@@ -7,5 +7,10 @@ fr:
   done: Terminer
   save: Enregistrer
   assess_rate_trip_voiceover:
-    one: Attribuer VARIABLE_TO_SET étoile
-    other: Attribuer VARIABLE_TO_SET étoiles
+    one: Attribuer %1$@ étoile
+    other: Attribuer %1$@ étoiles
+  login:
+    title: Login
+    email:
+      title: Email
+    password: Mot de passe

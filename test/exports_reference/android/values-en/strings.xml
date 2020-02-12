@@ -11,4 +11,7 @@
         <item quantity="one">"Rate %1$s star"</item>
         <item quantity="other">"Rate %1$s stars"</item>
     </plurals>
+    <string name="login.title">"Login"</string>
+    <string name="login.email.title">"Email"</string>
+    <string name="login.password">"Password"</string>
 </resources>

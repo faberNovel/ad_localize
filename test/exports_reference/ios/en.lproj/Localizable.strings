@@ -4,3 +4,6 @@
 "quit" = "Quit";
 "done" = "Finish";
 "save" = "Save";
+"login.title" = "Login";
+"login.email.title" = "Email";
+"login.password" = "Password";
