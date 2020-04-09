@@ -14,7 +14,7 @@ module AdLocalize
     # Raise a StandardError if no locale is detected in the csv
     def extract_data(file_name)
       data = {}
-      CSV.foreach(file_name, headers: true, skip_blanks: true) do |row|
+      CSV.foreach(file_name, headers: true, skip_blanks: true, encoding: 'utf-8') do |row|
         validity_status = check_row(row)
         if validity_status.zero?
           keys_column_index = row.index(CSV_WORDING_KEYS_COLUMN)
