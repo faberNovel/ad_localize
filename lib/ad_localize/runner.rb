@@ -18,7 +18,11 @@ module AdLocalize
           options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id))
           file_to_parse = options.dig(:drive_file)
         end
-        CsvFileManager.csv?(file_to_parse) ? export(file_to_parse) : LOGGER.log(:error, :red, "#{file_to_parse} is not a csv")
+        if CsvFileManager.csv?(file_to_parse)
+          export(file_to_parse)
+        else
+          LOGGER.log(:error, :red, "#{file_to_parse} is not a csv. Make sure to enable \"Allow external access\" in sharing options.")
+        end
         CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
       end
     end

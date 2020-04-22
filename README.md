@@ -29,7 +29,7 @@ $ gem install ad_localize
 $ bundle exec ad_localize -h
 ```
 
-* Export wording from a google drive spreadsheet, using the file key
+* Export wording from a google drive spreadsheet, using the file key. Make sure to enable _Allow external access_ in sharing options.
 ```
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
 ```
