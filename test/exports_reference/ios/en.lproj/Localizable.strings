@@ -7,3 +7,5 @@
 "login.title" = "Login";
 "login.email.title" = "Email";
 "login.password" = "Password";
+"unescaped_format" = "String \"unescaped\"";
+"escaped_format" = "String \"escaped\"";

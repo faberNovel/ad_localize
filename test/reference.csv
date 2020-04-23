@@ -20,3 +20,6 @@
 ,login.title,Login,,Login,
 ,login.email.title,Email,,Email,
 ,login.password,Mot de passe,,Password,
+#EscapingKeys,,,,,
+,unescaped_format,"String ""unescaped""",,"String ""unescaped""",
+,escaped_format,"String \""escaped\""",,"String \""escaped\""",

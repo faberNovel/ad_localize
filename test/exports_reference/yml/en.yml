@@ -14,3 +14,5 @@ en:
     email:
       title: Email
     password: Password
+  unescaped_format: String "unescaped"
+  escaped_format: String \"escaped\"
