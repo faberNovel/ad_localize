@@ -38,8 +38,13 @@ module AdLocalize
         LOGGER.log(:error, :red, "No data were found in the file - check if there is a key column in the file")
       else
         export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
+        add_intermediate_platform_dir = export_platforms.length > 1
         export_platforms.each do |platform|
-          platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(parser.locales.first, options.dig(:output_path))
+          platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(
+            parser.locales.first,
+            options.dig(:output_path),
+            add_intermediate_platform_dir
+          )
           parser.locales.each do |locale|
             platform_formatter.export(locale, data)
           end

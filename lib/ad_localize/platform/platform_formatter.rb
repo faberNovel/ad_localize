@@ -5,12 +5,13 @@ module AdLocalize::Platform
     OPTIONS = {output_path: ".."}
 
     attr_accessor :platform_dir
-    attr_reader :default_locale, :output_path
+    attr_reader :default_locale, :output_path, :add_intermediate_platform_dir
 
-    def initialize(default_locale, output_path)
+    def initialize(default_locale, output_path, add_intermediate_platform_dir)
       @default_locale = default_locale.to_sym
       @output_path = output_path # Must be set before platform_dir
-      @platform_dir = export_base_directory.join(platform.to_s)
+      @platform_dir = add_intermediate_platform_dir ? export_base_directory.join(platform.to_s) : export_base_directory
+      @add_intermediate_platform_dir = add_intermediate_platform_dir
       create_platform_dir
     end
 
@@ -52,7 +53,7 @@ module AdLocalize::Platform
     end
 
     def create_platform_dir
-      if platform_dir.directory?
+      if platform_dir.directory? && add_intermediate_platform_dir
         FileUtils.rm_rf("#{platform_dir}/.", secure: true)
       else
         platform_dir.mkpath
