@@ -99,7 +99,7 @@ module AdLocalize
     end
 
     def parse_key(row)
-      key = row.field(CSV_WORDING_KEYS_COLUMN)
+      key = row.field(CSV_WORDING_KEYS_COLUMN).strip
       plural_prefix = key.match(PLURAL_KEY_REGEXP)
       plural_identifier = nil
       invalid_plural = false

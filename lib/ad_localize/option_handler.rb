@@ -20,7 +20,8 @@ module AdLocalize
           end
           opts.on("-k", "--drive-key #{GOOGLE_DRIVE_DOCUMENT_ID.dig(:length)}_characters", String, "Use google drive spreadsheets") do |key|
             is_valid_drive_key = !!(key =~ GOOGLE_DRIVE_DOCUMENT_ID.dig(:regexp)) && (key.size >= GOOGLE_DRIVE_DOCUMENT_ID.dig(:length))
-            args[:drive_key] = is_valid_drive_key ? key : nil
+            raise ArgumentError.new("Invalid google drive spreadsheet key \"#{key}\"") unless is_valid_drive_key
+            args[:drive_key] = key
           end
           opts.on("-s", "--drive-sheet SHEET_ID", String, "Use a specific sheet id for Google Drive spreadsheets with several sheets") do |value|
             args[:sheet_id] = value
@@ -44,6 +45,7 @@ module AdLocalize
           LOGGER.log(:error, :red, "Missing argument for option #{e.args.join(',')}")
         rescue ArgumentError => e
           LOGGER.log(:error, :red, e.message)
+          raise e
         end
         args
       end

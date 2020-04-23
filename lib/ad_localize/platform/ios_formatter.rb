@@ -90,11 +90,16 @@ module AdLocalize::Platform
 
     private
 
+    def escape_quotes_if_needed(value)
+      value.gsub(/(?<!\\)\"/, "\\\"") # match " unless there is a \ before
+    end
+
     def write_localizable(locale:, singulars:, wording_type:, filename:)
       locale = locale.to_sym
 
       singulars.each do |key, locales_wording|
         value = locales_wording.dig(locale, wording_type)
+        value = escape_quotes_if_needed(value)
         comment = locales_wording.dig(locale, AdLocalize::Constant::COMMENT_KEY_SYMBOL)
         export_dir(locale).join(filename).open("a") do |file|
           line = ""

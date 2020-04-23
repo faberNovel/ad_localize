@@ -14,4 +14,8 @@
     <string name="login.title">"Login"</string>
     <string name="login.email.title">"Email"</string>
     <string name="login.password">"Mot de passe"</string>
+    <string name="unescaped_format">"String \"unescaped\""</string>
+    <string name="escaped_format">"String \"escaped\""</string>
+    <string name="space_before_key">"Value"</string>
+    <string name="space_after_key">"Value"</string>
 </resources>

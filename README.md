@@ -29,7 +29,7 @@ $ gem install ad_localize
 $ bundle exec ad_localize -h
 ```
 
-* Export wording from a google drive spreadsheet, using the file key
+* Export wording from a google drive spreadsheet, using the file key. Make sure to enable _Allow external access_ in sharing options.
 ```
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
 ```
@@ -62,7 +62,7 @@ $ bundle exec ad_localize -d
 | favorites | Mes favoris | My favorites |
 | from_to | du %1$@ au %2$@ | from %1$@ to %2$@ |
 
-- Any column after the `key` column will be considered as a locale column (except from the optional `comment columns) 
+- Any column after the `key` column will be considered as a locale column (except from the optional `comment columns)
 - Keys should be written in Android format : [a-z0-9_]+
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: "%1$@ %2$@'s report").
 
