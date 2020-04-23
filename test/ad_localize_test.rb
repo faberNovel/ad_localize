@@ -39,18 +39,37 @@ class AdLocalizeTest < TestCase
     end
   end
 
+  test 'it should not create intermediate platform directory' do
+    # Given
+    csv_file = "test/reference.csv"
+    assert(File.exist?(csv_file), "File does not exists #{csv_file}")
+    options = { only: ["ios"] }
+
+    # When
+    runner = AdLocalize::Runner.new
+    runner.options = options
+    runner.run [csv_file]
+
+    # Then
+    ios_files(with_platform_directory: false).each do |file|
+      generated_file = "exports/#{file}"
+      assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+    end
+  end
+
   private
 
   def all_files
     ios_files + android_files + json_files + yml_files
   end
 
-  def ios_files
+  def ios_files(with_platform_directory: true)
     files = ["InfoPlist.strings", "Localizable.strings", "Localizable.stringsdict"]
     languages
       .map { |language| "#{language}.lproj" }
       .product(files)
-      .map { |language_folder, file| "ios/#{language_folder}/#{file}" }
+      .map { |language_folder, file| "#{language_folder}/#{file}" }
+      .map { |file| with_platform_directory ? "ios/#{file}" : file }
   end
 
   def android_files
