@@ -16,4 +16,6 @@
     <string name="login.password">"Password"</string>
     <string name="unescaped_format">"String \"unescaped\""</string>
     <string name="escaped_format">"String \"escaped\""</string>
+    <string name="space_before_key">"Value"</string>
+    <string name="space_after_key">"Value"</string>
 </resources>
