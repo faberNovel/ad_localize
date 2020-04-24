@@ -15,7 +15,7 @@ module AdLocalize
         file_to_parse = args.first
         LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
         if args.empty?
-          options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id))
+          options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
           file_to_parse = options.dig(:drive_file)
         end
         if CsvFileManager.csv?(file_to_parse)
