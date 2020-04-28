@@ -8,6 +8,8 @@ require 'csv'
 require 'logger'
 require 'colorize'
 require 'open-uri'
+require 'stringio'
+require 'googleauth'
 require 'optparse'
 require 'nokogiri'
 

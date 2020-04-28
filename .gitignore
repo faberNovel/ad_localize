@@ -9,4 +9,5 @@ ad_localize/tmp/
 .idea
 .byebug_history
 .ruby-version
-
+pkg/
+exports/
