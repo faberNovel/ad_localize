@@ -14,20 +14,15 @@ module AdLocalize
         begin
           File.open(download_string_path, "wb") do |saved_file|
             download_url = drive_download_url(key, sheet)
+            headers = {}
             if use_service_account
-                LOGGER.log(:debug, :green, "Using a service account...")
-                token = service_account_access_token()
-                # the following "open" is provided by open-uri
-                open(download_url, "rb",
-                  "Authorization" => "#{token["token_type"]} #{token["access_token"]}"
-                ) do |read_file|
-                  saved_file.write(read_file.read)
-                end
-            else
-                # the following "open" is provided by open-uri
-                open(download_url, "rb") do |read_file|
-                  saved_file.write(read_file.read)
-                end
+              LOGGER.log(:debug, :green, "Using a service account...")
+              token = service_account_access_token()
+              headers["Authorization"] = "#{token["token_type"]} #{token["access_token"]}"
+            end
+            # the following "open" is provided by open-uri
+            open(download_url, "rb", headers) do |read_file|
+              saved_file.write(read_file.read)
             end
             File.basename saved_file
           end
