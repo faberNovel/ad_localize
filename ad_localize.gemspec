@@ -19,14 +19,16 @@ Gem::Specification.new do |spec|
     'Nicolas Braun',
     'Corentin Huard',
     'Claire Peyron',
-    'Claire Dufetrelle'
+    'Claire Dufetrelle',
+    'Pierre Felgines',
+    'Satyan Jacquens'
   ]
   spec.email         = %w(joanna.vigne@fabernovel.com hugo.hache@fabernovel.com edouard.siegel@fabernovel.com)
 
   spec.summary       = %q{AdLocalize helps with mobile and web applications wording}
   spec.description   = %q{AdLocalize produces localization files from platform agnostic wording.
                           Supported wording format : CSV. Supported export format: iOS, Android, JSON and YAML}
-  spec.homepage      = 'https://technologies.fabernovel.com'
+  spec.homepage      = 'https://github.com/applidium/ad_localize'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
