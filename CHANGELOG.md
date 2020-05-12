@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2020-05-12
+### Added
+  - add support for private spreadsheet using google service acccount by [@sjcqs](https://github.com/sjcqs). Fixes [#31](https://github.com/applidium/ad_localize/issues/31)
+  - add makefile for easier testing by [@felginep](https://github.com/felginep)
+
+### Changed
+  - improve error message to have useful information in case of google spreadsheet use by [@felginep](https://github.com/felginep). Fixes [#27](https://github.com/applidium/ad_localize/issues/27)
+  - platform folder is no longer generated when there is only one platform selected. The files are directly generated in the output path. By [@felginep](https://github.com/felginep). Fixes [#29](https://github.com/applidium/ad_localize/issues/29)
+  - raise error when google spreadsheet key is invalid by [@felginep](https://github.com/felginep)
+
+### Fixed
+  - auto escape strings in Localizable.strings by [@felginep](https://github.com/felginep). Fixes [#26](https://github.com/applidium/ad_localize/issues/26)
+  - trim keys to prevent user error by [@felginep](https://github.com/felginep). Fixes [#16](https://github.com/applidium/ad_localize/issues/16)
+
 ## [3.4.0] - 2019-02-10
 ### Added
   - Rails folks, [@epaillous](https://github.com/epaillous) has improved the YAML support. You can now have multi-level wording.
