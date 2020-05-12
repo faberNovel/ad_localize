@@ -39,7 +39,16 @@ $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-sheet-id>
 ```
 
-* Export wording from a private google spreadsheet using an authorized google account
+* Export wording from a private google spreadsheet using a Google Cloud Service Account.
+    1. Create a GCloud Service Account:
+        - Go to [Google Cloud Console](https://console.cloud.google.com/)
+        - Either create a new project or use an existing one (when using Firebase, a GCloud project is created)
+        - Go to *IAM & Admin / Service Account* and create a new service account.
+        - Store the create `client-secret.json` (in a password manager for example)
+    2. Enable Google Drive API for the projet
+        - Go to *API / Library* and enable the **Drive API** there.
+    3. Add the service account to a spreadsheet.
+        - In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
 ```
 $ export GCLOUD_CLIENT_SECRET=$(cat <client-secret.json>)
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -a
