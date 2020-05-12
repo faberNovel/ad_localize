@@ -47,8 +47,8 @@ $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-shee
         - Store the create `client-secret.json` (in a password manager for example)
     2. Enable Google Drive API for the projet
         - Go to *API / Library* and enable the **Drive API** there.
-    3. Add the service account to a spreadsheet
-        In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
+    3. Add the service account to a spreadsheet.
+        - In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
 ```
 $ export GCLOUD_CLIENT_SECRET=$(cat <client-secret.json>)
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -a
