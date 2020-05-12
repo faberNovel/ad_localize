@@ -29,13 +29,20 @@ $ gem install ad_localize
 $ bundle exec ad_localize -h
 ```
 
-* Export wording from a google drive spreadsheet, using the file key. Make sure to enable _Allow external access_ in sharing options.
+* Export wording from a google spreadsheet, using the file key. Make sure to enable _Allow external access_ in sharing options.
 ```
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key>
 ```
-* Export wording from a google drive spreadsheet, using the file key and specifying a sheet (useful when your file has multiple sheets)
+
+* Export wording from a google spreadsheet, using the file key and specifying a sheet (useful when your file has multiple sheets)
 ```
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -s <your-specific-sheet-id>
+```
+
+* Export wording from a private google spreadsheet using an authorized google account
+```
+$ export GCLOUD_CLIENT_SECRET=$(cat <client-secret.json>)
+$ bundle exec ad_localize -k <your-spreadsheet-drive-key> -a
 ```
 
 * Only generate wording files for the specified platforms
@@ -65,6 +72,7 @@ $ bundle exec ad_localize -d
 - Any column after the `key` column will be considered as a locale column (except from the optional `comment columns)
 - Keys should be written in Android format : [a-z0-9_]+
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: "%1$@ %2$@'s report").
+
 
 #### Comment columns
 
@@ -110,6 +118,8 @@ exports/
     ├── en.yml
     └── fr.yml
 ```
+
+NB: If you select only one platform, the wording files will directly be generated in the output path. The output path is the `exports` folder in the current directory by default and you can change it using the option `-o`.
 
 ## Plurals
 
