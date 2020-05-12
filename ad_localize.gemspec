@@ -46,10 +46,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest-reporters', '~> 1.3'
   spec.add_development_dependency 'diffy', '~> 3.3'
 
-  spec.add_dependency 'activesupport', '~> 5.2'
+  spec.add_dependency 'activesupport', '>= 5.2', '< 7.0'
   spec.add_dependency 'nokogiri', '~> 1.10'
   spec.add_dependency 'colorize', '~> 0.8'
   spec.add_dependency 'googleauth', '~> 0.12'
 
-  spec.required_ruby_version     = '~> 2.3'
+  spec.required_ruby_version = '~> 2.3'
 end
