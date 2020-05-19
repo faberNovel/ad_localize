@@ -21,7 +21,7 @@ module AdLocalize
         if CsvFileManager.csv?(file_to_parse)
           export(file_to_parse)
         else
-          LOGGER.log(:error, :red, "#{file_to_parse} is not a csv. Make sure to enable \"Allow external access\" in sharing options.")
+          LOGGER.log(:error, :red, "#{file_to_parse} is not a csv. Make sure to enable \"Allow external access\" in sharing options or use a service account.")
         end
         CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
       end
