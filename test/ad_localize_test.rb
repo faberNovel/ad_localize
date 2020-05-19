@@ -11,7 +11,7 @@ class AdLocalizeTest < TestCase
 
   def teardown
     # Clean up
-    #FileUtils.rm_rf('exports')
+    FileUtils.rm_rf('exports')
   end
 
   test 'it has a version number' do
@@ -37,7 +37,6 @@ class AdLocalizeTest < TestCase
       diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
       assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
     end
-    FileUtils.rm_rf('exports')
   end
 
   test 'it should not create intermediate platform directory' do
@@ -56,7 +55,6 @@ class AdLocalizeTest < TestCase
       generated_file = "exports/#{file}"
       assert(File.exist?(generated_file), "File does not exists #{generated_file}")
     end
-    FileUtils.rm_rf('exports')
   end
 
   test 'it should export multiple input csv files' do
