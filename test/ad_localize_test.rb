@@ -18,7 +18,7 @@ class AdLocalizeTest < TestCase
     refute_nil ::AdLocalize::VERSION
   end
 
-  test 'it should export correct ios files' do
+  test 'it should export correct platforms files' do
     # Given
     csv_file = "test/reference.csv"
     reference_dir = "test/exports_reference"
