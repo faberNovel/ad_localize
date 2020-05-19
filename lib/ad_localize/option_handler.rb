@@ -23,6 +23,27 @@ module AdLocalize
             raise ArgumentError.new("Invalid google drive spreadsheet key \"#{key}\"") unless is_valid_drive_key
             args[:drive_key] = key
           end
+          opts.on("-e", "--export-all",
+            <<~DOC
+            Export all sheets from spreadsheet specified by --drive-key option.
+            \tBy default, generates one export directory per sheet (see -m|--merge-sheets option to merge them).
+            \tAn GCLOUD_CLIENT_SECRET environment variable containing the client_secret.json content is needed.
+            DOC
+          ) do
+            args[:export_all] = true
+          end
+          opts.on("-m", "--merge-option OPTION", String,
+            <<~DOC
+            Merge specified csv (or sheets from --export-all) instead of exporting each csv.
+            \treplace: if a key is already defined, replace its value.
+            \tignore: if a key is already defined, keep the previous value.
+            \tAvailable options : #{Constant::MERGE_SHEET_OPTIONS.join(', ')}
+            DOC
+          ) do |option|
+            is_valid_merge_option=Constant::MERGE_SHEET_OPTIONS.index(option)
+            raise ArgumentError.new("Invalid merge option \"#{option}\", available options : #{Constant::MERGE_SHEET_OPTIONS.join(', ')}") unless is_valid_merge_option
+            args[:merge] = option
+          end
           opts.on("-s", "--drive-sheet SHEET_ID", String, "Use a specific sheet id for Google Drive spreadsheets with several sheets") do |value|
             args[:sheet_id] = value
           end
