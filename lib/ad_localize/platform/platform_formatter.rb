@@ -45,11 +45,7 @@ module AdLocalize::Platform
 
     protected
     def export_base_directory
-      if output_path
         Pathname.new(output_path)
-      else
-        Pathname::pwd.join(AdLocalize::Constant::EXPORT_FOLDER)
-      end
     end
 
     def create_platform_dir

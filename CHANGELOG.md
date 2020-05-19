@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASE]
+### Breaking change
+  - if `--drive-key` option is used, arguments CSV files will be ignored
+### Change
+  - output_path is set inside runner instead of platform classes.
+### Added
+  - multiple CSV can now be exported, they will be exported under `outputs/<filename>/...`
+
 ## [3.6.0] - 2020-06-23
 ### Added
   - add documentation for service account usage by [@sjcqs](https://github.com/sjcqs)
@@ -12,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-  
+
 ## [3.5.0] - 2020-05-12
 ### Added
   - add support for private spreadsheet using google service acccount by [@sjcqs](https://github.com/sjcqs). Fixes [#31](https://github.com/applidium/ad_localize/issues/31)
