@@ -26,7 +26,7 @@ module AdLocalize
           opts.on("-s", "--drive-sheet SHEET_ID", String, "Use a specific sheet id for Google Drive spreadsheets with several sheets") do |value|
             args[:sheet_id] = value
           end
-          opts.on("-a", "--use-service-account", "Use a Google Cloud Service Account to access the file. An GCLOUD_CLIENT_SECRET environment variable containting the client_secret.json content is needed.") do
+          opts.on("-a", "--use-service-account", "Use a Google Cloud Service Account to access the file. An GCLOUD_CLIENT_SECRET environment variable containing the client_secret.json content is needed.") do
             args[:use_service_account] = true
           end
           opts.on("-o", "--only platform1,platform2", Array, "Only generate localisation files for the specified platforms. Supported platforms : #{Constant::SUPPORTED_PLATFORMS.join(', ')}") do |platforms|
