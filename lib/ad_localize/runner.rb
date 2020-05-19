@@ -14,7 +14,7 @@ module AdLocalize
 
         files_to_parse = Array.new
         if has_drive_key
-            LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if input_files.length > 1
+            LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
             options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
             files_to_parse.push(options.dig(:drive_file))
         else
