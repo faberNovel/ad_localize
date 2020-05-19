@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!--Comment fr-->
+    <string name="delete">"Supprimer"</string>
+    <string name="send">"Envoyer"</string>
+    <string name="send_again">"Envoyer à nouveau"</string>
+    <string name="quit">"Quitter"</string>
+    <string name="done">"Terminer"</string>
+    <string name="save">"Sauvegarder"</string>
+    <plurals name="assess_rate_trip_voiceover">
+        <item quantity="one">"Attribuer %1$s étoile"</item>
+        <item quantity="other">"Attribuer %1$s étoiles"</item>
+    </plurals>
+    <string name="login.title">"Login"</string>
+    <string name="login.email.title">"Email"</string>
+    <string name="login.password">"Mot de passe"</string>
+    <string name="unescaped_format">"String \"unescaped\""</string>
+    <string name="escaped_format">"String \"escaped\""</string>
+    <string name="space_before_key">"Value"</string>
+    <string name="space_after_key">"Value"</string>
+</resources>
