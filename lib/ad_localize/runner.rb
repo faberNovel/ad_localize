@@ -31,12 +31,8 @@ module AdLocalize
     private
 
     def export_all(files)
-        files.each do |file|
-            if CsvFileManager.csv?(file)
-              export(file, File.basename(file, ".csv"))
-            else
-              LOGGER.log(:error, :red, "#{file} is not a csv. Make sure to enable \"Allow external access\" in sharing options or use a service account.")
-            end
+        CsvFileManager.select_csvs(files).each do |file|
+            export(file, File.basename(file, ".csv"))
         end
         CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
     end
