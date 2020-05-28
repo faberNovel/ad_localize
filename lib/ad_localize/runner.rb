@@ -48,7 +48,7 @@ module AdLocalize
       else
         export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
         add_intermediate_platform_dir = export_platforms.length > 1
-        output_path = option_output_path_or_default()
+        output_path = option_output_path_or_default
         export_platforms.each do |platform|
           platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(
             parser.locales.first,
@@ -63,11 +63,7 @@ module AdLocalize
     end
 
     def option_output_path_or_default
-        if !options.dig(:output_path)
-            AdLocalize::Constant::EXPORT_FOLDER
-        else
-            options.dig(:output_path)
-        end
+        options.dig(:output_path).presence || AdLocalize::Constant::EXPORT_FOLDER
     end
   end
 end
