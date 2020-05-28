@@ -10,9 +10,10 @@ module AdLocalize
         LOGGER.log(:info, :green, "OPTIONS : #{options}")
         input_files = args
         has_drive_key = options.dig(:drive_key)
-        raise 'No CSV to parse. Use option -h to see how to use this script' if input_files.length.zero? and !has_drive_key
+        missing_csv_file = input_files.length.zero? and !has_drive_key
+        raise 'No CSV to parse. Use option -h to see how to use this script' if missing_csv_file
 
-        files_to_parse = Array.new
+        files_to_parse = []
         if has_drive_key
             LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
             options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
