@@ -11,29 +11,40 @@ module AdLocalize
         input_files = args
         drive_key = options.dig(:drive_key)
         has_drive_key = !drive_key.nil? && !drive_key.empty?
+
         missing_csv_file = input_files.length.zero? && !has_drive_key
         raise 'No CSV to parse. Use option -h to see how to use this script' if missing_csv_file
 
         files_to_parse = []
-        drive_file = nil
+        drive_files = []
+
         if has_drive_key
             LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
-            drive_file = SpreadSheetManager.download_from_drive(
-                options.dig(:drive_key),
-                options.dig(:sheet_id),
-                options.dig(:use_service_account)
-            )
-            files_to_parse.push(drive_file)
+            drive_key = options.dig(:drive_key)
+            should_exports_all_sheets = options.dig(:export_all_sheets)
+            if should_exports_all_sheets
+                drive_files = SpreadSheetManager.download_all_sheets_from_drive(drive_key)
+                files_to_parse += drive_files
+            else
+                drive_file = SpreadSheetManager.download_from_drive(
+                    drive_key,
+                    options.dig(:sheet_id),
+                    options.dig(:use_service_account)
+                )
+                drive_files.push(drive_file)
+                files_to_parse.push(drive_file)
+            end
         else
             files_to_parse += input_files
         end
+
         LOGGER.log(:debug, :black, "FILES: #{files_to_parse}")
         if files_to_parse.length > 1
             export_all(files_to_parse)
         else
             export(files_to_parse.first)
         end
-        SpreadSheetManager.delete_drive_file(drive_file) unless drive_file.nil?
+        drive_files.each { |file| SpreadSheetManager.delete_drive_file(file) }
     end
 
     private

@@ -19,6 +19,24 @@ module AdLocalize
                 download_sheet(download_url, download_path, headers)
             end
 
+            def download_all_sheets_from_drive(key)
+                authorization = service_account_authorization
+                LOGGER.log(:info, :green, 'Fetching all sheets from google drive...')
+                sheet_ids = fetch_all_sheet_ids(key, authorization)
+
+                LOGGER.log(:info, :green, 'Downloading all sheets from google drive...')
+                headers = drive_download_headers(authorization)
+                downloaded_files = []
+                sheet_ids.each do |sheet_id|
+                    LOGGER.log(:info, :green, "Downloading sheet: #{sheet_id}...")
+                    download_url = drive_download_url(key, sheet_id)
+                    download_path = drive_download_path(key, sheet_id)
+                    download_sheet(download_url, download_path, headers)
+                    LOGGER.log(:info, :green, "Sheet: #{sheet_id} downloaded.")
+                    downloaded_files.push(download_path)
+                end
+                downloaded_files
+            end
 
             def delete_drive_file(file)
               Pathname.new(file).delete unless file.nil?
@@ -72,6 +90,15 @@ module AdLocalize
                 end
                 headers
             end
+
+            def fetch_all_sheet_ids(key, authorization)
+                service = Google::Apis::SheetsV4::SheetsService.new
+                service.client_options.application_name = "ad_localize"
+                service.authorization = authorization
+                response = service.get_spreadsheet(key)
+                response.sheets.map { |s| s.properties.sheet_id }
+            end
+
             def service_account_authorization
                 scopes = [
                     Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY,
