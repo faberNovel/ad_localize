@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - output_path is set inside runner instead of platform classes.
 ### Added
   - multiple CSV can now be exported, they will be exported under `outputs/<filename>/...`
+  - -e|-export_all_sheets option fetches and exports all sheets from a spreadsheet
 
 ## [3.6.0] - 2020-06-23
 ### Added
