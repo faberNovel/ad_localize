@@ -27,6 +27,7 @@ module AdLocalize
         else
             export(files_to_parse.first)
         end
+        CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
     end
 
     private
@@ -35,7 +36,6 @@ module AdLocalize
         CsvFileManager.select_csvs(files).each do |file|
             export(file, File.basename(file, ".csv"))
         end
-        CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
     end
 
     def export(file, output_path_suffix="")
