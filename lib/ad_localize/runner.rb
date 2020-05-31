@@ -17,7 +17,11 @@ module AdLocalize
         files_to_parse = []
         if has_drive_key
             LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
-            options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
+            options[:drive_file] = SpreadSheetManager.download_from_drive(
+                options.dig(:drive_key),
+                options.dig(:sheet_id),
+                options.dig(:use_service_account)
+            )
             files_to_parse.push(options.dig(:drive_file))
         else
             files_to_parse += input_files
@@ -28,7 +32,7 @@ module AdLocalize
         else
             export(files_to_parse.first)
         end
-        CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
+        SpreadSheetManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
     end
 
     private
