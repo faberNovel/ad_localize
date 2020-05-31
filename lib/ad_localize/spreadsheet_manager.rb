@@ -1,3 +1,4 @@
+require "google/apis/sheets_v4"
 require 'googleauth'
 require 'open-uri'
 require 'stringio'
