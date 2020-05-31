@@ -1,3 +1,7 @@
+require 'googleauth'
+require 'open-uri'
+require 'stringio'
+
 module AdLocalize
     class SpreadSheetManager
         class << self

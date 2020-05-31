@@ -15,14 +15,15 @@ module AdLocalize
         raise 'No CSV to parse. Use option -h to see how to use this script' if missing_csv_file
 
         files_to_parse = []
+        drive_file = nil
         if has_drive_key
             LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
-            options[:drive_file] = SpreadSheetManager.download_from_drive(
+            drive_file = SpreadSheetManager.download_from_drive(
                 options.dig(:drive_key),
                 options.dig(:sheet_id),
                 options.dig(:use_service_account)
             )
-            files_to_parse.push(options.dig(:drive_file))
+            files_to_parse.push(drive_file)
         else
             files_to_parse += input_files
         end
@@ -32,7 +33,7 @@ module AdLocalize
         else
             export(files_to_parse.first)
         end
-        SpreadSheetManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
+        SpreadSheetManager.delete_drive_file(drive_file) unless drive_file.nil?
     end
 
     private
