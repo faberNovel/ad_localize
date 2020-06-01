@@ -40,7 +40,7 @@ module AdLocalize
 
         LOGGER.log(:debug, :black, "FILES: #{files_to_parse}")
         if files_to_parse.length > 1
-            export_all(files_to_parse)
+            export_all(files_to_parse, options.dig(:merge))
         else
             export(files_to_parse.first)
         end
@@ -49,34 +49,59 @@ module AdLocalize
 
     private
 
-    def export_all(files)
-        CsvFileManager.select_csvs(files).each do |file|
-            export(file, File.basename(file, ".csv"))
+    def export_all(files, merge_policy = nil)
+        csv_files = CsvFileManager.select_csvs(files)
+        if merge_policy.nil?
+            csv_files.each do |file|
+                export(file, File.basename(file, '.csv'))
+            end
+        else
+            merge_and_export_csvs(csv_files, merge_policy)
         end
     end
 
-    def export(file, output_path_suffix="")
+    def merge_and_export_csvs(files, merge_policy)
+        LOGGER.log(:info, :green, "********* MERGING (#{merge_policy}) *********")
+        LOGGER.log(:info, :green, 'Merging data from files...')
+        output_file = files[1]
+        parser = CsvParser.new
+
+        data_set = files.map { |file| parser.extract_data(file) }
+        replace_previous = merge_policy == AdLocalize::Constant::REPLACE_MERGE_POLICY
+        data = data_set.reduce(data_set[0]) do |result, data|
+            result.deep_merge!(data) do |_, previous, current|
+                replace_previous ? current : previous
+            end
+        end
+        export_data(parser, data)
+    end
+
+    def export(file, output_path_suffix = "")
       LOGGER.log(:info, :green, "********* PARSING #{file} *********")
       LOGGER.log(:info, :green, "Extracting data from file...")
       parser = CsvParser.new
       data = parser.extract_data(file)
-      if data.empty?
-        LOGGER.log(:error, :red, "No data were found in the file - check if there is a key column in the file")
-      else
-        export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
-        add_intermediate_platform_dir = export_platforms.length > 1
-        output_path = option_output_path_or_default
-        export_platforms.each do |platform|
-          platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(
-            parser.locales.first,
-            output_path + '/' + output_path_suffix,
-            add_intermediate_platform_dir
-          )
-          parser.locales.each do |locale|
-            platform_formatter.export(locale, data)
+      export_data(parser, data, output_path_suffix)
+    end
+
+    def export_data(parser, data, output_path_suffix = "")
+        if data.empty?
+          LOGGER.log(:error, :red, "No data were found in the file - check if there is a key column in the file")
+        else
+          export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
+          add_intermediate_platform_dir = export_platforms.length > 1
+          output_path = option_output_path_or_default
+          export_platforms.each do |platform|
+            platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(
+              parser.locales.first,
+              output_path + '/' + output_path_suffix,
+              add_intermediate_platform_dir
+            )
+            parser.locales.each do |locale|
+              platform_formatter.export(locale, data)
+            end
           end
         end
-      end
     end
 
     def option_output_path_or_default
