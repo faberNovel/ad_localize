@@ -1,0 +1,20 @@
+---
+fr:
+  delete: Supprimer
+  send: Envoyer
+  send_again: Envoyer à nouveau
+  quit: Quitter
+  done: Terminer
+  save: Sauvegarder
+  assess_rate_trip_voiceover:
+    one: Attribuer %1$@ étoile
+    other: Attribuer %1$@ étoiles
+  login:
+    title: Login
+    email:
+      title: Email
+    password: Mot de passe
+  unescaped_format: String "unescaped"
+  escaped_format: String \"escaped\"
+  space_before_key: Value
+  space_after_key: Value
