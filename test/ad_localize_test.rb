@@ -60,7 +60,7 @@ class AdLocalizeTest < TestCase
   private
 
   def all_files
-    ios_files + android_files + json_files + yml_files
+    ios_files + android_files + json_files + yml_files + properties_files
   end
 
   def ios_files(with_platform_directory: true)
@@ -85,6 +85,11 @@ class AdLocalizeTest < TestCase
 
   def yml_files
     languages.map { |language| "yml/#{language}.yml" }
+  end
+
+
+  def properties_files
+    languages.map { |language| "properties/#{language}.properties" }
   end
 
   def languages
