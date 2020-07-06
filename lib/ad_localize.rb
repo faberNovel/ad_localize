@@ -25,6 +25,7 @@ require 'ad_localize/platform/android_formatter'
 require 'ad_localize/platform/ios_formatter'
 require 'ad_localize/platform/json_formatter'
 require 'ad_localize/platform/yml_formatter'
+require 'ad_localize/platform/properties_formatter'
 
 module AdLocalize
   class Error < StandardError; end

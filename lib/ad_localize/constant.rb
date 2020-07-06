@@ -1,6 +1,6 @@
 module AdLocalize
   module Constant
-    SUPPORTED_PLATFORMS = %w(ios android yml json)
+    SUPPORTED_PLATFORMS = %w(ios android yml json properties)
     PLURAL_KEY_SYMBOL = :plural
     ADAPTIVE_KEY_SYMBOL = :adaptive
     SINGULAR_KEY_SYMBOL = :singular
