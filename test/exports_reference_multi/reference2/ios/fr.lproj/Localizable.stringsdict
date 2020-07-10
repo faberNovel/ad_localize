@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+    <dict>
+        <key>start_countdown</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>Commencer</string>
+                <key>25</key>
+                <string>Commencer</string>
+                <key>50</key>
+                <string>Commencer le compte à rebours</string>
+            </dict>
+        </dict>
+    </dict>
+</plist>

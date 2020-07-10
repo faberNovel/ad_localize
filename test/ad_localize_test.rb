@@ -18,7 +18,7 @@ class AdLocalizeTest < TestCase
     refute_nil ::AdLocalize::VERSION
   end
 
-  test 'it should export correct ios files' do
+  test 'it should export correct platforms files' do
     # Given
     csv_file = "test/reference.csv"
     reference_dir = "test/exports_reference"
@@ -57,13 +57,47 @@ class AdLocalizeTest < TestCase
     end
   end
 
-  private
+  test 'it should export multiple input csv files' do
+      # Given
+      csv_files = ['test/reference.csv', 'test/reference1.csv', 'test/reference2.csv']
+      csv_files.each do |file|
+        assert(File.exist?(file), "File does not exists #{file}")
+      end
+      reference_dir = "test/exports_reference_multi"
+      assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+      reference_subdirs = [
+        "reference",
+        "reference1",
+        "reference2"
+      ]
 
-  def all_files
-    ios_files + android_files + json_files + yml_files + properties_files
+      # When
+      runner = AdLocalize::Runner.new
+      runner.run csv_files
+
+      # Then
+      reference_subdirs.each do |subdir|
+          all_files.each do |file|
+            reference_file = "#{reference_dir}/#{subdir}/#{file}"
+            generated_file = "exports/#{subdir}/#{file}"
+            assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+            diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+            assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+          end
+      end
   end
 
-  def ios_files(with_platform_directory: true)
+  private
+
+  def all_files(languages: DEFAULT_LANGUAGES)
+    ios_files(languages: languages) +
+    android_files(languages: languages) +
+    json_files(languages: languages) +
+    yml_files(languages: languages) +
+    properties_files(languages: languages)
+  end
+
+  def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES)
     files = ["InfoPlist.strings", "Localizable.strings", "Localizable.stringsdict"]
     languages
       .map { |language| "#{language}.lproj" }
@@ -72,27 +106,23 @@ class AdLocalizeTest < TestCase
       .map { |file| with_platform_directory ? "ios/#{file}" : file }
   end
 
-  def android_files
+  def android_files(languages: DEFAULT_LANGUAGES)
     languages
       .each_with_index
       .map { |language, i| i == 0 ? "values" : "values-#{language}" }
       .map { |language_folder| "android/#{language_folder}/strings.xml" }
   end
 
-  def json_files
+  def json_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "json/#{language}.json" }
   end
 
-  def yml_files
+  def yml_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "yml/#{language}.yml" }
   end
 
-
-  def properties_files
+  def properties_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "properties/#{language}.properties" }
   end
 
-  def languages
-    ["fr", "en"]
-  end
 end

@@ -35,7 +35,7 @@ module AdLocalize
 
       def select_csvs(files)
         files.select do |file|
-          LOGGER.log(:error, :red, "#{file} is not a csv. It will be ignored") unless self.csv?(file)
+          LOGGER.log(:error, :red, "#{file} is not a csv. It will be ignored. Make sure to enable \"Allow external access\" in sharing options or use a service account.") unless self.csv?(file)
           self.csv?(file)
         end
       end

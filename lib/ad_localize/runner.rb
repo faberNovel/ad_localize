@@ -7,29 +7,39 @@ module AdLocalize
     end
 
     def run(args = ARGV)
-      LOGGER.log(:info, :green, "OPTIONS : #{options}")
-      input_files = (args + [options.dig(:drive_key)]).compact # drive_key can be nil
-      if input_files.length.zero?
-        LOGGER.log(:error, :red, "No CSV to parse. Use option -h to see how to use this script")
-      else
-        file_to_parse = args.first
-        LOGGER.log(:warn, :yellow, "Only one CSV can be treated - the priority goes to #{file_to_parse}") if input_files.length > 1
-        if args.empty?
-          options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
-          file_to_parse = options.dig(:drive_file)
-        end
-        if CsvFileManager.csv?(file_to_parse)
-          export(file_to_parse)
+        LOGGER.log(:info, :green, "OPTIONS : #{options}")
+        input_files = args
+        drive_key = options.dig(:drive_key)
+        has_drive_key = !drive_key.nil? && !drive_key.empty?
+        missing_csv_file = input_files.length.zero? && !has_drive_key
+        raise 'No CSV to parse. Use option -h to see how to use this script' if missing_csv_file
+
+        files_to_parse = []
+        if has_drive_key
+            LOGGER.log(:warn, :yellow, 'CSV file are ignored with the drive key option') if args.length > 1
+            options[:drive_file] = CsvFileManager.download_from_drive(options.dig(:drive_key), options.dig(:sheet_id), options.dig(:use_service_account))
+            files_to_parse.push(options.dig(:drive_file))
         else
-          LOGGER.log(:error, :red, "#{file_to_parse} is not a csv. Make sure to enable \"Allow external access\" in sharing options.")
+            files_to_parse += input_files
+        end
+        LOGGER.log(:debug, :black, "FILES: #{files_to_parse}")
+        if files_to_parse.length > 1
+            export_all(files_to_parse)
+        else
+            export(files_to_parse.first)
         end
         CsvFileManager.delete_drive_file(options[:drive_file]) if options[:drive_file]
-      end
     end
 
     private
 
-    def export(file)
+    def export_all(files)
+        CsvFileManager.select_csvs(files).each do |file|
+            export(file, File.basename(file, ".csv"))
+        end
+    end
+
+    def export(file, output_path_suffix="")
       LOGGER.log(:info, :green, "********* PARSING #{file} *********")
       LOGGER.log(:info, :green, "Extracting data from file...")
       parser = CsvParser.new
@@ -39,10 +49,11 @@ module AdLocalize
       else
         export_platforms = options.dig(:only) || Constant::SUPPORTED_PLATFORMS
         add_intermediate_platform_dir = export_platforms.length > 1
+        output_path = option_output_path_or_default
         export_platforms.each do |platform|
           platform_formatter = "AdLocalize::Platform::#{platform.to_s.camelize}Formatter".constantize.new(
             parser.locales.first,
-            options.dig(:output_path),
+            output_path + '/' + output_path_suffix,
             add_intermediate_platform_dir
           )
           parser.locales.each do |locale|
@@ -50,6 +61,10 @@ module AdLocalize
           end
         end
       end
+    end
+
+    def option_output_path_or_default
+        options.dig(:output_path).presence || AdLocalize::Constant::EXPORT_FOLDER
     end
   end
 end
