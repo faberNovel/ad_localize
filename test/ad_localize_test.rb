@@ -89,7 +89,7 @@ class AdLocalizeTest < TestCase
 
   private
 
-  def all_files(languages: ["fr", "en"])
+  def all_files(languages: DEFAULT_LANGUAGES)
     ios_files(languages: languages) +
     android_files(languages: languages) +
     json_files(languages: languages) +
@@ -97,7 +97,7 @@ class AdLocalizeTest < TestCase
     properties_files(languages: languages)
   end
 
-  def ios_files(with_platform_directory: true, languages: ["fr", "en"])
+  def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES)
     files = ["InfoPlist.strings", "Localizable.strings", "Localizable.stringsdict"]
     languages
       .map { |language| "#{language}.lproj" }
@@ -106,22 +106,22 @@ class AdLocalizeTest < TestCase
       .map { |file| with_platform_directory ? "ios/#{file}" : file }
   end
 
-  def android_files(languages: ["fr", "en"])
+  def android_files(languages: DEFAULT_LANGUAGES)
     languages
       .each_with_index
       .map { |language, i| i == 0 ? "values" : "values-#{language}" }
       .map { |language_folder| "android/#{language_folder}/strings.xml" }
   end
 
-  def json_files(languages: ["fr", "en"])
+  def json_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "json/#{language}.json" }
   end
 
-  def yml_files(languages: ["fr", "en"])
+  def yml_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "yml/#{language}.yml" }
   end
 
-  def properties_files(languages: ["fr", "en"])
+  def properties_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "properties/#{language}.properties" }
   end
 

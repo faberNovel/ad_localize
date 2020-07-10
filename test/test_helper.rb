@@ -11,4 +11,5 @@ Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
 class TestCase < Minitest::Test
   extend ActiveSupport::Testing::Declarative
+  DEFAULT_LANGUAGES = %w(fr en)
 end
