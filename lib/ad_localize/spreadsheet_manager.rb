@@ -45,6 +45,7 @@ module AdLocalize
             private
 
             def download_sheet(download_url, download_path, headers)
+                is_first_attempt = true
                 begin
                     File.open(download_path, "wb") do |saved_file|
                       # the following "open" is provided by open-uri
@@ -54,18 +55,13 @@ module AdLocalize
                       File.basename saved_file
                     end
                 rescue => e
-                    if is_rate_limit_error(e)
+                    if is_rate_limit_error(e) and is_first_attempt
+                        is_first_attempt = false
                         LOGGER.log(:warn, :yellow, "Rate limits, slowing down...")
                         sleep(RATE_LIMIT_SLEEP_DURATION)
-                        begin
-                            download_sheet(download_url, download_path, headers)
-                        rescue => e
-                            LOGGER.log(:error, :red, "Failed to download. (#{e.message})")
-                            delete_drive_file(download_path)
-                            exit
-                        end
+                        retry
                     else
-                        LOGGER.log(:error, :red, e.message)
+                        LOGGER.log(:error, :red, "Failed to download. (#{e.message})")
                         delete_drive_file(download_path)
                         exit
                     end
@@ -93,7 +89,7 @@ module AdLocalize
 
             def fetch_all_sheet_ids(key, authorization)
                 service = Google::Apis::SheetsV4::SheetsService.new
-                service.client_options.application_name = "ad_localize"
+                service.client_options.application_name = Constant::SPREADSHEET_APPLICATION_NAME
                 service.authorization = authorization
                 response = service.get_spreadsheet(key)
                 response.sheets.map { |s| s.properties.sheet_id }

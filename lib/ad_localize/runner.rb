@@ -10,7 +10,7 @@ module AdLocalize
         LOGGER.log(:info, :green, "OPTIONS : #{options}")
         input_files = args
         drive_key = options.dig(:drive_key)
-        has_drive_key = !drive_key.nil? && !drive_key.empty?
+        has_drive_key = !drive_key.blank?
 
         missing_csv_file = input_files.length.zero? && !has_drive_key
         raise 'No CSV to parse. Use option -h to see how to use this script' if missing_csv_file
