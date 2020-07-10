@@ -54,6 +54,13 @@ $ export GCLOUD_CLIENT_SECRET=$(cat <client-secret.json>)
 $ bundle exec ad_localize -k <your-spreadsheet-drive-key> -a
 ```
 
+* Fetch and export all sheets from a google spreadsheet. (requires a Google Cloud Service Account)
+The Google Service Account's projet needs to have **Google Spreadsheet API** enabled.
+```
+$ export GCLOUD_CLIENT_SECRET=$(cat <client-secret.json>)
+$ bundle exec ad_localize -k <your-spreadsheet-drive-key> -e
+```
+
 * Only generate wording files for the specified platforms
 ```
 $ bundle exec ad_localize -o ios

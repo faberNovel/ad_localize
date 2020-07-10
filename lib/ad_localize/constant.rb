@@ -22,5 +22,6 @@ module AdLocalize
     IOS_INFO_PLIST_EXPORT_FILENAME = "InfoPlist.strings"
     IOS_PLURAL_EXPORT_FILENAME = "Localizable.stringsdict"
     ANDROID_EXPORT_FILENAME = "strings.xml"
+    SPREADSHEET_APPLICATION_NAME = "ad_localize"
   end
 end
