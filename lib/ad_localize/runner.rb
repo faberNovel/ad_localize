@@ -40,7 +40,7 @@ module AdLocalize
 
         LOGGER.log(:debug, :black, "FILES: #{files_to_parse}")
         if files_to_parse.length > 1
-            export_all(files_to_parse, options.dig(:merge))
+            export_all(files_to_parse, merge_policy: options.dig(:merge))
         else
             export(files_to_parse.first)
         end
@@ -49,7 +49,7 @@ module AdLocalize
 
     private
 
-    def export_all(files, merge_policy = nil)
+    def export_all(files, merge_policy: nil)
         csv_files = CsvFileManager.select_csvs(files)
         if merge_policy.nil?
             csv_files.each do |file|
@@ -63,12 +63,12 @@ module AdLocalize
     def merge_and_export_csvs(files, merge_policy)
         LOGGER.log(:info, :green, "********* MERGING (#{merge_policy}) *********")
         LOGGER.log(:info, :green, 'Merging data from files...')
-        output_file = files[1]
+        output_file = files.first
         parser = CsvParser.new
 
         data_set = files.map { |file| parser.extract_data(file) }
         replace_previous = merge_policy == AdLocalize::Constant::REPLACE_MERGE_POLICY
-        data = data_set.reduce(data_set[0]) do |result, data|
+        data = data_set.reduce(data_set.first) do |result, data|
             result.deep_merge!(data) do |_, previous, current|
                 replace_previous ? current : previous
             end

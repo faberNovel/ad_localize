@@ -37,12 +37,12 @@ module AdLocalize
             Merge specified csv (or sheets from --export-all) instead of exporting each csv.
             \treplace: if a key is already defined, replace its value.
             \tkeep: if a key is already defined, keep the previous value.
-            \tAvailable options : #{Constant::MERGE_POLICIES.join(', ')}
+            \tAvailable options : #{Constant::MERGE_POLICIES.to_sentence}
             DOC
           ) do |option|
             is_valid_merge_option=Constant::MERGE_POLICIES.index(option)
             if !is_valid_merge_option
-                raise ArgumentError.new("Invalid merge option \"#{option}\", available options : #{Constant::MERGE_POLICIES.join(', ')}")
+                raise ArgumentError.new("Invalid merge option \"#{option}\", available options : #{Constant::MERGE_POLICIES.to_sentence}")
             end
             args[:merge] = option
           end
