@@ -6,7 +6,9 @@ module AdLocalize
     SINGULAR_KEY_SYMBOL = :singular
     COMMENT_KEY_SYMBOL = :comment
     INFO_PLIST_KEY_SYMBOL = :info_plist
-    MERGE_SHEET_OPTIONS = %w(replace ignore)
+    REPLACE_MERGE_POLICY = "replace"
+    KEEP_MERGE_POLICY = "keep"
+    MERGE_POLICIES = [KEEP_MERGE_POLICY, REPLACE_MERGE_POLICY]
     COMMENT_KEY_COLUMN_IDENTIFIER = "comment"
     DEFAULT_CONFIG = {
       platforms: {

@@ -87,6 +87,56 @@ class AdLocalizeTest < TestCase
       end
   end
 
+  test 'it should merge multiple input csv files replacing old values' do
+      # Given
+      csv_files = ['test/reference.csv', 'test/reference1.csv', 'test/reference2.csv']
+      csv_files.each do |file|
+        assert(File.exist?(file), "File does not exists #{file}")
+      end
+      reference_dir = "test/exports_merge_replace"
+      assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+      # When
+      runner = AdLocalize::Runner.new
+      options = { merge: 'replace' }
+      runner.options = options
+      runner.run csv_files
+
+      # Then
+      all_files.each do |file|
+        reference_file = "#{reference_dir}/#{file}"
+        generated_file = "exports/#{file}"
+        assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+        diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+        assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+      end
+  end
+
+  test 'it should merge multiple input csv files keeping old values' do
+      # Given
+      csv_files = ['test/reference.csv', 'test/reference1.csv', 'test/reference2.csv']
+      csv_files.each do |file|
+        assert(File.exist?(file), "File does not exists #{file}")
+      end
+      reference_dir = "test/exports_merge_keep"
+      assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+      # When
+      runner = AdLocalize::Runner.new
+      options = { merge: 'keep' }
+      runner.options = options
+      runner.run csv_files
+
+      # Then
+      all_files.each do |file|
+        reference_file = "#{reference_dir}/#{file}"
+        generated_file = "exports/#{file}"
+        assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+        diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+        assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+      end
+  end
+
   private
 
   def all_files(languages: DEFAULT_LANGUAGES)

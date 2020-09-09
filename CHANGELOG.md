@@ -6,12 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASE]
 ### Breaking change
-  - if `--drive-key` option is used, arguments CSV files will be ignored
+  - if `--drive-key` option is used, arguments CSV files will be ignored by [@sjcqs](https://github.com/sjcqs)
 ### Change
-  - output_path is set inside runner instead of platform classes.
+  - output_path is set inside runner instead of platform classes. by [@sjcqs](https://github.com/sjcqs)
 ### Added
-  - multiple CSV can now be exported, they will be exported under `outputs/<filename>/...`
-  - -e|-export_all_sheets option fetches and exports all sheets from a spreadsheet
+  - multiple CSV can now be exported, they will be exported under `outputs/<filename>/...` by [@sjcqs](https://github.com/sjcqs)
+  - -e|-export_all_sheets option fetches and exports all sheets from a spreadsheet by [@sjcqs](https://github.com/sjcqs)
+  - -m|--merge-option to merge multiple CSV or spreadsheet's sheets by [@sjcqs](https://github.com/sjcqs)
 
 ## [3.6.0] - 2020-06-23
 ### Added
