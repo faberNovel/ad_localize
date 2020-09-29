@@ -24,6 +24,12 @@ module AdLocalize
     IOS_INFO_PLIST_EXPORT_FILENAME = "InfoPlist.strings"
     IOS_PLURAL_EXPORT_FILENAME = "Localizable.stringsdict"
     ANDROID_EXPORT_FILENAME = "strings.xml"
+    PROPERTIES_EXPORT_FILENAME = "template.properties"
     SPREADSHEET_APPLICATION_NAME = "ad_localize"
+    CSV_WORDING_KEYS_COLUMN = "key"
+    PLURAL_KEY_REGEXP = /\#\#\{([A-Za-z]+)\}/
+    ADAPTIVE_KEY_REGEXP = /\#\#\{(\d+)\}/
+    INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)/ # see https://developer.apple.com/documentation/bundleresources/information_property_list
+    CSV_CONTENT_TYPES = %w(text/csv text/plain)
   end
 end
