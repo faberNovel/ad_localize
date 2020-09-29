@@ -51,6 +51,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'colorize', '~> 0.8'
   spec.add_dependency 'google-api-client', '~> 0.34'
   spec.add_dependency 'googleauth', '~> 0.12'
+  spec.add_dependency 'mime-types', '~> 3.3'
 
   spec.required_ruby_version = '~> 2.3'
 end

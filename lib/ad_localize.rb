@@ -9,6 +9,7 @@ require 'logger'
 require 'colorize'
 require 'optparse'
 require 'nokogiri'
+require 'mime/types'
 
 require 'ad_localize/version'
 require 'ad_localize/ad_logger'
