@@ -10,6 +10,7 @@ require 'colorize'
 require 'optparse'
 require 'nokogiri'
 require 'mime/types'
+require 'erb'
 
 require 'ad_localize/version'
 require 'ad_localize/ad_logger'

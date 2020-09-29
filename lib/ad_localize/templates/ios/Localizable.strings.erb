@@ -1,0 +1,3 @@
+<%- translations.each do |translation| -%>
+<%= translation.key.label %> = "<%= translation.value %>"; <% if translation.comment %>// <%= translation.comment %> <% end %>
+<%- end -%>
