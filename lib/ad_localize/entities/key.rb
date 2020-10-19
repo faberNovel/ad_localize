@@ -1,6 +1,11 @@
 module AdLocalize
   module Entities
     class Key
+      PLURAL_KEY_REGEXP = /\#\#\{([A-Za-z]+)\}/.freeze
+      ADAPTIVE_KEY_REGEXP = /\#\#\{(\d+)\}/.freeze
+      # see https://developer.apple.com/documentation/bundleresources/information_property_list
+      INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)/.freeze
+
       def initialize(label:)
         @label = label
       end
@@ -22,7 +27,7 @@ module AdLocalize
       end
 
       def info_plist?
-        @label.match(Constant::INFO_PLIST_KEY_REGEXP).present?
+        @label.match(INFO_PLIST_KEY_REGEXP).present?
       end
 
       def singular?
@@ -45,22 +50,22 @@ module AdLocalize
 
       def compute_label
         if plural?
-          @label.gsub(Constant::PLURAL_KEY_REGEXP, '')
+          @label.gsub(PLURAL_KEY_REGEXP, '')
         elsif adaptive?
-          @label.gsub(Constant::ADAPTIVE_KEY_REGEXP, '')
+          @label.gsub(ADAPTIVE_KEY_REGEXP, '')
         else
           @label
         end
       end
 
       def compute_plural_key
-        match = @label.match(Constant::PLURAL_KEY_REGEXP)
+        match = @label.match(PLURAL_KEY_REGEXP)
         return unless match
         match.captures.first
       end
 
       def compute_adaptive_key
-        match = @label.match(Constant::ADAPTIVE_KEY_REGEXP)
+        match = @label.match(ADAPTIVE_KEY_REGEXP)
         return unless match
         match.captures.first
       end
