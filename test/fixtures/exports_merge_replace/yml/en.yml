@@ -1,0 +1,22 @@
+---
+en:
+  delete: Delete
+  send: Send
+  send_again: Send again
+  quit: Quit
+  done: Finish
+  save: Save
+  assess_rate_trip_voiceover:
+    one: Rate %1$@ star
+    other: Rate %1$@ stars
+  NSCameraUsageDescription: Camera used for blabla
+  start_countdown: Start countdown
+  login:
+    title: Login
+    email:
+      title: Email
+    password: Password
+  unescaped_format: String "unescaped"
+  escaped_format: String \"escaped\"
+  space_before_key: Value
+  space_after_key: Value

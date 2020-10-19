@@ -4,12 +4,11 @@ require "ad_localize"
 require "minitest/autorun"
 require 'byebug'
 require 'active_support/testing/declarative'
-require "minitest/autorun"
 require "minitest/reporters"
+require 'diffy'
 
 Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
-class TestCase < Minitest::Test
-  extend ActiveSupport::Testing::Declarative
+class TestCase < ActiveSupport::TestCase
   DEFAULT_LANGUAGES = %w(fr en)
 end

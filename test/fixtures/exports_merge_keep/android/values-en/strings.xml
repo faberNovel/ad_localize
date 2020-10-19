@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Comment fr -->
+    <string name="delete">"Delete"</string>
+    <string name="send">"Send"</string>
+    <string name="send_again">"Send again"</string>
+    <string name="quit">"Quit"</string>
+    <string name="done">"Finish"</string>
+    <string name="save">"Save"</string>
+    <string name="login.title">"Login"</string>
+    <string name="login.email.title">"Email"</string>
+    <string name="login.password">"Password"</string>
+    <string name="unescaped_format">"String \"unescaped\""</string>
+    <string name="escaped_format">"String \"escaped\""</string>
+    <string name="space_before_key">"Value"</string>
+    <string name="space_after_key">"Value"</string>
+    <plurals name="assess_rate_trip_voiceover">
+        <item quantity="one">"Rate %1$s star"</item>
+        <item quantity="other">"Rate %1$s stars"</item>
+    </plurals>
+</resources>
