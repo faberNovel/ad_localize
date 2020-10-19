@@ -11,6 +11,8 @@ require 'optparse'
 require 'nokogiri'
 require 'mime/types'
 require 'erb'
+require 'googleauth'
+require 'google/apis/sheets_v4'
 
 require 'ad_localize/version'
 require 'ad_localize/ad_logger'
