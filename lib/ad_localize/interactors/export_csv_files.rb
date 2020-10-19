@@ -1,8 +1,8 @@
 module AdLocalize
   module Interactors
     class ExportCSVFiles
-      def initialize
-        @csv_file_to_wording = Mappers::CSVFileToWording.new
+      def initialize(csv_path_to_wording: nil)
+        @csv_path_to_wording = csv_path_to_wording.presence || Mappers::CSVPathToWording.new
         @merge_wordings = MergeWordings.new
       end
 
