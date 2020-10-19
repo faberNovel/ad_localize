@@ -33,12 +33,12 @@ module AdLocalize
         export_request.csv_paths = downloaded_files.map(&:path)
         if export_request.has_csv_files?
           ExportCSVFiles.new.call(export_request: export_request)
-          downloaded_files.select { |downloaded_file| File.exist?(downloaded_file.path) }.each do |downloaded_file|
-            downloaded_file.close
-            downloaded_file.unlink
-          end
         else
           LOGGER.error("invalid export request. check the spreadsheet share configuration")
+        end
+        downloaded_files.select { |downloaded_file| File.exist?(downloaded_file.path) }.each do |downloaded_file|
+          downloaded_file.close
+          downloaded_file.unlink
         end
       end
 
