@@ -91,7 +91,7 @@ To use a private google spreasheet you need to use a Google Cloud Service Accoun
     - Go to *IAM & Admin / Service Account* and create a new service account.  
     - Store the created `client-secret.json` (in a password manager for example)  
 2. Enable Google Spreadsheet API for the project  
-    - Go to *API / Library* and enable the **Drive API** there.  
+    - Go to *API / Library* and enable the **Google Spreadsheet API** there.  
 3. Add the service account to a spreadsheet.  
     - In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
       
