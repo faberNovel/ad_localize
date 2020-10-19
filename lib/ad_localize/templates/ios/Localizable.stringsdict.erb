@@ -1,35 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plist>
-  <dict>
-    <%- plurals.each do |label, translations| -%>
-    <key><%= label %></key>
     <dict>
-      <key>NSStringLocalizedFormatKey</key>
-      <string>"%\#@key@"</string>
-      <key>key</key>
-      <dict>
-        <key>NSStringFormatSpecTypeKey</key>
-        <string>NSStringPluralRuleType</string>
-        <key>NSStringFormatValueTypeKey</key>
-        <string>d</string>
-        <%- translations.each do |translation| -%>
-        <key><%= translation.key.plural_key -%></key>
-        <string><%= translation.value -%></string>
+        <%- plurals.each do |translation_group| -%>
+        <key><%= translation_group.label %></key>
+        <dict>
+            <key>NSStringLocalizedFormatKey</key>
+            <string>%#@key@</string>
+            <key>key</key>
+            <dict>
+                <key>NSStringFormatSpecTypeKey</key>
+                <string>NSStringPluralRuleType</string>
+                <key>NSStringFormatValueTypeKey</key>
+                <string>d</string>
+                <%- translation_group.translation_view_models.each do |translation_view_model| -%>
+                <%- if translation_view_model.comment -%>
+                <!-- <%= translation_view_model.comment %> -->
+                <%- end -%>
+                <key><%= translation_view_model.key -%></key>
+                <string><%= translation_view_model.value -%></string>
+                <%- end -%>
+            </dict>
+        </dict>
         <%- end -%>
-      </dict>
-    </dict>
-    <%- end -%>
-    <%- adaptives.each do |label, translations| -%>
-    <key><%= label %></key>
-    <dict>
-      <key>NSStringVariableWidthRuleType</key>
-      <dict>
-        <%- translations.each do |translation| -%>
-        <key><%= translation.key.adaptive_key %></key>
-        <string><%= translation.value %></string>
+        <%- adaptives.each do |translation_group| -%>
+        <key><%= translation_group.label %></key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <%- translation_group.translation_view_models.each do |translation_view_model| -%>
+                <%- if translation_view_model.comment -%>
+                <!-- <%= translation_view_model.comment %> -->
+                <%- end -%>
+                <key><%= translation_view_model.key %></key>
+                <string><%= translation_view_model.value %></string>
+                <%- end -%>
+            </dict>
+        </dict>
         <%- end -%>
-      </dict>
     </dict>
-    <%- end -%>
-  </dict>
 </plist>

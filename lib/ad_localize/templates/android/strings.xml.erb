@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-  <%- singulars.each do |translation| -%>
-  <%- if translation.comment -%>
-  <!-- <%= translation.comment %> -->
-  <%- end -%>
-  <string name="<%= translation.key.label %>"><%= translation.value %></string>
-  <%- end -%>
-
-  <%- plurals.each do |label, translations| -%>
-  <plurals name="<%= label %>">
-    <%- translations.each do |translation| -%>
-    <item quantity="<%= translation.key.plural_key %>"><%= translation.value %></item>
+    <%- singulars.each do |single_translation| -%>
+    <%- if single_translation.comment -%>
+    <!-- <%= single_translation.comment %> -->
     <%- end -%>
-  </plurals>
-  <%- end -%>
+    <string name="<%= single_translation.label %>"><%= single_translation.value %></string>
+    <%- end -%>
+    <%- plurals.each do |translation_group| -%>
+    <plurals name="<%= translation_group.label %>">
+        <%- translation_group.translation_view_models.each do |translation_view_model| -%>
+        <%- if translation_view_model.comment -%>
+        <!-- <%= translation_view_model.comment %> -->
+        <%- end -%>
+        <item quantity="<%= translation_view_model.key %>"><%= translation_view_model.value %></item>
+        <%- end -%>
+    </plurals>
+    <%- end -%>
 </resources>

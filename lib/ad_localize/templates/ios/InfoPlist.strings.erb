@@ -1,3 +1,3 @@
-<% translations.each do |translation| -%>
-<%= translation.key.label %> = "<%= translation.value %>"; <% if translation.comment %>// <%= translation.comment %> <% end %>
+<% translations.each do |single_translation| -%>
+<%= single_translation.label %> = "<%= single_translation.value %>";<% if single_translation.comment %> // <%= single_translation.comment %> <% end %>
 <% end -%>
