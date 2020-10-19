@@ -2,12 +2,13 @@ module AdLocalize
   module Mappers
     class OptionsToExportRequest
       def map(options:)
-        ExportRequest.new(
+        Requests::ExportRequest.new(
           platform_codes: options[:only],
           g_spreadsheet_options: map_g_spreadsheet_options(options: options),
           verbose: options[:debug],
-          output_path: options[:output_path],
-          merge_policy: options[:merge]
+          output_path: options[:'target-dir'],
+          merge_policy: options[:'merge-policy'],
+          csv_paths: options[:csv_paths]
         )
       end
 
@@ -16,9 +17,9 @@ module AdLocalize
       def map_g_spreadsheet_options(options:)
         return unless options[:drive_key]
         Requests::GSpreadsheetOptions.new(
-          spreadsheet_id: options[:drive_key],
-          sheet_ids: options[:sheet_id],
-          export_all: options[:export_all_sheets],
+          spreadsheet_id: options[:'drive-key'],
+          sheet_ids: options[:'sheets'],
+          export_all: options[:'export-all-sheets'],
           service_account_config: ENV['GCLOUD_CLIENT_SECRET']
         )
       end
