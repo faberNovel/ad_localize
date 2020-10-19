@@ -1,21 +1,28 @@
 module AdLocalize
   class AdLogger
-    SEVERITY = { debug: Logger::DEBUG , info: Logger::INFO, warn: Logger::WARN, error: Logger::ERROR, fatal: Logger::FATAL, unknown: Logger::UNKNOWN }
-    AUTHORIZED_COLORS  = [:black, :yellow, :red, :blue, :green]
-
     def initialize
       @logger = Logger.new(STDOUT)
       @logger.level = Logger::INFO
     end
 
-    def log(level, color, text)
-      exit unless text and level and color
+    def warn(text)
+      log(level: Logger::WARN, text: text.yellow)
+    end
 
-      level, color = [level, color].map(&:to_sym)
-      raise "Color not supported" unless AUTHORIZED_COLORS.include? color
-      raise "Invalid severity" unless SEVERITY.dig(level)
+    def info(text)
+      log(level: Logger::INFO, text: text.blue)
+    end
 
-      @logger.add(SEVERITY.dig(level), text.send(color))
+    def error(text)
+      log(level: Logger::ERROR, text: text.red)
+    end
+
+    def debug(text)
+      log(level: Logger::DEBUG, text: text.black)
+    end
+
+    def info!
+      @logger.level = Logger::INFO
     end
 
     def debug!
@@ -28,6 +35,12 @@ module AdLocalize
 
     def close
       @logger.close
+    end
+
+    private
+
+    def log(level:, text:)
+      @logger.add(level, text)
     end
   end
 end
