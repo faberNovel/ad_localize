@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.2] - 2020-10-26
+### Fixed
+  - Use percent HTML char for escaping '%' on android. [#49](https://github.com/applidium/ad_localize/pull/49) by [flolom](https://github.com/flolom)
+
 ## [4.0.1] - 2020-10-19
 ### Fixed
   - delete downloaded files even when any of them is a CSV file
@@ -13,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Precedence to csv files. Only CSV files will be exported if both csv file and google spreadsheet are provided
   - In case of multiple CSVs or sheet ids, you should be aware that all sources will be merged. By default the merge policy to keep the first wording translation for each key
   - New architecture. Separate export process responsibilities in dedicated classes. Fixes [#48](https://github.com/applidium/ad_localize/issues/48), [#20](https://github.com/applidium/ad_localize/issues/20)
- 
+
 ### Changed
   - it is now possible to provide an output path path that does not exist
   - if a service account configuration is provided, there won't be any files downloaded
@@ -24,8 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - tests for ad_localize class are restricted to the minimum
   - No more file generated when there are no data to export
   - Less verbose logs. Now, they only describe the different steps of the export process
-  - do not add `InfoPlist` translations to android `strings.xml` 
-  
+  - do not add `InfoPlist` translations to android `strings.xml`
+
 ### Added
   - -e, -export_all_sheets option export all sheets from a spreadsheet by [@sjcqs](https://github.com/sjcqs)
   - -m, --merge-option to select the merge policy (`keep` or `replace`) by [@sjcqs](https://github.com/sjcqs)
@@ -37,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - dedicated folder for fixture files
   - add ability to use AdLocalize in a Ruby program
   - add documentation for JSON and YAML support. Fixes [#23](https://github.com/applidium/ad_localize/issues/23)
-  
+
 ### Fixed
   - comments will now be added to iOS and Android plural files
   - do not remove existing files in export output folder. Fixes [#40](https://github.com/applidium/ad_localize/issues/40)
@@ -46,8 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - no more option -a option to indicate that a service account configuration will be provided. If set, the environment variable `GCLOUD_CLIENT_SECRET` content will be used
   - no more substitution of empty wording with by "Missing Translation" when using the option -d
   - no more Makefile, the Rakefile is sufficient. Use `bundle exec rake -T` to display the available commands
-  - no more check for ordered interpolation variables in translations 
-  
+  - no more check for ordered interpolation variables in translations
+
 ## [3.6.0] - 2020-06-23
 ### Added
   - add documentation for service account usage by [@sjcqs](https://github.com/sjcqs)
