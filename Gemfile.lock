@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ad_localize (4.0.2)
+    ad_localize (4.0.3)
       activesupport (>= 5.2, < 7.0)
       colorize (~> 0.8)
       google-api-client (~> 0.34)
