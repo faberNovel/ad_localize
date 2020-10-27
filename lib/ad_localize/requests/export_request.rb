@@ -61,7 +61,7 @@ module AdLocalize
       end
 
       def is_csv?(path:)
-        (MIME::Types.of(path).map(&:content_type) & CSV_CONTENT_TYPES).present?
+        CSV_CONTENT_TYPES.include?(`file --brief --mime-type #{path}`.strip)
       end
 
       def valid_g_spreadsheet_options?
