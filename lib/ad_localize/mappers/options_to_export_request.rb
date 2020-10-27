@@ -15,7 +15,7 @@ module AdLocalize
       private
 
       def map_g_spreadsheet_options(options:)
-        return unless options[:drive_key]
+        return unless options[:'drive-key']
         Requests::GSpreadsheetOptions.new(
           spreadsheet_id: options[:'drive-key'],
           sheet_ids: options[:'sheets'],
