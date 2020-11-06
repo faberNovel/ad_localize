@@ -3,7 +3,7 @@ module AdLocalize
     class OptionsToExportRequest
       def map(options:)
         Requests::ExportRequest.new(
-          platform_codes: options[:only],
+          platforms: options[:only],
           g_spreadsheet_options: map_g_spreadsheet_options(options: options),
           verbose: options[:debug],
           output_path: options[:'target-dir'],
