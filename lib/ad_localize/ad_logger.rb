@@ -18,7 +18,7 @@ module AdLocalize
     end
 
     def debug(text)
-      log(level: Logger::DEBUG, text: text.black)
+      log(level: Logger::DEBUG, text: text)
     end
 
     def info!
