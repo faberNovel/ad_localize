@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.4] - 2020-11-09
+### Fixed
+  - Fix android special character escaping [#56](https://github.com/applidium/ad_localize/issues/56)
+  - Fix platform filter on export [#55](https://github.com/applidium/ad_localize/issues/55)
+  
+### Changed
+  - Use default terminal color for debug log
+
 ## [4.0.3] - 2020-10-27
 ### Fixed
   - Fix CSV detection and remove dependency to MimeType gem
