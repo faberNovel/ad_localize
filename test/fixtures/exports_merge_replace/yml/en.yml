@@ -20,3 +20,5 @@ en:
   escaped_format: String \"escaped\"
   space_before_key: Value
   space_after_key: Value
+  password_specialchar_error: 'Special chars allowed: - / : ; ( ) € & @ . , ? ! ''
+    [ ] { } # % ^ * + = _ | ~ < > $ £ ¥ ` ° "'
