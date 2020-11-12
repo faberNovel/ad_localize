@@ -3,7 +3,7 @@ module AdLocalize
     class ExportRequest
       SUPPORTED_PLATFORMS = %w(ios android yml json properties).freeze
       DEFAULT_EXPORT_FOLDER = 'exports'.freeze
-      CSV_CONTENT_TYPES = %w(text/csv text/plain).freeze
+      CSV_CONTENT_TYPES = %w(text/csv text/plain application/csv).freeze
 
       def initialize(**args)
         @locales = Array(args[:locales].presence)
@@ -61,7 +61,7 @@ module AdLocalize
       end
 
       def is_csv?(path:)
-        CSV_CONTENT_TYPES.include?(`file --brief --mime-type #{path}`.strip)
+        CSV_CONTENT_TYPES.include?(`file --brief --mime-type "#{path}"`.strip)
       end
 
       def valid_g_spreadsheet_options?
