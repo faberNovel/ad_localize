@@ -19,7 +19,7 @@ module AdLocalize
           spreadsheet.sheets[0..0].map { |sheet| get_sheet_values(spreadsheet_id: g_spreadsheet_options.spreadsheet_id, sheet: sheet) }
         else
           spreadsheet.sheets.select do |sheet|
-            g_spreadsheet_options.sheet_ids.include?(sheet.properties.sheet_id)
+            g_spreadsheet_options.sheet_ids.include?(sheet.properties.sheet_id.to_s)
           end.map do |sheet|
             get_sheet_values(spreadsheet_id: g_spreadsheet_options.spreadsheet_id, sheet: sheet)
           end
