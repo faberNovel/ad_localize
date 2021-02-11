@@ -31,7 +31,7 @@ $ gem install ad_localize
 $ ad_localize -h
 ```
 
-* Export wording from a google spreadsheet, default tab. The spreadsheet key and sheet_id are available in the spreadsheet url. For example `https://docs.google.com/spreadsheets/d/<your-spreadsheet-drive-key>/edit#gid=<sheet-id>`.
+* Export wording from a public google spreadsheet, default tab. The spreadsheet key and sheet_id are available in the spreadsheet url. For example `https://docs.google.com/spreadsheets/d/<your-spreadsheet-drive-key>/edit#gid=<sheet-id>`.
 ```
 $ ad_localize -k <your-spreadsheet-drive-key>
 ```
@@ -39,6 +39,11 @@ $ ad_localize -k <your-spreadsheet-drive-key>
 * Export wording from a set of google spreadsheet tabs.
 ```
 $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
+```
+
+* Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account). 
+```
+$ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) ad_localize -k <your-spreadsheet-drive-key>
 ```
 
 * Export wording from all sheets in a google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account). 
