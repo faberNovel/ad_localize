@@ -15,12 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.5] - 2020-11-12
 ### Fixed
   - Fix csv file type check (also add compatibility with macOS Big Sur)
-  
+
 ## [4.0.4] - 2020-11-09
 ### Fixed
   - Fix android special character escaping [#56](https://github.com/applidium/ad_localize/issues/56)
   - Fix platform filter on export [#55](https://github.com/applidium/ad_localize/issues/55)
-  
+
 ### Changed
   - Use default terminal color for debug log
 
