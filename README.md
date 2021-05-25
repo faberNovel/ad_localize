@@ -177,6 +177,7 @@ _Only for iOS._
 
 Every key that matches the following formats will be added to the `InfoPlist.strings` file instead of `Localizable.strings`:
 * `NS...UsageDescription`
+* `NFCReaderUsageDescription`
 * `CF...Name`
 
 ### Nested wording
