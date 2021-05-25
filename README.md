@@ -2,7 +2,7 @@
 
 The purpose of this gem is to automatically generate wording files from a CSV input (CSV file or Google Spreadsheet).
 It supports iOS, Android, JSON, YAML and Java Properties.
-It is a useful tool when working on a mobile application or a SPA.  
+It is a useful tool when working on a mobile application or a SPA.
 
 ## Installation
 
@@ -41,12 +41,12 @@ $ ad_localize -k <your-spreadsheet-drive-key>
 $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 ```
 
-* Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account). 
+* Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
 ```
 $ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) ad_localize -k <your-spreadsheet-drive-key>
 ```
 
-* Export wording from all sheets in a google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account). 
+* Export wording from all sheets in a google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
 ```
 $ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) ad_localize -k <your-spreadsheet-drive-key> -e
 ```
@@ -76,7 +76,7 @@ If you want more examples, please open a documentation issue.
     require 'ad_localize'
     # create optional google spreasheet options
     g_spreadsheet_options = AdLocalize::Requests::GSpreadsheetOptions.new(spreadsheet_id: 'some_id', sheet_ids: ['first', 'second'], service_account_config: ENV['GCLOUD_CLIENT_SECRET'])
-    # create export request    
+    # create export request
     export_request = AdLocalize::Requests::ExportRequest.new(g_spreadsheet_options: g_spreadsheet_options, verbose: true)
     # execute request
     AdLocalize::Interactors::ExecuteExportRequest.new.call(export_request: export_request)
@@ -86,20 +86,20 @@ If you want more examples, please open a documentation issue.
 ### Share to anyone with the link
 
 If you do not have high security concerns, the simplest way to access a google spreadsheet is to allow **anyone** with the link to **view** it and enable the `Viewers and commenters can see the option to download, print, and copy` option in the spreadsheet sharing settings.
-    
+
 ### Use a Google Cloud Service Account
 
-To use a private google spreasheet you need to use a Google Cloud Service Account. Here are the steps to follow :    
-1. Create a GCloud Service Account:    
-    - Go to [Google Cloud Console](https://console.cloud.google.com/)  
-    - Either create a new project or use an existing one (when using Firebase, a GCloud project is created)  
-    - Go to *IAM & Admin / Service Account* and create a new service account.  
-    - Store the created `client-secret.json` (in a password manager for example)  
-2. Enable Google Spreadsheet API for the project  
-    - Go to *API / Library* and enable the **Google Spreadsheet API** there.  
-3. Add the service account to a spreadsheet.  
+To use a private google spreasheet you need to use a Google Cloud Service Account. Here are the steps to follow :
+1. Create a GCloud Service Account:
+    - Go to [Google Cloud Console](https://console.cloud.google.com/)
+    - Either create a new project or use an existing one (when using Firebase, a GCloud project is created)
+    - Go to *IAM & Admin / Service Account* and create a new service account.
+    - Store the created `client-secret.json` (in a password manager for example)
+2. Enable Google Spreadsheet API for the project
+    - Go to *API / Library* and enable the **Google Spreadsheet API** there.
+3. Add the service account to a spreadsheet.
     - In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
-      
+
 ```
 $ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secrets>) ad_localize -k # one way
 $ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secrets>) ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list> # another way
@@ -124,11 +124,11 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 - Keys should contain only letter, number, underscore and dot : [a-z0-9_.]+.
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: `"%1$@ %2$@'s report"`).
 
-### Comments 
+### Comments
 
 _Only for Android and iOS_
 
-To add comments for iOS or Android, simply add a comment column using the naming convention `comment <locale>`.  
+To add comments for iOS or Android, simply add a comment column using the naming convention `comment <locale>`.
 Comments are available in `strings.xml`, `Localizable.strings`, `Localizable.stringsdict`, `InfoPlist.strings`. Here is an example for `InfoPlist.strings` :
 
 | key | en | comment en |
@@ -177,21 +177,22 @@ _Only for iOS._
 
 Every key that matches the following formats will be added to the `InfoPlist.strings` file instead of `Localizable.strings`:
 * `NS...UsageDescription`
+* `NFCReaderUsageDescription`
 * `CF...Name`
 
 ### Nested wording
 
 _Only for YAML and JSON_
 
-For these two platforms it is common to have nested wording files, either to handle plural or to group wording by sections. To handle this behavior in a simple way you should use dots in the key to separate the different levels. For example :  
- 
+For these two platforms it is common to have nested wording files, either to handle plural or to group wording by sections. To handle this behavior in a simple way you should use dots in the key to separate the different levels. For example :
+
 | key | fr |
 | --- | --- |
 | login.password | mot de passe |
 | login.email | email |
 
 ```json
-{"login":{"password":"mot de passe","email":"email"}} 
+{"login":{"password":"mot de passe","email":"email"}}
 ```
 
 ```yaml
@@ -199,14 +200,14 @@ fr:
   login:
     password: "mot de passe"
     email: "email"
-```  
+```
 
 
 ## Output
 
-The default output folder name is `exports`.  
-If your export is for multiple platforms there will be an intermediate folder for each platform, otherwise the wording files (and folders) will directly be generated in the export folder.  
-Any existing file will be overriden. 
+The default output folder name is `exports`.
+If your export is for multiple platforms there will be an intermediate folder for each platform, otherwise the wording files (and folders) will directly be generated in the export folder.
+Any existing file will be overriden.
 You can see examples of generated files in `test/fixtures/export_references/`
 
 Here an export tree example for all supported platforms in `fr` and `en`:

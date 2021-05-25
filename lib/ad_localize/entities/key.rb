@@ -4,7 +4,7 @@ module AdLocalize
       PLURAL_KEY_REGEXP = /\#\#\{([A-Za-z]+)\}/.freeze
       ADAPTIVE_KEY_REGEXP = /\#\#\{(\d+)\}/.freeze
       # see https://developer.apple.com/documentation/bundleresources/information_property_list
-      INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)/.freeze
+      INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)|NFCReaderUsageDescription/.freeze
 
       def initialize(label:)
         @label = label

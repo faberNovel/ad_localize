@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Add `NFCReaderUsageDescription` to InfoPlist keys for iOS
+
 ## [4.0.7] - 2021-05-18
 ### Changed
 - Support Ruby 3.x
@@ -15,12 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.5] - 2020-11-12
 ### Fixed
   - Fix csv file type check (also add compatibility with macOS Big Sur)
-  
+
 ## [4.0.4] - 2020-11-09
 ### Fixed
   - Fix android special character escaping [#56](https://github.com/applidium/ad_localize/issues/56)
   - Fix platform filter on export [#55](https://github.com/applidium/ad_localize/issues/55)
-  
+
 ### Changed
   - Use default terminal color for debug log
 
