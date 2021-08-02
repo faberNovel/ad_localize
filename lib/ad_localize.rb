@@ -53,6 +53,7 @@ require 'ad_localize/interactors/platforms/export_ios_locale_wording'
 require 'ad_localize/interactors/platforms/export_json_locale_wording'
 require 'ad_localize/interactors/platforms/export_yaml_locale_wording'
 require 'ad_localize/interactors/platforms/export_properties_locale_wording'
+require 'ad_localize/interactors/platforms/export_csv_locale_wording'
 require 'ad_localize/interactors/platforms/export_platform_factory'
 
 require 'ad_localize/serializers/with_template'

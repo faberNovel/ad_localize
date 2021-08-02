@@ -7,12 +7,16 @@ module AdLocalize
 
       def call(export_request:, wording:)
         LOGGER.debug("Starting export wording")
-        locales = export_request.locales.size.zero? ? wording.locales : wording.locales & export_request.locales
         export_request.platforms.each do |platform|
-          locales.each do |locale|
-            platform_dir = compute_platform_dir(export_request: export_request, platform: platform)
-            export_platform = @export_platform_factory.build(platform: platform)
-            export_platform.call(wording: wording, locale: locale, platform_dir: platform_dir)
+          platform_dir = compute_platform_dir(export_request: export_request, platform: platform)
+          export_platform = @export_platform_factory.build(platform: platform)
+          if platform == 'csv'
+            export_platform.call(export_request: export_request, platform_dir: platform_dir)
+          else
+            locales = export_request.locales.size.zero? ? wording.locales : wording.locales & export_request.locales
+            locales.each do |locale|
+              export_platform.call(wording: wording, locale: locale, platform_dir: platform_dir)
+            end
           end
         end
       end
