@@ -10,13 +10,13 @@ module AdLocalize
         export_request.platforms.each do |platform|
           platform_dir = compute_platform_dir(export_request: export_request, platform: platform)
           export_platform = @export_platform_factory.build(platform: platform)
-          if platform == 'csv'
-            export_platform.call(export_request: export_request, platform_dir: platform_dir)
-          else
+          if export_platform.should_export_locale_by_locale?
             locales = export_request.locales.size.zero? ? wording.locales : wording.locales & export_request.locales
             locales.each do |locale|
               export_platform.call(wording: wording, locale: locale, platform_dir: platform_dir)
             end
+          else
+            export_platform.call(export_request: export_request, platform_dir: platform_dir)
           end
         end
       end

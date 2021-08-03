@@ -27,6 +27,10 @@ module AdLocalize
           export_localizable_stringsdict(locale_wording: locale_wording, output_dir: output_dir)
         end
 
+        def should_export_locale_by_locale?
+          true
+        end
+
         private
 
         def has_ios_wording?(locale_wording:)

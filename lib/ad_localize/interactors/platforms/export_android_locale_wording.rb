@@ -23,6 +23,10 @@ module AdLocalize
           LOGGER.debug("#{STRINGS_FILENAME} done !")
         end
 
+        def should_export_locale_by_locale?
+          true
+        end
+
         private
 
         def has_android_wording?(locale_wording:)
