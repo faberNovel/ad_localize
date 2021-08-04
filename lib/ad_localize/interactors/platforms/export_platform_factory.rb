@@ -14,6 +14,8 @@ module AdLocalize
             ios_builder
           when 'properties'
             properties_builder
+          when 'csv'
+            csv_builder
           else
             raise ArgumentError.new('Unknown platform for builder factory')
           end
@@ -37,6 +39,10 @@ module AdLocalize
 
         def properties_builder
           @properties_builder ||= ExportPropertiesLocaleWording.new
+        end
+
+        def csv_builder
+          @csv_builder ||= ExportCSVLocaleWording.new
         end
       end
     end

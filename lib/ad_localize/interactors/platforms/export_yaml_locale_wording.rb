@@ -17,6 +17,10 @@ module AdLocalize
           @file_system_repository.write(content: content, path: platform_dir.join("#{locale}.yml"))
           LOGGER.debug("#{locale}.yml done !")
         end
+
+        def should_export_locale_by_locale?
+          true
+        end
       end
     end
   end

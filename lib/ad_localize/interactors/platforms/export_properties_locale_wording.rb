@@ -18,6 +18,10 @@ module AdLocalize
           LOGGER.debug("#{locale}.properties done !")
         end
 
+        def should_export_locale_by_locale?
+          true
+        end
+
         private
 
         def has_properties_wording?(locale_wording:)
