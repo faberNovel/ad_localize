@@ -10,6 +10,14 @@ module AdLocalize
                 hash[translation.key.label] = {} unless hash.key? translation.key.label
                 hash[translation.key.label][translation.key.plural_key] = translation.value
               else
+                unless hash.is_a?(Hash)
+                  LOGGER.warn "Corrupted input. Trying to insert a value for key '#{translation.key.label}' but a value already exists for '#{inner_keys[0..index-1].join(".")}'. Skipping."
+                  break # skip this corrupted key
+                end
+                previous_value = hash[inner_key.to_s]
+                if !previous_value.blank? && previous_value.is_a?(Hash)
+                  LOGGER.warn "Corrupted input. Trying to insert a value for key '#{translation.key.label}' but values already exist for keys '#{translation.key.label}.*'. Previous values will be lost."
+                end
                 hash[inner_key.to_s] = translation.value
               end
             else
