@@ -33,14 +33,12 @@ module AdLocalize
         export_request.csv_paths = downloaded_files.map(&:path)
         if export_request.has_csv_files?
           ExportCSVFiles.new.call(export_request: export_request)
+        elsif export_request.has_empty_files?
+          # When downloading an empty spreadsheet, the content type of the downloaded file is "inode/x-empty"
+          LOGGER.warn("Your spreadsheet is empty. Add content and retry.")
         else
-          if export_request.has_empty_files?
-            # When downloading an empty spreadsheet, the content type of the downloaded file is "inode/x-empty"
-            LOGGER.warn("Your spreadsheet is empty. Add content and retry.")
-          else
-            # When shared configuration is misconfigured, the content type of the downloaded file is "text/html"
-            LOGGER.error("Invalid export request. Check the spreadsheet share configuration")
-          end
+          # When shared configuration is misconfigured, the content type of the downloaded file is "text/html"
+          LOGGER.error("Invalid export request. Check the spreadsheet share configuration")
         end
         downloaded_files.select { |downloaded_file| File.exist?(downloaded_file.path) }.each do |downloaded_file|
           downloaded_file.close
