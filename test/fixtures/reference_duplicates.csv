@@ -1,0 +1,11 @@
+,key,fr,comment fr,en,comment en
+#Generic actions,,,,,
+,duplicate,Duplicate,,Duplicate,
+,duplicate,Erreur,,Error,
+#Plurals,,,,,
+,plural_before_singular##{one},Plural before Singular,,Plural before Singular,
+,plural_before_singular##{one},Plural before Singular,,Plural before Singular,
+,plural_before_singular##{other},Plural before Singular,,Plural before Singular,
+,plural_before_singular,Erreur,,Error,,
+,singular_before_plural,Singular before Plural,,Singular before Plural,,
+,singular_before_plural##{one},Erreur,,Error,,

@@ -8,7 +8,6 @@
 ,save,Enregistrer,,Save,
 #Plurals,,,,,
 ,assess_rate_trip_voiceover##{one},Attribuer %1$@ étoile,,Rate %1$@ star,
-,assess_rate_trip_voiceover##{one},Attribuer %1$@ étoile,,Rate %1$@ star,
 ,assess_rate_trip_voiceover##{other},Attribuer %1$@ étoiles,Si %1$@<=3 : prononcer également assess_comment_placeholder. Si %1$@>3 : prononcer également assess_optional_comment_placeholder,Rate %1$@ stars,
 #InfoPlist,,,,,
 ,NSCameraUsageDescription,Camera utilisé pour blabla,,Camera used for blabla,
