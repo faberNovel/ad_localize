@@ -17,18 +17,29 @@ module AdLocalize
 
       def map_rows(values:)
         translations = []
+        existing_key_for_label = {}
+
         values[1..-1].each do |row|
           row_translations = map_row(row: row)
           next if row_translations.blank?
 
-          existing_keys = translations.map(&:key)
-          new_translations = row_translations.reject do |translation|
-            existing_keys.any? do |key|
-              existing_plural_key = key.label == translation.key.label && key.plural? && translation.key.singular?
-              key.same_as?(key: translation.key) || existing_plural_key
-            end
+          current_key = row_translations.first.key
+
+          current_label = current_key.label
+          existing_key = existing_key_for_label[current_label]
+
+          unless existing_key.nil?
+            existing_plural_key = existing_key.label == current_key.label && existing_key.plural? && current_key.singular?
+            existing_singular_key = existing_key.label == current_key.label && existing_key.singular? && current_key.plural?
+            is_same_key = existing_key.same_as?(key: current_key)
+            LOGGER.warn "A plural value already exist for key '#{current_label}'. Remove duplicates." if existing_plural_key
+            LOGGER.warn "A singular value already exist for key '#{current_label}'. Remove duplicates." if existing_singular_key
+            LOGGER.warn "Some values already exist for key '#{current_label}'. Remove duplicates." if is_same_key
+            next if is_same_key || existing_plural_key || existing_singular_key
           end
-          translations.concat(new_translations)
+
+          existing_key_for_label[current_label] = current_key
+          translations.concat(row_translations)
         end
         translations
       end
