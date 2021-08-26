@@ -5,7 +5,7 @@ module AdLocalize
         @headers = CSV.foreach(csv_path).first
         return unless valid?(csv_path: csv_path)
         translations = []
-        validator = KeyValidator.new
+        validator = Validators::KeyValidator.new
 
         CSV.foreach(csv_path, headers: true, skip_blanks: true) do |row|
           row_translations = map_row(row: row, locales: locales)

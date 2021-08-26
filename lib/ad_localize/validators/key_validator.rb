@@ -1,5 +1,5 @@
 module AdLocalize
-  module Mappers
+  module Validators
     class KeyValidator
 
       def initialize

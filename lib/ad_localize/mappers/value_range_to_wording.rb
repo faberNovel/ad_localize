@@ -17,7 +17,7 @@ module AdLocalize
 
       def map_rows(values:)
         translations = []
-        validator = KeyValidator.new
+        validator = Validators::KeyValidator.new
 
         values[1..-1].each do |row|
           row_translations = map_row(row: row)

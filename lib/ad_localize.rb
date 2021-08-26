@@ -33,7 +33,6 @@ require 'ad_localize/mappers/translation_mapper'
 require 'ad_localize/mappers/translation_group_mapper'
 require 'ad_localize/mappers/android_translation_mapper'
 require 'ad_localize/mappers/ios_translation_mapper'
-require 'ad_localize/mappers/key_validator'
 
 require 'ad_localize/entities/key'
 require 'ad_localize/entities/translation'
@@ -66,7 +65,7 @@ require 'ad_localize/serializers/properties_serializer'
 require 'ad_localize/serializers/json_serializer'
 require 'ad_localize/serializers/yaml_serializer'
 
-
+require 'ad_localize/validators/key_validator'
 
 module AdLocalize
   class Error < StandardError; end
