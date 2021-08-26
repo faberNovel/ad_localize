@@ -33,6 +33,7 @@ require 'ad_localize/mappers/translation_mapper'
 require 'ad_localize/mappers/translation_group_mapper'
 require 'ad_localize/mappers/android_translation_mapper'
 require 'ad_localize/mappers/ios_translation_mapper'
+require 'ad_localize/mappers/key_validator'
 
 require 'ad_localize/entities/key'
 require 'ad_localize/entities/translation'
