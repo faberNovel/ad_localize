@@ -46,6 +46,11 @@ module AdLocalize
         raw_label == key.raw_label
       end
 
+      def ==(o)
+        o.class == self.class &&
+        o.raw_label == raw_label
+      end
+
       private
 
       def compute_label

@@ -4,6 +4,7 @@ module AdLocalize
       SUPPORTED_PLATFORMS = %w(ios android yml json properties csv).freeze
       DEFAULT_EXPORT_FOLDER = 'exports'.freeze
       CSV_CONTENT_TYPES = %w(text/csv text/plain application/csv).freeze
+      EMPTY_CONTENT_TYPE = 'inode/x-empty'.freeze
 
       def initialize(**args)
         @locales = Array(args[:locales].presence)
@@ -34,6 +35,10 @@ module AdLocalize
         !@csv_paths.blank? && @csv_paths.all? { |csv_path| File.exist?(csv_path) && is_csv?(path: csv_path) }
       end
 
+      def has_empty_files?
+        !@csv_paths.blank? && @csv_paths.all? { |csv_path| File.exist?(csv_path) && is_empty?(path: csv_path) }
+      end
+
       def has_g_spreadsheet_options?
         @g_spreadsheet_options.present?
       end
@@ -61,7 +66,15 @@ module AdLocalize
       end
 
       def is_csv?(path:)
-        CSV_CONTENT_TYPES.include?(`file --brief --mime-type "#{path}"`.strip)
+        CSV_CONTENT_TYPES.include? content_type(path: path)
+      end
+
+      def is_empty?(path:)
+        content_type(path: path) == EMPTY_CONTENT_TYPE
+      end
+
+      def content_type(path:)
+        `file --brief --mime-type "#{path}"`.strip
       end
 
       def valid_g_spreadsheet_options?

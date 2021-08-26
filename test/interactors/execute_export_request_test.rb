@@ -13,6 +13,50 @@ module AdLocalize
         FileUtils.rm_rf('exports')
       end
 
+      test 'it should export json file with bad inputs' do
+        # Given
+        csv_file = "test/fixtures/reference_json_bad_input.csv"
+        reference_dir = "test/fixtures/exports_reference_json_bad_input"
+        assert(File.exist?(csv_file), "File does not exists #{csv_file}")
+        assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+        # When
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: 'json')
+        ExecuteExportRequest.new.call(export_request: export_request)
+
+        # Then
+        reference_file = "#{reference_dir}/en.json"
+        generated_file = "exports/en.json"
+        assert(File.exist?(reference_file), "File does not exists #{reference_file}")
+        assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+        diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+        assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+      end
+
+      test 'it should export ios file with duplicated keys' do
+        # Given
+        csv_file = "test/fixtures/reference_duplicates.csv"
+        reference_dir = "test/fixtures/exports_reference_duplicates"
+        assert(File.exist?(csv_file), "File does not exists #{csv_file}")
+        assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+        # When
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: 'ios')
+        ExecuteExportRequest.new.call(export_request: export_request)
+
+        # Then
+        ios_files(with_platform_directory: false)
+          .reject { |file| file.include? "InfoPlist.strings" }
+          .each do |file|
+            reference_file = "#{reference_dir}/#{file}"
+            generated_file = "exports/#{file}"
+            assert(File.exist?(reference_file), "File does not exists #{reference_file}")
+            assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+            diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+            assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+          end
+      end
+
       test 'it should export correct platforms files' do
         # Given
         csv_file = "test/fixtures/reference.csv"

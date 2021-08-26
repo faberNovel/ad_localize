@@ -17,18 +17,16 @@ module AdLocalize
 
       def map_rows(values:)
         translations = []
+        validator = Validators::KeyValidator.new
+
         values[1..-1].each do |row|
           row_translations = map_row(row: row)
           next if row_translations.blank?
 
-          existing_keys = translations.map(&:key)
-          new_translations = row_translations.reject do |translation|
-            existing_keys.any? do |key|
-              existing_plural_key = key.label == translation.key.label && key.plural? && translation.key.singular?
-              key.same_as?(key: translation.key) || existing_plural_key
-            end
-          end
-          translations.concat(new_translations)
+          current_key = row_translations.first.key
+          next if validator.has_warnings?(current_key)
+
+          translations.concat(row_translations)
         end
         translations
       end
