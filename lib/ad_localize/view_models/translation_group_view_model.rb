@@ -10,6 +10,10 @@ module AdLocalize
         @label = label
         @translation_view_models = translation_view_models
       end
+
+      def has_translations?
+        (translation_view_models || []).any? { |translation| translation.value.present? }
+      end
     end
   end
 end

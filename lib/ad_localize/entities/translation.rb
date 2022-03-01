@@ -23,6 +23,10 @@ module AdLocalize
         o.value == value &&
         o.comment == comment
       end
+
+      def has_value?
+        value.present?
+      end
     end
   end
 end
