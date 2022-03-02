@@ -22,11 +22,13 @@ module AdLocalize
       end
 
       def map_singulars(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+        translations.select(&:has_value?).map { |translation| @translation_mapper.map(translation: translation) }
       end
 
       def map_plurals(plurals:)
-        plurals.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations) }
+        plurals
+        .map { |label, translations| @translation_group_mapper.map(label: label, translations: translations.select(&:has_value?)) }
+        .select(&:has_translations?)
       end
     end
   end
