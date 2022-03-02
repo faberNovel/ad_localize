@@ -1,3 +1,3 @@
 module AdLocalize
-  VERSION = "4.0.9"
+  VERSION = "4.1.0"
 end
