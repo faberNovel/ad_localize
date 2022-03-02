@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2022-03-02
+
+### Changed
+
+- Do not export empty translation on Android in PR [#72](https://github.com/faberNovel/ad_localize/pull/72)
+
+
 ## [4.0.9] - 2021-09-05
 
 ### Fixed
