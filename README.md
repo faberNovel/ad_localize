@@ -123,6 +123,7 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 - Any column after the `key` column will be considered as a locale column (except from the optional `comment` columns)
 - Keys should contain only letter, number, underscore and dot : [a-z0-9_.]+.
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: `"%1$@ %2$@'s report"`).
+- _Only for Android_ keys without translation won't be considered
 
 ### Comments
 
