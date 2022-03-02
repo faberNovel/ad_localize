@@ -12,7 +12,7 @@ module AdLocalize
       end
 
       def has_translations?
-        (translation_view_models || []).any? { |translation| translation.value.present? }
+        (translation_view_models || []).any?(&:has_value?)
       end
     end
   end

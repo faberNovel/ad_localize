@@ -14,6 +14,10 @@ module AdLocalize
         @value = value
         @comment = comment
       end
+
+      def has_value?
+        value.present?
+      end
     end
   end
 end
