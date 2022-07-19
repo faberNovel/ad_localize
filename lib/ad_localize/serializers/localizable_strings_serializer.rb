@@ -9,6 +9,10 @@ module AdLocalize
         @translation_mapper = Mappers::IOSTranslationMapper.new
       end
 
+      attr_accessor(
+        :bypass_empty_values
+      )
+
       private
 
       def template_path
@@ -20,7 +24,7 @@ module AdLocalize
       end
 
       def map_translations(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+        translations.select(&:has_value?).map { |translation| @translation_mapper.map(translation: translation) }
       end
     end
   end

@@ -6,6 +6,7 @@ module AdLocalize
           platforms: options[:only],
           g_spreadsheet_options: map_g_spreadsheet_options(options: options),
           verbose: options[:debug],
+          non_empty_values: options[:'non-empty-values'],
           output_path: options[:'target-dir'],
           merge_policy: options[:'merge-policy'],
           csv_paths: options[:csv_paths]

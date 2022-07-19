@@ -62,6 +62,11 @@ module AdLocalize
       assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w(-k)) }
     end
 
+    test 'should parse -x option' do
+      options = OptionHandler.parse!(%w(-x))
+      assert options[:'non-empty-values']
+    end
+
     test 'should set non option arguments as csv_paths' do
       options = OptionHandler.parse!(%w(-k some_id -e -t foo bar foobar))
       assert_equal %w(bar foobar), options[:csv_paths]

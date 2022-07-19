@@ -14,7 +14,10 @@ module AdLocalize
           @file_system_repository = Repositories::FileSystemRepository.new
         end
 
-        def call(wording:, locale:, platform_dir:)
+        def call(export_wording_options:)
+          locale = export_wording_options.locale
+          wording = export_wording_options.wording
+          platform_dir = export_wording_options.platform_directory
           LOGGER.debug("Starting export iOS wording for locale #{locale}")
           locale_wording = wording.translations_for(locale: locale)
           return unless has_ios_wording?(locale_wording: locale_wording)
@@ -23,8 +26,8 @@ module AdLocalize
           @file_system_repository.create_directory(path: output_dir)
 
           export_info_plist(locale_wording: locale_wording, output_dir: output_dir)
-          export_localizable_strings(locale_wording: locale_wording, output_dir: output_dir)
-          export_localizable_stringsdict(locale_wording: locale_wording, output_dir: output_dir)
+          export_localizable_strings(locale_wording: locale_wording, output_dir: output_dir, bypass_empty_values: export_wording_options.bypass_empty_values)
+          export_localizable_stringsdict(locale_wording: locale_wording, output_dir: output_dir, bypass_empty_values: export_wording_options.bypass_empty_values)
         end
 
         def should_export_locale_by_locale?
@@ -47,15 +50,17 @@ module AdLocalize
           LOGGER.debug("#{INFO_PLIST_FILENAME} done !")
         end
 
-        def export_localizable_strings(locale_wording:, output_dir:)
+        def export_localizable_strings(locale_wording:, output_dir:, bypass_empty_values:)
           return unless locale_wording.has_singular_keys?
+          @localizable_strings_serializer.bypass_empty_values = bypass_empty_values
           content = @localizable_strings_serializer.render(locale_wording: locale_wording)
           @file_system_repository.write(content: content, path: output_dir.join(LOCALIZABLE_STRINGS_FILENAME))
           LOGGER.debug("#{LOCALIZABLE_STRINGS_FILENAME} done !")
         end
 
-        def export_localizable_stringsdict(locale_wording:, output_dir:)
+        def export_localizable_stringsdict(locale_wording:, output_dir:, bypass_empty_values:)
           return unless locale_wording.has_plural_keys? || locale_wording.has_adaptive_keys?
+          @localizable_stringsdict_serializer.bypass_empty_values = bypass_empty_values
           content = @localizable_stringsdict_serializer.render(locale_wording: locale_wording)
           @file_system_repository.write(content: content, path: output_dir.join(LOCALIZABLE_STRINGSDICT_FILENAME))
           LOGGER.debug("#{LOCALIZABLE_STRINGSDICT_FILENAME} done !")

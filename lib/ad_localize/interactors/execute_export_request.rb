@@ -27,6 +27,7 @@ module AdLocalize
         LOGGER.debug("platforms : #{export_request.platforms.to_sentence}")
         LOGGER.debug("output_path : #{export_request.output_path}")
         LOGGER.debug("verbose : #{export_request.verbose}")
+        LOGGER.debug("non_empty_values : #{export_request.non_empty_values}")
         LOGGER.debug("merge_policy : #{export_request.merge_policy&.policy}")
         LOGGER.debug("csv_paths : #{export_request.csv_paths.to_sentence}")
         if export_request.has_g_spreadsheet_options?

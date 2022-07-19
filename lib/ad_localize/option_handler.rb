@@ -27,6 +27,7 @@ module AdLocalize
         parser.on("-o", "--only PLATFORMS", Array, "PLATFORMS is a comma separated list. Only generate localisation files for the specified platforms. Supported platforms : #{Requests::ExportRequest::SUPPORTED_PLATFORMS.to_sentence}")
         parser.on("-s", "--sheets SHEET_IDS", Array, "SHEET_IDS is a comma separated list. Use a specific sheet id for Google Drive spreadsheets with several sheets")
         parser.on("-t", "--target-dir PATH", String, "Path to the target directory")
+        parser.on("-x", "--non-empty-values", TrueClass, "Do not export keys with empty values (iOS only)")
       end
 
       args = {}

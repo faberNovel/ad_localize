@@ -10,7 +10,10 @@ module AdLocalize
           @file_system_repository = Repositories::FileSystemRepository.new
         end
 
-        def call(wording:, locale:, platform_dir:)
+        def call(export_wording_options:)
+          locale = export_wording_options.locale
+          wording = export_wording_options.wording
+          platform_dir = export_wording_options.platform_directory
           LOGGER.debug("Starting export Android wording for locale #{locale}")
           locale_wording = wording.translations_for(locale: locale)
           return unless has_android_wording?(locale_wording: locale_wording)

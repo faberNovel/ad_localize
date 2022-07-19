@@ -1,0 +1,11 @@
+,key,fr,comment fr,en,comment en
+#Generic actions,,,,,
+,empty,,,,
+,non_empty,Erreur,,Error,
+#Plurals,,,,,
+,plural_empty##{one},,,,
+,plural_non_empty##{other},Plural non empty,,Plural non empty,
+,plural_half_empty##{one},Plural non empty,,,
+#Adaptive,,,,,
+,adaptive_empty##{20},,,,
+,adaptive_non_empty##{20},Adaptive non empty,,Adaptive non empty,

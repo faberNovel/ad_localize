@@ -203,6 +203,20 @@ module AdLocalize
         request = ExportRequest.new(verbose: false)
         refute request.verbose?
       end
+
+      test 'should detect if request has only non empty values' do
+        request = ExportRequest.new(non_empty_values: true)
+        assert request.non_empty_values?
+
+        request = ExportRequest.new(non_empty_values: false)
+        refute request.non_empty_values?
+
+        request = ExportRequest.new(non_empty_values: nil)
+        refute request.non_empty_values?
+
+        request = ExportRequest.new(non_empty_values: "")
+        refute request.non_empty_values?
+      end
     end
   end
 end
