@@ -66,6 +66,11 @@ $ ad_localize -t <path-to-the-output-directory>
 $ ad_localize -d
 ```
 
+* Won't generate keys with empty values (iOS feature only, automatically handled for Android)
+```
+$ ad_localize -x
+```
+
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
 
