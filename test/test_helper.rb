@@ -11,4 +11,5 @@ Minitest::Reporters.use! Minitest::Reporters::ProgressReporter.new
 
 class TestCase < ActiveSupport::TestCase
   DEFAULT_LANGUAGES = %w(fr en)
+  DEFAULT_IOS_FILES = %w(InfoPlist.strings Localizable.strings Localizable.stringsdict)
 end

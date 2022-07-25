@@ -41,6 +41,7 @@ require 'ad_localize/entities/wording'
 
 require 'ad_localize/requests/g_spreadsheet_options'
 require 'ad_localize/requests/export_request'
+require 'ad_localize/requests/export_wording_options'
 require 'ad_localize/requests/merge_policy'
 
 require 'ad_localize/interactors/merge_wordings'

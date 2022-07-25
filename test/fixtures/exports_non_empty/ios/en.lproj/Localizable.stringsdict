@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+    <dict>
+        <key>plural_non_empty</key>
+        <dict>
+            <key>NSStringLocalizedFormatKey</key>
+            <string>%#@key@</string>
+            <key>key</key>
+            <dict>
+                <key>NSStringFormatSpecTypeKey</key>
+                <string>NSStringPluralRuleType</string>
+                <key>NSStringFormatValueTypeKey</key>
+                <string>d</string>
+                <key>other</key>
+                <string>Plural non empty</string>
+            </dict>
+        </dict>
+        <key>adaptive_non_empty</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>Adaptive non empty</string>
+            </dict>
+        </dict>
+    </dict>
+</plist>

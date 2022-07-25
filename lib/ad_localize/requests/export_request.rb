@@ -12,6 +12,7 @@ module AdLocalize
         @csv_paths = Array(args[:csv_paths])
         @g_spreadsheet_options = args[:g_spreadsheet_options]
         @verbose = args[:verbose].presence || false
+        @non_empty_values = args[:non_empty_values].presence || false
         @output_path = Pathname.new(args[:output_path].presence || DEFAULT_EXPORT_FOLDER)
         if @csv_paths.size > 1 || @g_spreadsheet_options&.has_multiple_sheets?
           @merge_policy = MergePolicy.new(policy: args[:merge_policy].presence || MergePolicy::DEFAULT_POLICY)
@@ -26,6 +27,7 @@ module AdLocalize
         :g_spreadsheet_options,
         :output_path,
         :verbose,
+        :non_empty_values,
         :merge_policy
       )
 
@@ -53,6 +55,10 @@ module AdLocalize
 
       def verbose?
         verbose
+      end
+
+      def non_empty_values?
+        non_empty_values
       end
 
       private

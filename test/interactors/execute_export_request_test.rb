@@ -137,6 +137,27 @@ module AdLocalize
         end
       end
 
+      test 'it should only export non-empty values' do
+        # Given
+        csv_files = %w(test/fixtures/reference_empty_values.csv)
+        csv_files.each { |file| assert(File.exist?(file), "File does not exists #{file}") }
+        reference_dir = "test/fixtures/exports_non_empty"
+        assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+        # When
+        export_request = Requests::ExportRequest.new(csv_paths: csv_files, non_empty_values: true)
+        ExecuteExportRequest.new.call(export_request: export_request)
+
+        # Then
+        ios_files(files: ["Localizable.strings", "Localizable.stringsdict"]).each do |file|
+          reference_file = "#{reference_dir}/#{file}"
+          generated_file = "exports/#{file}"
+          assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+          diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+          assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+        end
+      end
+
       private
 
       def all_files(languages: DEFAULT_LANGUAGES)
@@ -147,8 +168,7 @@ module AdLocalize
           properties_files(languages: languages)
       end
 
-      def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES)
-        files = ["InfoPlist.strings", "Localizable.strings", "Localizable.stringsdict"]
+      def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES, files: DEFAULT_IOS_FILES)
         languages
           .map { |language| "#{language}.lproj" }
           .product(files)

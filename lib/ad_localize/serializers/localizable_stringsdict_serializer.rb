@@ -10,6 +10,10 @@ module AdLocalize
         @translation_group_mapper = Mappers::TranslationGroupMapper.new(translation_mapper: @translation_mapper)
       end
 
+      attr_accessor(
+        :bypass_empty_values
+      )
+
       private
 
       def template_path
@@ -24,11 +28,13 @@ module AdLocalize
       end
 
       def map_plurals(plurals:)
-        plurals.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations) }
+        plurals.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations.select(&:has_value?)) }
+        .select(&:has_translations?)
       end
 
       def map_adaptives(adaptives:)
-        adaptives.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations) }
+        adaptives.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations.select(&:has_value?)) }
+        .select(&:has_translations?)
       end
     end
   end
