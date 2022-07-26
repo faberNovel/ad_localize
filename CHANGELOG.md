@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-- Added new option (-x) to bypass keys with empty values for iOS only in PR [#78](https://github.com/faberNovel/ad_localize/pull/78)
+## [4.2.0] - 2022-07-26
+
+### Added
+
+- Added new option (-x) to bypass keys with empty values for iOS only in PR [#78](https://github.com/faberNovel/ad_localize/pull/78) by [ThomasEsterlin](https://github.com/ThomasEsterlin)
 
 ## [4.1.1] - 2022-04-15
 
