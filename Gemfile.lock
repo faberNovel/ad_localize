@@ -24,7 +24,7 @@ GEM
     colorize (0.8.1)
     concurrent-ruby (1.1.10)
     declarative (0.0.20)
-    diffy (3.3.0)
+    diffy (3.4.2)
     faraday (1.10.0)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
