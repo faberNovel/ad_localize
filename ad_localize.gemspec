@@ -21,9 +21,10 @@ Gem::Specification.new do |spec|
     'Claire Peyron',
     'Claire Dufetrelle',
     'Pierre Felgines',
-    'Satyan Jacquens'
+    'Satyan Jacquens',
+    'Thomas Esterlin'
   ]
-  spec.email         = %w(joanna.vigne@fabernovel.com hugo.hache@fabernovel.com edouard.siegel@fabernovel.com)
+  spec.email         = %w(joanna.vigne@fabernovel.com pierre.felgines@fabernovel.com edouard.siegel@fabernovel.com)
 
   spec.summary       = %q{AdLocalize helps with mobile and web applications wording}
   spec.description   = %q{AdLocalize produces localization files from platform agnostic wording.
