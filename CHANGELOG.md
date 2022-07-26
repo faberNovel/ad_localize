@@ -11,7 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added new option (-x) to bypass keys with empty values for iOS only in PR [#78](https://github.com/faberNovel/ad_localize/pull/78) by [ThomasEsterlin](https://github.com/ThomasEsterlin)
+- Added new option (-x) to bypass keys with empty values for iOS only in
+  PR [#78](https://github.com/faberNovel/ad_localize/pull/78) by [ThomasEsterlin](https://github.com/ThomasEsterlin)
+
+### Breaking change
+
+- Drop support for Ruby >= 2.3, < 2.7
 
 ## [4.1.1] - 2022-04-15
 
@@ -29,10 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix error warning when spreadsheet is empty. Fix [#58](https://github.com/applidium/ad_localize/issues/58) in PR [#69](https://github.com/applidium/ad_localize/pull/69)
-- Add warning messages when input is corrupted. Fix [#59](https://github.com/applidium/ad_localize/issues/59) in PR [#69](https://github.com/applidium/ad_localize/pull/69)
-- Fix performance issue and add warning messages. Fix [#61](https://github.com/applidium/ad_localize/issues/61) in PR [#69](https://github.com/applidium/ad_localize/pull/69)
-- Update deprecated `google-api-client` gem. Fix [#63](https://github.com/applidium/ad_localize/issues/63) in PR [#70](https://github.com/applidium/ad_localize/pull/70)
+- Fix error warning when spreadsheet is empty. Fix [#58](https://github.com/applidium/ad_localize/issues/58) in
+  PR [#69](https://github.com/applidium/ad_localize/pull/69)
+- Add warning messages when input is corrupted. Fix [#59](https://github.com/applidium/ad_localize/issues/59) in
+  PR [#69](https://github.com/applidium/ad_localize/pull/69)
+- Fix performance issue and add warning messages. Fix [#61](https://github.com/applidium/ad_localize/issues/61) in
+  PR [#69](https://github.com/applidium/ad_localize/pull/69)
+- Update deprecated `google-api-client` gem. Fix [#63](https://github.com/applidium/ad_localize/issues/63) in
+  PR [#70](https://github.com/applidium/ad_localize/pull/70)
 
 ## [4.0.8] - 2021-05-25
 
@@ -80,7 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Use percent HTML char for escaping '%' on android. [#49](https://github.com/applidium/ad_localize/pull/49) by [flolom](https://github.com/flolom)
+- Use percent HTML char for escaping '%' on android. [#49](https://github.com/applidium/ad_localize/pull/49)
+  by [flolom](https://github.com/flolom)
 
 ## [4.0.1] - 2020-10-19
 
@@ -93,8 +103,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking change
 
 - Precedence to csv files. Only CSV files will be exported if both csv file and google spreadsheet are provided
-- In case of multiple CSVs or sheet ids, you should be aware that all sources will be merged. By default the merge policy to keep the first wording translation for each key
-- New architecture. Separate export process responsibilities in dedicated classes. Fixes [#48](https://github.com/applidium/ad_localize/issues/48), [#20](https://github.com/applidium/ad_localize/issues/20)
+- In case of multiple CSVs or sheet ids, you should be aware that all sources will be merged. By default the merge
+  policy to keep the first wording translation for each key
+- New architecture. Separate export process responsibilities in dedicated classes.
+  Fixes [#48](https://github.com/applidium/ad_localize/issues/48)
+  , [#20](https://github.com/applidium/ad_localize/issues/20)
 
 ### Changed
 
@@ -129,7 +142,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- no more option -a option to indicate that a service account configuration will be provided. If set, the environment variable `GCLOUD_CLIENT_SECRET` content will be used
+- no more option -a option to indicate that a service account configuration will be provided. If set, the environment
+  variable `GCLOUD_CLIENT_SECRET` content will be used
 - no more substitution of empty wording with by "Missing Translation" when using the option -d
 - no more Makefile, the Rakefile is sufficient. Use `bundle exec rake -T` to display the available commands
 - no more check for ordered interpolation variables in translations
@@ -149,25 +163,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add support for private spreadsheet using google service acccount by [@sjcqs](https://github.com/sjcqs). Fixes [#31](https://github.com/applidium/ad_localize/issues/31)
+- add support for private spreadsheet using google service acccount by [@sjcqs](https://github.com/sjcqs).
+  Fixes [#31](https://github.com/applidium/ad_localize/issues/31)
 - add makefile for easier testing by [@felginep](https://github.com/felginep)
 
 ### Changed
 
-- improve error message to have useful information in case of google spreadsheet use by [@felginep](https://github.com/felginep). Fixes [#27](https://github.com/applidium/ad_localize/issues/27)
-- platform folder is no longer generated when there is only one platform selected. The files are directly generated in the output path. By [@felginep](https://github.com/felginep). Fixes [#29](https://github.com/applidium/ad_localize/issues/29)
+- improve error message to have useful information in case of google spreadsheet use
+  by [@felginep](https://github.com/felginep). Fixes [#27](https://github.com/applidium/ad_localize/issues/27)
+- platform folder is no longer generated when there is only one platform selected. The files are directly generated in
+  the output path. By [@felginep](https://github.com/felginep).
+  Fixes [#29](https://github.com/applidium/ad_localize/issues/29)
 - raise error when google spreadsheet key is invalid by [@felginep](https://github.com/felginep)
 
 ### Fixed
 
-- auto escape strings in Localizable.strings by [@felginep](https://github.com/felginep). Fixes [#26](https://github.com/applidium/ad_localize/issues/26)
-- trim keys to prevent user error by [@felginep](https://github.com/felginep). Fixes [#16](https://github.com/applidium/ad_localize/issues/16)
+- auto escape strings in Localizable.strings by [@felginep](https://github.com/felginep).
+  Fixes [#26](https://github.com/applidium/ad_localize/issues/26)
+- trim keys to prevent user error by [@felginep](https://github.com/felginep).
+  Fixes [#16](https://github.com/applidium/ad_localize/issues/16)
 
 ## [3.4.0] - 2019-02-10
 
 ### Added
 
-- Rails folks, [@epaillous](https://github.com/epaillous) has improved the YAML support. You can now have multi-level wording.
+- Rails folks, [@epaillous](https://github.com/epaillous) has improved the YAML support. You can now have multi-level
+  wording.
 
 ## [3.3.0] - 2019-02-10
 
@@ -180,7 +201,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add tests to compare reference exports by [@felginep](https://github.com/felginep)
-- [iOS only] Handle [adaptive strings](https://developer.apple.com/documentation/foundation/nsstring/1413104-variantfittingpresentationwidth) by [@felginep](https://github.com/felginep)
+- [iOS only]
+  Handle [adaptive strings](https://developer.apple.com/documentation/foundation/nsstring/1413104-variantfittingpresentationwidth)
+  by [@felginep](https://github.com/felginep)
 
 ### Changed
 
