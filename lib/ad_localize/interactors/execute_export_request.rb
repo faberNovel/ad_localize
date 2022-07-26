@@ -11,6 +11,7 @@ module AdLocalize
         print_export_request(export_request: export_request) if export_request.verbose?
         LOGGER.debug("Checking request validity")
         return unless export_request.valid?
+
         if export_request.has_csv_files?
           ExportCSVFiles.new(csv_path_to_wording: @csv_path_to_wording).call(export_request: export_request)
         elsif export_request.has_g_spreadsheet_options?

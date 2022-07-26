@@ -8,21 +8,17 @@ module AdLocalize
         end
 
         def call(export_wording_options:)
-          locale = export_wording_options.locale
-          wording = export_wording_options.wording
-          platform_dir = export_wording_options.platform_directory
-          LOGGER.debug("Starting export Properties wording for locale #{locale}")
-          locale_wording = wording.translations_for(locale: locale)
-          return unless has_properties_wording?(locale_wording: locale_wording)
+          export_wording_options.locales.each do |locale|
+            LOGGER.debug("Starting export Properties wording for locale #{locale}")
+            locale_wording = export_wording_options.wording.translations_for(locale: locale)
+            return unless has_properties_wording?(locale_wording: locale_wording)
 
-          content = @properties_serializer.render(locale_wording: locale_wording)
-          @file_system_repository.create_directory(path: platform_dir)
-          @file_system_repository.write(content: content, path: platform_dir.join("#{locale}.properties"))
-          LOGGER.debug("#{locale}.properties done !")
-        end
-
-        def should_export_locale_by_locale?
-          true
+            content = @properties_serializer.render(locale_wording: locale_wording)
+            @file_system_repository.create_directory(path: export_wording_options.platform_output_directory)
+            output_path = export_wording_options.platform_output_directory.join("#{locale}.properties")
+            @file_system_repository.write(content: content, path: output_path)
+            LOGGER.debug("#{locale}.properties done !")
+          end
         end
 
         private
