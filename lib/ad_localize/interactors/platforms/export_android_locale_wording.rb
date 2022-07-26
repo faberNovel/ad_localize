@@ -11,23 +11,21 @@ module AdLocalize
         end
 
         def call(export_wording_options:)
-          locale = export_wording_options.locale
+          platform_dir = export_wording_options.platform_output_directory
           wording = export_wording_options.wording
-          platform_dir = export_wording_options.platform_directory
-          LOGGER.debug("Starting export Android wording for locale #{locale}")
-          locale_wording = wording.translations_for(locale: locale)
-          return unless has_android_wording?(locale_wording: locale_wording)
 
-          output_dir = compute_output_dir(wording: wording, locale: locale, platform_dir: platform_dir)
-          @file_system_repository.create_directory(path: output_dir)
+          export_wording_options.locales.each do |locale|
+            LOGGER.debug("Starting export Android wording for locale #{locale}")
+            locale_wording = export_wording_options.wording.translations_for(locale: locale)
+            return unless has_android_wording?(locale_wording: locale_wording)
 
-          content = @strings_serializer.render(locale_wording: locale_wording)
-          @file_system_repository.write(content: content, path: output_dir.join(STRINGS_FILENAME))
-          LOGGER.debug("#{STRINGS_FILENAME} done !")
-        end
+            output_dir = compute_output_dir(wording: wording, locale: locale, platform_dir: platform_dir)
+            @file_system_repository.create_directory(path: output_dir)
 
-        def should_export_locale_by_locale?
-          true
+            content = @strings_serializer.render(locale_wording: locale_wording)
+            @file_system_repository.write(content: content, path: output_dir.join(STRINGS_FILENAME))
+            LOGGER.debug("#{STRINGS_FILENAME} done !")
+          end
         end
 
         private

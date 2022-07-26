@@ -4,6 +4,9 @@ module AdLocalize
       def initialize(value_range_to_wording: nil)
         @value_range_to_wording = value_range_to_wording.presence || Mappers::ValueRangeToWording.new
         @g_sheets_repository = Repositories::GSheetsRepository.new
+        @export_wording = ExportWording.new
+        @merge_wordings = MergeWordings.new
+        @export_csv_files = ExportCSVFiles.new
       end
 
       def call(export_request:)
@@ -20,9 +23,11 @@ module AdLocalize
       def export_with_service_account(export_request:)
         LOGGER.debug("Using service account")
         value_ranges = @g_sheets_repository.get_sheets_values(g_spreadsheet_options: export_request.g_spreadsheet_options)
-        wordings = value_ranges.map { |value_range| @value_range_to_wording.map(value_range: value_range) }
-        wording = MergeWordings.new.call(wordings: wordings.compact, merge_policy: export_request.merge_policy)
-        ExportWording.new.call(export_request: export_request, wording: wording)
+        wordings = value_ranges.map { |value_range| @value_range_to_wording.map(value_range: value_range) }.compact
+        return if wordings.blank?
+
+        wording = @merge_wordings.call(wordings: wordings, merge_policy: export_request.merge_policy)
+        @export_wording.call(export_request: export_request, wording: wording)
       end
 
       def export_without_service_account(export_request:)
@@ -32,7 +37,7 @@ module AdLocalize
         end
         export_request.csv_paths = downloaded_files.map(&:path)
         if export_request.has_csv_files?
-          ExportCSVFiles.new.call(export_request: export_request)
+          @export_csv_files.call(export_request: export_request)
         elsif export_request.has_empty_files?
           # When downloading an empty spreadsheet, the content type of the downloaded file is "inode/x-empty"
           LOGGER.warn("Your spreadsheet is empty. Add content and retry.")
