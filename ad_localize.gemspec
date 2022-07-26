@@ -40,17 +40,16 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '>= 1.12.0', '< 3.0.0'
-  spec.add_development_dependency 'rake', '~> 12.3'
+  spec.add_development_dependency 'rake', '>= 12.3.0', '< 14.0.0'
   spec.add_development_dependency 'minitest', '~> 5.11'
-  spec.add_development_dependency 'byebug', '~> 11.0'
   spec.add_development_dependency 'minitest-reporters', '~> 1.3'
   spec.add_development_dependency 'diffy', '~> 3.3'
 
-  spec.add_dependency 'activesupport', '>= 6.1.3.2', '< 7.0'
+  spec.add_dependency 'activesupport', '>= 6.1.3.2', '< 8.0'
   spec.add_dependency 'nokogiri', '~> 1.10'
   spec.add_dependency 'colorize', '~> 0.8'
   spec.add_dependency 'googleauth', '~> 0.12'
   spec.add_dependency 'google-apis-sheets_v4', '~> 0.9'
 
-  spec.required_ruby_version = '>= 2.3'
+  spec.required_ruby_version = '>= 2.7'
 end

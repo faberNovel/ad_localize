@@ -2,7 +2,6 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "ad_localize"
 
 require "minitest/autorun"
-require 'byebug'
 require 'active_support/testing/declarative'
 require "minitest/reporters"
 require 'diffy'
