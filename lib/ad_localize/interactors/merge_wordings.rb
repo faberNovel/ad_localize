@@ -10,12 +10,13 @@ module AdLocalize
       end
 
       def call(wordings:, merge_policy:)
-        if wordings.size == 1
+        # TODO: fix
+        # if wordings.size == 1
           wordings.first
-        elsif wordings.size > 1
-          LOGGER.debug("Merge wordings before processing")
-          merge_many(wordings: wordings, merge_policy: merge_policy)
-        end
+        # elsif wordings.size > 1
+          # LOGGER.debug("Merge wordings before processing")
+          # merge_many(wordings: wordings, merge_policy: merge_policy)
+        # end
       end
 
       private

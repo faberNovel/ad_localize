@@ -1,7 +1,7 @@
 module AdLocalize
   module Validators
     class KeyValidator
-
+      # TODO : use in new csv parser
       def initialize
         @existing_key_for_label = {}
       end

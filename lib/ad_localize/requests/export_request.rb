@@ -8,7 +8,7 @@ module AdLocalize
 
       def initialize(**args)
         @locales = Array(args[:locales].presence)
-        @platforms = args[:platforms].blank? ? SUPPORTED_PLATFORMS : Array(args[:platforms])
+        @platforms = args[:platforms].blank? ? Entities::Platform.supported_platforms : Array(args[:platforms]).filter_map { |platform| Entities::Platform.value_from(string: platform) }
         @csv_paths = Array(args[:csv_paths])
         @g_spreadsheet_options = args[:g_spreadsheet_options]
         @verbose = args[:verbose].presence || false
@@ -50,7 +50,11 @@ module AdLocalize
       end
 
       def valid?
-        valid_platforms? && (valid_csv_options? || valid_g_spreadsheet_options?)
+        platforms_ok = valid_platforms?
+        LOGGER.debug("Valid platforms : #{platforms_ok}")
+        source_ok = valid_csv_options? || valid_g_spreadsheet_options?
+        LOGGER.debug("Valid CSV or GSpreadsheet options : #{source_ok}")
+        platforms_ok && source_ok
       end
 
       def verbose?
@@ -68,7 +72,7 @@ module AdLocalize
       end
 
       def valid_platforms?
-        @platforms.size.positive? && (@platforms & SUPPORTED_PLATFORMS).size == @platforms.size
+        @platforms.size.positive? && (@platforms & Entities::Platform.supported_platforms).size == @platforms.size
       end
 
       def is_csv?(path:)
