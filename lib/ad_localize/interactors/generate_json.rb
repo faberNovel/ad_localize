@@ -8,18 +8,22 @@ module AdLocalize
 
       def call(wording:, options:)
         wording.each do |locale, locale_wording|
+          next unless has_wording?(locale_wording:)
+          
           path = prepare_output_path(locale_wording:, options:)
-          LOGGER.debug("[#{locale}] Generating #{path.basename}")
-          # TODO : fix JSON serializer
-          content = @serializer.render(locale_wording: locale_wording)
-          next if content[locale].blank?
-
+          filename = path.basename
+          LOGGER.debug("[#{locale}] Generating #{filename}")
+          content = @serializer.render(locale_wording:)
           @file_system_repository.write(content:, path:)
-          LOGGER.debug("#{path.basename} done !")
+          LOGGER.debug("[#{locale}] #{filename} done !")
         end
       end
 
       private
+
+      def has_wording?(locale_wording:)
+        locale_wording.singulars.any? || locale_wording.plurals.any?
+      end
 
       def prepare_output_path(locale_wording:, options:)
         output_dir = options[:platform_output_directory]

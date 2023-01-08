@@ -2,17 +2,18 @@ module AdLocalize
   module Interactors
     module Platforms
       class ExportCSVLocaleWording
+        # TODO delete : no interest. This class just copies each csv to another location
         def initialize
           @file_system_repository = Repositories::FileSystemRepository.new
         end
 
-        def call(export_wording_options:)
+        def call(wording:, options:)
           LOGGER.debug("Starting export CSV wording")
-          @file_system_repository.create_directory(path: export_wording_options.platform_output_directory)
-          export_wording_options.csv_paths.each_with_index do |csv_path, i|
+          output_dir = options[:platform_output_directory]
+          @file_system_repository.create_directory(path: output_dir)
+          options[:csv_paths].each_with_index do |csv_path, i|
             file = File.basename("localization_#{i}.csv")
-            output_path = export_wording_options.platform_output_directory.join(file.to_s)
-            FileUtils.cp(csv_path, output_path)
+            FileUtils.cp(csv_path, output_dir.join(file.to_s))
           end
           LOGGER.debug("CSV wording export done !")
         end
