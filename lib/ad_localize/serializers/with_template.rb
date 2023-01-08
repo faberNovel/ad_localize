@@ -1,6 +1,12 @@
 module AdLocalize
   module Serializers
     module WithTemplate
+      def render(locale_wording:)
+        variable_binding = variable_binding(locale_wording:)
+        return unless variable_binding
+        render_template(template_path: template_path, variable_binding: variable_binding)
+      end
+
       # TODO: add sanitizers in DI them in serializer so that sanitize value can be common
       private
       
@@ -28,14 +34,8 @@ module AdLocalize
       end
 
       def map_compound_wording(label:, translations:)
-        variants = translations.map { |translation| translation_to_binding(translation:) }
+        variants = translations.map { |translation| map_simple_wording(translation:) }
         CompoundWordingViewModel.new(label:, variants:)
-      end
-
-      def render(locale_wording:)
-        variable_binding = variable_binding(locale_wording:)
-        return unless variable_binding
-        render_template(template_path: template_path, variable_binding: variable_binding)
       end
 
       def render_template(template_path:, variable_binding:)
