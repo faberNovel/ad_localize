@@ -45,6 +45,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'minitest-reporters', '~> 1.3'
   spec.add_development_dependency 'diffy', '~> 3.3'
+  spec.add_development_dependency 'debug', ">= 1.0.0"
 
   spec.add_dependency 'activesupport', '>= 6.1.3.2', '< 8.0'
   spec.add_dependency 'nokogiri', '~> 1.10'
