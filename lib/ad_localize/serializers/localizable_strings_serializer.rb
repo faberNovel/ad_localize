@@ -13,16 +13,8 @@ module AdLocalize
 
       def variable_binding(locale_wording:)
         {
-          translations: locale_wording.singulars.map { |translation| translation_to_binding(translation:) }
+          translations: locale_wording.singulars.map { |translation| map_simple_wording(translation:) }
         }
-      end
-
-      def translation_to_binding(translation:)
-        SimpleWordingViewModel.new(
-          label: translation.key.label,
-          value: sanitize_value(value: translation.value),
-          comment: translation.comment
-        )
       end
 
       def sanitize_value(value:)

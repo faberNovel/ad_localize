@@ -5,27 +5,13 @@ module AdLocalize
 
       private
 
-      def map_compound_wording(label:, translations:)
-        variants = translations.map { |translation| translation_to_binding(translation:) }
-        CompoundWordingViewModel.new(label:, variants:)
-      end
-
-      def translation_to_binding(translation:)
-        SimpleWordingViewModel.new(
-          label: translation.key.label,
-          value: sanitize_value(value: translation.value),
-          comment: translation.comment,
-          variant_name: translation.key.variant_name
-        )
-      end
-
       def template_path
         TEMPLATES_DIRECTORY + "/android/strings.xml.erb"
       end
 
       def variable_binding(locale_wording:)
         {
-          singulars: locale_wording.singulars.map { |translation| translation_to_binding(translation:) },
+          singulars: locale_wording.singulars.map { |translation| map_simple_wording(translation:) },
           plurals: locale_wording.plurals.map { |label, translations| map_compound_wording(label:, translations:) }
         }
       end
