@@ -3,22 +3,29 @@ module AdLocalize
     class PropertiesSerializer
       include WithTemplate
 
-      def initialize
-        @translation_mapper = Mappers::TranslationMapper.new
-      end
-
       private
+
+      def translation_to_binding(translation:)
+        SimpleWordingViewModel.new(
+          label: translation.key.label,
+          value: sanitize_value(value: translation.value),
+          comment: translation.comment,
+          variant_name: translation.key.variant_name
+        )
+      end
 
       def template_path
         TEMPLATES_DIRECTORY + "/properties/template.properties.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.singulars) }
+      def variable_binding(locale_wording:)
+        {
+          translations: locale_wording.singulars.map { |translation| translation_to_binding(translation:) }
+        }
       end
 
-      def map_translations(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+      def sanitize_value(value:)
+        value
       end
     end
   end

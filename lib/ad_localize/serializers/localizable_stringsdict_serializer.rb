@@ -5,36 +5,36 @@ module AdLocalize
 
       LOCALIZABLE_STRINGSDICT_FILENAME = "Localizable.stringsdict".freeze
 
-      def initialize
-        @translation_mapper = Mappers::IOSTranslationMapper.new
-        @translation_group_mapper = Mappers::TranslationGroupMapper.new(translation_mapper: @translation_mapper)
-      end
-
-      attr_accessor(
-        :bypass_empty_values
-      )
-
       private
 
       def template_path
         TEMPLATES_DIRECTORY + "/ios/#{LOCALIZABLE_STRINGSDICT_FILENAME}.erb"
       end
 
-      def hash_binding(locale_wording:)
+      def variable_binding(locale_wording:)
         {
-          plurals: map_plurals(plurals: locale_wording.plurals),
-          adaptives: map_adaptives(adaptives: locale_wording.adaptives)
+          plurals: locale_wording.plurals.map { |label, translations| map_compound_wording(label:, translations:) },
+          adaptives: locale_wording.adaptives.map { |label, translations| map_compound_wording(label:, translations:) }
         }
       end
 
-      def map_plurals(plurals:)
-        plurals.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations.select(&:has_value?)) }
-        .select(&:has_translations?)
+      def map_compound_wording(label:, translations:)
+        variants = translations.map { |translation| translation_to_binding(translation:) }
+        CompoundWordingViewModel.new(label:, variants:)
       end
 
-      def map_adaptives(adaptives:)
-        adaptives.map { |label, translations| @translation_group_mapper.map(label: label, translations: translations.select(&:has_value?)) }
-        .select(&:has_translations?)
+      def translation_to_binding(translation:)
+        SimpleWordingViewModel.new(
+          label: translation.key.label,
+          value: sanitize_value(value: translation.value),
+          comment: translation.comment,
+          variant_name: translation.key.variant_name
+        )
+      end
+
+      def sanitize_value(value:)
+        return if value.nil? || value.strip.empty?
+        value.gsub(/(?<!\\)\"/, "\\\"")
       end
     end
   end

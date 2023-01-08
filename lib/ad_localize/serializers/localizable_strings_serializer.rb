@@ -5,26 +5,29 @@ module AdLocalize
 
       LOCALIZABLE_STRINGS_FILENAME = "Localizable.strings".freeze
 
-      def initialize
-        @translation_mapper = Mappers::IOSTranslationMapper.new
-      end
-
-      attr_accessor(
-        :bypass_empty_values
-      )
-
       private
 
       def template_path
         TEMPLATES_DIRECTORY + "/ios/#{LOCALIZABLE_STRINGS_FILENAME}.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.singulars) }
+      def variable_binding(locale_wording:)
+        {
+          translations: locale_wording.singulars.map { |translation| translation_to_binding(translation:) }
+        }
       end
 
-      def map_translations(translations:)
-        translations.select(&:has_value?).map { |translation| @translation_mapper.map(translation: translation) }
+      def translation_to_binding(translation:)
+        SimpleWordingViewModel.new(
+          label: translation.key.label,
+          value: sanitize_value(value: translation.value),
+          comment: translation.comment
+        )
+      end
+
+      def sanitize_value(value:)
+        return if value.nil? || value.strip.empty?
+        value.gsub(/(?<!\\)\"/, "\\\"")
       end
     end
   end

@@ -5,22 +5,28 @@ module AdLocalize
 
       INFO_PLIST_FILENAME = "InfoPlist.strings".freeze
 
-      def initialize
-        @translation_mapper = Mappers::IOSTranslationMapper.new
-      end
-
       private
 
       def template_path
         TEMPLATES_DIRECTORY + "/ios/#{INFO_PLIST_FILENAME}.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.info_plists) }
+      def variable_binding(locale_wording:)
+        translations = locale_wording.info_plists.map { |translation| translation_to_binding(translation:) }
+        { translations: translations }
       end
 
-      def map_translations(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+      def translation_to_binding(translation:)
+        SimpleWordingViewModel.new(
+          label: translation.key.label,
+          value: sanitize_value(value: translation.value),
+          comment: translation.comment
+        )
+      end
+
+      def sanitize_value(value:)
+        return if value.nil? || value.strip.empty?
+        value.gsub(/(?<!\\)\"/, "\\\"")
       end
     end
   end
