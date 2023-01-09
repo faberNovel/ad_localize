@@ -7,10 +7,10 @@ module AdLocalize
       INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)|NFCReaderUsageDescription/.freeze
 
       module WordingType
-        SINGULAR = 0
-        PLURAL = 1
-        INFO_PLIST = 2
-        ADAPTIVE = 3
+        SINGULAR = 'singular'
+        PLURAL = 'plural'
+        INFO_PLIST = 'info_plist'
+        ADAPTIVE = 'adaptive'
       end
 
       def call(raw_key:)

@@ -64,8 +64,6 @@ require 'ad_localize/serializers/properties_serializer'
 require 'ad_localize/serializers/json_serializer'
 require 'ad_localize/serializers/yaml_serializer'
 
-require 'ad_localize/validators/key_validator'
-
 module AdLocalize
   class Error < StandardError; end
 
