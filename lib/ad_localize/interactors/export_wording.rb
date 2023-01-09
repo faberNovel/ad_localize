@@ -3,10 +3,10 @@ module AdLocalize
     class ExportWording
       def call(export_request:, wording:)
         export_request.platforms.each do |platform|
-          LOGGER.debug("[#{Entities::Platform.value_to_s(value: platform)}] Starting export...")
+          LOGGER.debug("[#{platform}] Starting export...")
           options = build_options(export_request: export_request, platform: platform)
           export_platform(wording:, platform:, options:)
-          LOGGER.debug("[#{Entities::Platform.value_to_s(value: platform)}] done !")
+          LOGGER.debug("[#{platform}] done !")
         end
       end
 
@@ -33,7 +33,7 @@ module AdLocalize
         csv_paths = export_request.csv_paths
         platform_output_directory = export_request.output_path
         if export_request.multiple_platforms?
-          platform_output_directory = platform_output_directory.join(Entities::Platform.value_to_s(value: platform))
+          platform_output_directory = platform_output_directory.join(platform)
         end
         { csv_paths:, platform_output_directory: }
       end

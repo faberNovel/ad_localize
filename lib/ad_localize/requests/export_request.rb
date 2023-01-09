@@ -8,7 +8,7 @@ module AdLocalize
 
       def initialize(**args)
         @locales = Array(args[:locales].presence)
-        @platforms = args[:platforms].blank? ? Entities::Platform.supported_platforms : Array(args[:platforms]).filter_map { |platform| Entities::Platform.value_from(string: platform) }
+        @platforms = args[:platforms].blank? ? Entities::Platform.supported_platforms : Array(args[:platforms])
         @csv_paths = Array(args[:csv_paths])
         @g_spreadsheet_options = args[:g_spreadsheet_options]
         @verbose = args[:verbose].presence || false

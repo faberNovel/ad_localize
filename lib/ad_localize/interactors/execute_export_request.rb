@@ -25,7 +25,7 @@ module AdLocalize
       def print_export_request(export_request:)
         LOGGER.debug("Export Request info")
         LOGGER.debug("locales : #{export_request.locales.to_sentence}")
-        LOGGER.debug("platforms : #{export_request.platforms.map { |value| Entities::Platform.value_to_s(value:) }.to_sentence}")
+        LOGGER.debug("platforms : #{export_request.platforms.to_sentence}")
         LOGGER.debug("output_path : #{export_request.output_path}")
         LOGGER.debug("verbose : #{export_request.verbose}")
         LOGGER.debug("non_empty_values : #{export_request.non_empty_values}")
