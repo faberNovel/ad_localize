@@ -8,8 +8,8 @@ module AdLocalize
         @is_default = is_default
         @singulars = []
         @info_plists = []
-        @plurals = Hash.new { |hash, key| hash[key] = [] }
-        @adaptives = Hash.new { |hash, key| hash[key] = [] }
+        @plurals = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
+        @adaptives = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
       end
 
       def add_wording(key:, value:, comment:)
