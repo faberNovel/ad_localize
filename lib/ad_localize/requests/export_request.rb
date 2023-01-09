@@ -1,7 +1,7 @@
 module AdLocalize
   module Requests
     class ExportRequest
-      SUPPORTED_PLATFORMS = %w(ios android yml json properties csv).freeze
+      SUPPORTED_PLATFORMS = %w(ios android yml json properties).freeze
       DEFAULT_EXPORT_FOLDER = 'exports'.freeze
       CSV_CONTENT_TYPES = %w(text/csv text/plain application/csv).freeze
       EMPTY_CONTENT_TYPE = 'inode/x-empty'.freeze

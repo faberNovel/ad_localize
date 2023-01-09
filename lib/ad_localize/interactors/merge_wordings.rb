@@ -33,10 +33,10 @@ module AdLocalize
 
       def merge_compound_wordings(reference_hash:, new_hash:, merge_policy:)
         new_hash.each do |new_label, new_list|
-          if reference_hash[:new_label].nil?
-            reference_hash[:new_label] = new_list
+          if reference_hash[new_label].nil?
+            reference_hash[new_label] = new_list
           elsif merge_policy.replace?
-            merge_simple_wordings(reference_list: reference_hash[:new_label], new_list:, merge_policy:)
+            merge_simple_wordings(reference_list: reference_hash[new_label], new_list:, merge_policy:)
           end
         end
       end

@@ -4,7 +4,8 @@ module AdLocalize
       def map(locale_wording:)
         singulars_hash = map_singulars(simple_wordings: locale_wording.singulars)
         plural_hash = map_plurals(coumpound_wordings: locale_wording.plurals)
-        singulars_hash.merge(plural_hash)
+        locale_hash = singulars_hash.merge(plural_hash)
+        { locale_wording.locale => locale_hash }
       end
 
       private
@@ -25,8 +26,7 @@ module AdLocalize
           variants_hash = map_translations(translations: simple_wordings) do |keys, translation|
             dotted_key_to_hash(keys, { translation.key.variant_name => translation.value })
           end
-          plural_hash = dotted_key_to_hash(inner_keys(label: label), variants_hash)
-          result.deep_merge!(plural_hash)
+          result.deep_merge!(variants_hash)
         end
         result
       end
