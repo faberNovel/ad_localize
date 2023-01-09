@@ -6,11 +6,6 @@ en:
   quit: Quit
   done: Finish
   save: Save
-  assess_rate_trip_voiceover:
-    one: Rate %1$@ star
-    other: Rate %1$@ stars
-  NSCameraUsageDescription: Camera used for blabla
-  start_countdown: Start countdown
   login:
     title: Login
     email:
@@ -22,3 +17,6 @@ en:
   space_after_key: Value
   password_specialchar_error: 'Special chars allowed: - / : ; ( ) € & @ . , ? ! ''
     [ ] { } # % ^ * + = _ | ~ < > $ £ ¥ ` ° "'
+  assess_rate_trip_voiceover:
+    one: Rate %1$@ star
+    other: Rate %1$@ stars
