@@ -32,6 +32,13 @@ module AdLocalize
         export_all || @sheet_ids.size > 1
       end
 
+      def to_s
+        "spreadsheet_id : #{g_options.spreadsheet_id}, " +
+        "sheet_ids : #{g_options.sheet_ids.to_sentence}, " +
+        "export_all: #{g_options.export_all}, " +
+        "service_account: #{g_options.service_account_config.present?}\n"
+      end
+
       private
 
       def public_download_url(sheet_id:)

@@ -65,6 +65,19 @@ module AdLocalize
         non_empty_values
       end
 
+      def to_s
+        "Export Request info\n" +
+        "locales : #{export_request.locales.to_sentence}\n" +
+        "platforms : #{export_request.platforms.to_sentence}\n" +
+        "output_path : #{export_request.output_path}\n" +
+        "verbose : #{export_request.verbose}\n" +
+        "non_empty_values : #{export_request.non_empty_values}\n" +
+        "merge_policy : #{export_request.merge_policy&.policy}\n" +
+        "csv_paths : #{export_request.csv_paths.to_sentence}\n" +
+        "spreadsheet options : #{export_request.g_spreadsheet_options&.to_s}"
+        LOGGER.debug("End Export Request info")
+      end
+
       private
 
       def valid_csv_options?

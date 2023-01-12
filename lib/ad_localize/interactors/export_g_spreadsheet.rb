@@ -1,63 +1,30 @@
 module AdLocalize
   module Interactors
     class ExportGSpreadsheet
-      def initialize(value_range_to_wording: nil)
-        @value_range_to_wording = value_range_to_wording.presence || Mappers::ValueRangeToWording.new
-        @g_sheets_repository = Repositories::GSheetsRepository.new
-        @export_wording = ExportWording.new
-        @merge_wordings = MergeWordings.new
+      def initialize
+        @drive_repository = Repositories::DriveRepository.new
         @export_csv_files = ExportCSVFiles.new
       end
 
       def call(export_request:)
         LOGGER.debug("Starting export google spreadsheet")
-        if export_request.g_spreadsheet_options.service_account_config
-          export_with_service_account(export_request: export_request)
-        else
-          export_without_service_account(export_request: export_request)
+        export_request.csv_paths = download_files(export_request:)
+        ExportCSVFiles.new.call(export_request:)
+      ensure
+        export_request.csv_paths.each do |file|
+          file.close
+          file.unlink
         end
       end
 
       private
 
-      def export_with_service_account(export_request:)
-        LOGGER.debug("Using service account")
-        value_ranges = @g_sheets_repository.get_sheets_values(g_spreadsheet_options: export_request.g_spreadsheet_options)
-        wordings = value_ranges.map { |value_range| @value_range_to_wording.map(value_range: value_range) }.compact
-        return if wordings.blank?
-
-        wording = @merge_wordings.call(wordings: wordings, merge_policy: export_request.merge_policy)
-        @export_wording.call(export_request: export_request, wording: wording)
-      end
-
-      def export_without_service_account(export_request:)
-        LOGGER.debug("Using direct access to spreadsheet")
-        downloaded_files = export_request.g_spreadsheet_options.public_download_urls.map do |sheet_download_url|
-          download_public_sheet(url: sheet_download_url)
-        end
-        export_request.csv_paths = downloaded_files.map(&:path)
-        if export_request.has_csv_files?
-          @export_csv_files.call(export_request: export_request)
-        elsif export_request.has_empty_files?
-          # When downloading an empty spreadsheet, the content type of the downloaded file is "inode/x-empty"
-          LOGGER.warn("Your spreadsheet is empty. Add content and retry.")
+      def download_files(export_request:)
+        if export_request.g_spreadsheet_options.export_all
+          @drive_repository.download_all_sheets(spreadsheet_id: export_request.g_spreadsheet_options.spreadsheet_id)
         else
-          # When shared configuration is misconfigured, the content type of the downloaded file is "text/html"
-          LOGGER.error("Invalid export request. Check the spreadsheet share configuration")
+          @drive_repository.download_sheets_by_id(spreadsheet_id: export_request.spreadsheet_id, sheet_ids: export_request.g_spreadsheet_options.sheet_ids)
         end
-        downloaded_files.select { |downloaded_file| File.exist?(downloaded_file.path) }.each do |downloaded_file|
-          downloaded_file.close
-          downloaded_file.unlink
-        end
-      end
-
-      def download_public_sheet(url:)
-        tempfile = Tempfile.new
-        URI.open(url) do |uri_io|
-          tempfile.write uri_io.read
-          tempfile.rewind
-        end
-        tempfile
       end
     end
   end
