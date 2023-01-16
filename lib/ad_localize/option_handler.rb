@@ -1,39 +1,60 @@
 module AdLocalize
   class OptionHandler
-    def self.parse!(options)
-      option_parser = OptionParser.new do |parser|
-        parser.banner = "Usage: exe/ad_localize [options] file(s)"
+    DEFAULT_EXPORT_FOLDER = 'exports'.freeze
+    DEFAULT_OPTIONS = {
+      locales: [],
+      bypass_empty_values: false,
+      csv_paths: [],
+      merge_policy: Requests::Request::MergePolicy::DEFAULT_POLICY,
+      output_path: Pathname.new(DEFAULT_EXPORT_FOLDER),
+      spreadsheet_id: nil,
+      sheet_ids: [],
+      export_all: false,
+      verbose: false
+    }
 
-        parser.on("-d", "--debug", TrueClass, "Run in debug mode")
-        parser.on("-e", "--export-all-sheets", TrueClass,
-                  <<~DOC
-                    Export all sheets from spreadsheet specified by --drive-key option.
-                    \tBy default, generates one export directory per sheet (see -m|--merge-sheets option to merge them).
-                    \tAn GCLOUD_CLIENT_SECRET environment variable containing the client_secret.json content is needed.
-        DOC
-        )
-        parser.on("-h", "--help", "Prints help") do
+    def self.parse!(options)
+      args = DEFAULT_OPTIONS
+
+      option_parser = OptionParser.new do |parser|
+        parser.banner = BANNER
+        parser.on("-d", "--debug", TrueClass, 'DEBUG_DESCRIPTION') do
+          args[:verbose] = true
+        end
+        parser.on("-e", "--export-all-sheets", TrueClass, 'EXPORT_ALL_DESCRIPTION') do
+          args[:export_all] = true
+        end
+        parser.on("-h", "--help", 'HELP_DESCRIPTION') do
           puts parser
           exit
         end
-        parser.on("-k", "--drive-key SPREADSHEET_ID", String, "Use google drive spreadsheets")
-        parser.on("-m", "--merge-policy POLICY", String,
-                  <<~DOC
-                    Merge specified csv (or sheets from --export-all) instead of exporting each csv.
-                    \treplace: if a key is already defined, replace its value.
-                    \tkeep: if a key is already defined, keep the previous value.
-        DOC
-        )
-        parser.on("-o", "--only PLATFORMS", Array, "PLATFORMS is a comma separated list. Only generate localisation files for the specified platforms. Supported platforms : #{Requests::ExportRequest::SUPPORTED_PLATFORMS.to_sentence}")
-        parser.on("-s", "--sheets SHEET_IDS", Array, "SHEET_IDS is a comma separated list. Use a specific sheet id for Google Drive spreadsheets with several sheets")
-        parser.on("-t", "--target-dir PATH", String, "Path to the target directory")
-        parser.on("-x", "--non-empty-values", TrueClass, "Do not export keys with empty values (iOS only)")
+        parser.on("-k", "--drive-key SPREADSHEET_ID", String, 'SPREADSHEET_DESCRIPTION') do |spreadsheet_id|
+          args[:spreadsheet_id] = spreadsheet_id
+        end
+        parser.on("-m", "--merge-policy POLICY", String, 'MERGE_POLICY_DESCRIPTION') do |policy|
+          args[:policy] = policy
+        end
+        parser.on("-o", "--only PLATFORMS", Array, 'PLATFORM_FILTER_DESCRIPTION') do |platforms|
+          args[:platforms] = platforms
+        end
+        parser.on("-s", "--sheets SHEET_IDS", Array, 'SHEET_DESCRIPTION') do |sheet_ids|
+          args[:sheet_ids] = sheet_ids
+        end
+        parser.on("-t", "--target-dir PATH", String, "OUTPUT_PATH_DESCRIPTION") do |output_path|
+          args[:output_path] = output_path
+        end
+        parser.on("-x", "--non-empty-values", TrueClass, "Do not export keys with empty values (iOS only)") do |bypass|
+          args[:bypass_empty_values] = bypass
+        end
+        parser.on("-v", "--version", "Prints current version") do
+          puts AdLocalize::VERSION
+          exit
+        end
       end
 
-      args = {}
       option_parser.parse!(options, into: args)
       args[:csv_paths] = options
-      return args
+      return 
     end
   end
 end
