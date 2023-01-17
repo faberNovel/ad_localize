@@ -4,10 +4,7 @@ module AdLocalize
       REPLACE_MERGE_POLICY = 'replace'.freeze
       KEEP_MERGE_POLICY = 'keep'.freeze
       MERGE_POLICIES = [KEEP_MERGE_POLICY, REPLACE_MERGE_POLICY]
-
-      def self.valid_policy?(policy:)
-        MERGE_POLICIES.include?(policy)
-      end
+      DEFAULT_POLICY = KEEP_MERGE_POLICY
 
       def call(wordings:, merge_policy:)
         if wordings.size == 1
@@ -25,7 +22,7 @@ module AdLocalize
           translation_reference = reference_list[index]
           if translation_reference.nil?
             reference_list.append(new_translation)
-          elsif merge_policy.replace?
+          elsif merge_policy == REPLACE_MERGE_POLICY
             translation_reference.value = new_translation.value
           end
         end
@@ -35,7 +32,7 @@ module AdLocalize
         new_hash.each do |new_label, new_list|
           if reference_hash[new_label].nil?
             reference_hash[new_label] = new_list
-          elsif merge_policy.replace?
+          elsif merge_policy == REPLACE_MERGE_POLICY
             merge_simple_wordings(reference_list: reference_hash[new_label], new_list:, merge_policy:)
           end
         end

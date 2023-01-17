@@ -13,11 +13,6 @@ require 'googleauth'
 require 'google/apis/sheets_v4'
 require 'google/apis/drive_v3'
 
-require 'ad_localize/version'
-require 'ad_localize/ad_logger'
-require 'ad_localize/cli'
-require 'ad_localize/option_handler'
-
 require 'ad_localize/repositories/drive_repository'
 require 'ad_localize/repositories/file_system_repository'
 
@@ -35,12 +30,8 @@ require 'ad_localize/entities/locale_wording'
 require 'ad_localize/entities/platform'
 require 'ad_localize/entities/simple_wording'
 
-# require 'ad_localize/requests/g_spreadsheet_options'
-# require 'ad_localize/requests/export_request'
-require 'ad_localize/requests/request'
-# require 'ad_localize/requests/merge_policy'
-
-require 'ad_localize/interactors/process_csv_files'
+require 'ad_localize/interactors/base_generate_files'
+require 'ad_localize/interactors/process_export_request'
 require 'ad_localize/interactors/parse_csv_files'
 require 'ad_localize/interactors/download_spreadsheets'
 require 'ad_localize/interactors/merge_wordings'
@@ -62,6 +53,12 @@ require 'ad_localize/serializers/strings_serializer'
 require 'ad_localize/serializers/properties_serializer'
 require 'ad_localize/serializers/json_serializer'
 require 'ad_localize/serializers/yaml_serializer'
+
+require 'ad_localize/version'
+require 'ad_localize/ad_logger'
+require 'ad_localize/cli'
+require 'ad_localize/requests/export_request'
+require 'ad_localize/option_handler'
 
 module AdLocalize
   class Error < StandardError; end

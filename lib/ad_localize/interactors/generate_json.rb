@@ -1,22 +1,8 @@
 module AdLocalize
   module Interactors
-    class GenerateJSON
+    class GenerateJSON < BaseGenerateFiles
       def initialize
-        @serializer = Serializers::JSONSerializer.new
-        @file_system_repository = Repositories::FileSystemRepository.new
-      end
-
-      def call(wording:, options:)
-        wording.each do |locale, locale_wording|
-          next unless has_wording?(locale_wording:)
-          
-          path = prepare_output_path(locale_wording:, options:)
-          filename = path.basename
-          LOGGER.debug("[#{locale}] Generating #{filename}")
-          content = @serializer.render(locale_wording:)
-          @file_system_repository.write(content:, path:)
-          LOGGER.debug("[#{locale}] #{filename} done !")
-        end
+        super(serializer: Serializers::JSONSerializer.new)
       end
 
       private
@@ -25,10 +11,8 @@ module AdLocalize
         locale_wording.singulars.any? || locale_wording.plurals.any?
       end
 
-      def prepare_output_path(locale_wording:, options:)
-        output_dir = options[:platform_output_directory]
-        @file_system_repository.create_directory(path: output_dir)
-        output_dir.join("#{locale_wording.locale}.json")
+      def output_path(locale_wording:, export_request:)
+        export_request.output_dir.join("#{locale_wording.locale}.json")
       end
     end
   end

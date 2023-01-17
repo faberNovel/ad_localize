@@ -2,7 +2,7 @@ require 'test_helper'
 
 module AdLocalize
   module Interactors
-    class ExecuteExportRequestTest < TestCase
+    class ProcessExportRequestTest < TestCase
       def setup
         # Remove exports if needed
         FileUtils.rm_rf('exports')
@@ -21,8 +21,8 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: 'json')
-        ExecuteExportRequest.new.call(export_request: export_request)
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w(json))
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         reference_file = "#{reference_dir}/en.json"
@@ -41,8 +41,8 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: 'ios')
-        ExecuteExportRequest.new.call(export_request: export_request)
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w(ios))
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         ios_files(with_platform_directory: false)
@@ -66,7 +66,7 @@ module AdLocalize
 
         # When
         export_request = Requests::ExportRequest.new(csv_paths: [csv_file])
-        ExecuteExportRequest.new.call(export_request: export_request)
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         all_files.each do |file|
@@ -86,7 +86,7 @@ module AdLocalize
 
         # When
         export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: platforms)
-        ExecuteExportRequest.new.call(export_request: export_request)
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         ios_files(with_platform_directory: false).each do |file|
@@ -104,7 +104,7 @@ module AdLocalize
 
         # When
         export_request = Requests::ExportRequest.new(csv_paths: csv_files, merge_policy: 'replace')
-        ExecuteExportRequest.new.call(export_request: export_request)
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         all_files.each do |file|
@@ -125,7 +125,7 @@ module AdLocalize
 
         # When
         export_request = Requests::ExportRequest.new(csv_paths: csv_files, merge_policy: 'keep')
-        ExecuteExportRequest.new.call(export_request: export_request)
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         all_files.each do |file|
@@ -145,8 +145,8 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: csv_files, non_empty_values: true)
-        ExecuteExportRequest.new.call(export_request: export_request)
+        export_request = Requests::ExportRequest.new(csv_paths: csv_files, bypass_empty_values: true)
+        ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
         ios_files(files: ["Localizable.strings", "Localizable.stringsdict"]).each do |file|
