@@ -6,19 +6,19 @@ module AdLocalize
     end
 
     def warn(text)
-      log(level: Logger::WARN, text: text.yellow)
+      @logger.warn(text.yellow)
     end
 
     def info(text)
-      log(level: Logger::INFO, text: text.blue)
+      @logger.info(text.blue)
     end
 
     def error(text)
-      log(level: Logger::ERROR, text: text.red)
+      @logger.error(text.red)
     end
 
     def debug(text)
-      log(level: Logger::DEBUG, text: text)
+      @logger.debug(text)
     end
 
     def info!
@@ -35,12 +35,6 @@ module AdLocalize
 
     def close
       @logger.close
-    end
-
-    private
-
-    def log(level:, text:)
-      @logger.add(level, text)
     end
   end
 end
