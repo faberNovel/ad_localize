@@ -19,9 +19,7 @@ module AdLocalize
       options = OptionHandler.parse!(%w(-m keep))
       assert_equal 'keep', options[:'merge-policy']
 
-      options = OptionHandler.parse!(%w(-m other))
-      assert_equal 'other', options[:'merge-policy']
-
+      assert_raises(OptionParser::InvalidArgument) { OptionHandler.parse!(%w(-m other)) }
       assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w(-m)) }
     end
 
@@ -70,6 +68,16 @@ module AdLocalize
     test 'should set non option arguments as csv_paths' do
       options = OptionHandler.parse!(%w(-k some_id -e -t foo bar foobar))
       assert_equal %w(bar foobar), options[:csv_paths]
+    end
+
+    test 'should parse -l option' do
+      options = OptionHandler.parse!(%w(-l en))
+      assert_equal %w(en), options[:locales]
+
+      options = OptionHandler.parse!(%w(-l en,fr))
+      assert_equal %w(en fr), options[:locales]
+
+      assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w(-l)) }
     end
   end
 end

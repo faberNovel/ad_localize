@@ -8,22 +8,22 @@ module AdLocalize
         @key_parser = key_parser.presence || KeyParser.new
       end
 
-      def call(csv_path:, options:)
-        locales = find_locales(csv_path:, options:)
+      def call(csv_path:, export_request:)
+        locales = find_locales(csv_path:, export_request:)
         keys = find_keys(csv_path:)
-        wording = build_wording(csv_path:, locales:, keys:, options:)
+        wording = build_wording(csv_path:, locales:, keys:, export_request:)
         wording
       end
       
       private
       
-      def find_locales(csv_path:, options:)
+      def find_locales(csv_path:, export_request:)
         csv = CSV.open(csv_path, headers: true, skip_blanks: true)
         headers = csv.first.headers
         locales = headers[headers.index(CSV_WORDING_KEYS_COLUMN).succ..-1].compact.reject do |header|
           header.include?(COMMENT_KEY_COLUMN_IDENTIFIER)
         end
-        options[:locales].empty? ? locales : locales & options[:locales]
+        export_request.locales.empty? ? locales : locales & export_request.locales
       end
 
       def find_keys(csv_path:)
@@ -44,7 +44,7 @@ module AdLocalize
         keys
       end
 
-      def build_wording(csv_path:, locales:, keys:, options:)
+      def build_wording(csv_path:, locales:, keys:, export_request:)
         default_locale = locales.first
         wording = Hash.new { |hash, key| hash[key] = Entities::LocaleWording.new(locale: key, is_default: key == default_locale) }
         added_keys = Hash.new { |hash, key| hash[key] = false }
@@ -55,7 +55,7 @@ module AdLocalize
 
           locales.each do |locale|
             value = row[locale]
-            next if options[:bypass_empty_values] && value.nil?
+            next if export_request.bypass_empty_values && value.nil?
 
             comment = row["#{COMMENT_KEY_COLUMN_IDENTIFIER} #{locale}"]
             wording[locale].add_wording(key:, value:, comment:)
