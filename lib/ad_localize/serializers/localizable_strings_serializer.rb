@@ -1,9 +1,11 @@
 module AdLocalize
   module Serializers
-    class LocalizableStringsSerializer
-      include WithTemplate
-
+    class LocalizableStringsSerializer < TemplatedSerializer
       LOCALIZABLE_STRINGS_FILENAME = "Localizable.strings".freeze
+
+      def initialize
+        super(sanitizer: Sanitizers::IOSSanitizer.new)
+      end
 
       private
 
@@ -15,11 +17,6 @@ module AdLocalize
         {
           translations: locale_wording.singulars.map { |translation| map_simple_wording(translation:) }
         }
-      end
-
-      def sanitize_value(value:)
-        return if value.nil? || value.strip.empty?
-        value.gsub(/(?<!\\)\"/, "\\\"")
       end
     end
   end

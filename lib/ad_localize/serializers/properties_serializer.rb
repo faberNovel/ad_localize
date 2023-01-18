@@ -1,7 +1,9 @@
 module AdLocalize
   module Serializers
-    class PropertiesSerializer
-      include WithTemplate
+    class PropertiesSerializer < TemplatedSerializer
+      def initialize
+        super(sanitizer: Sanitizers::PassThroughSanitizer.new)
+      end
 
       private
 
@@ -13,10 +15,6 @@ module AdLocalize
         {
           translations: locale_wording.singulars.map { |translation| map_simple_wording(translation:) }
         }
-      end
-
-      def sanitize_value(value:)
-        value
       end
     end
   end

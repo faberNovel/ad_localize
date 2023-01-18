@@ -1,9 +1,11 @@
 module AdLocalize
   module Serializers
-    class InfoPlistSerializer
-      include WithTemplate
-
+    class InfoPlistSerializer < TemplatedSerializer
       INFO_PLIST_FILENAME = "InfoPlist.strings".freeze
+
+      def initialize
+        super(sanitizer: Sanitizers::IOSSanitizer.new) 
+      end
 
       private
 
@@ -14,11 +16,6 @@ module AdLocalize
       def variable_binding(locale_wording:)
         translations = locale_wording.info_plists.map { |translation| map_simple_wording(translation:) }
         { translations: translations }
-      end
-
-      def sanitize_value(value:)
-        return if value.nil? || value.strip.empty?
-        value.gsub(/(?<!\\)\"/, "\\\"")
       end
     end
   end

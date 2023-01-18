@@ -1,36 +1,37 @@
 module AdLocalize
   module Serializers
-    module WithTemplate
+    class TemplatedSerializer
+      def initialize(sanitizer:)
+        @sanitizer = sanitizer
+      end
+
       def render(locale_wording:)
         variable_binding = variable_binding(locale_wording:)
         return unless variable_binding
         render_template(template_path: template_path, variable_binding: variable_binding)
       end
 
-      # TODO: add sanitizers in DI them in serializer so that sanitize value can be common
-      private
+      protected
       
       TEMPLATES_DIRECTORY = __dir__ + "/../templates"
 
       def template_path
         raise 'Override me!'
       end
-
+      
       def variable_binding(locale_wording:)
         raise 'override me!'
       end
 
+      private
+
       def map_simple_wording(translation:)
         SimpleWordingViewModel.new(
           label: translation.key.label,
-          value: sanitize_value(value: translation.value),
+          value: @sanitizer.sanitize(value: translation.value),
           comment: translation.comment,
           variant_name: translation.key.variant_name
         )
-      end
-
-      def sanitize_value(value:)
-        raise 'Override me!'
       end
 
       def map_compound_wording(label:, translations:)

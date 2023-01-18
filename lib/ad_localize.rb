@@ -46,7 +46,11 @@ require 'ad_localize/interactors/generate_properties'
 require 'ad_localize/interactors/generate_strings'
 require 'ad_localize/interactors/generate_yaml'
 
-require 'ad_localize/serializers/with_template'
+require 'ad_localize/sanitizers/ios_sanitizer'
+require 'ad_localize/sanitizers/ios_to_android_sanitizer'
+require 'ad_localize/sanitizers/pass_through_sanitizer'
+
+require 'ad_localize/serializers/templated_serializer'
 require 'ad_localize/serializers/info_plist_serializer'
 require 'ad_localize/serializers/localizable_strings_serializer'
 require 'ad_localize/serializers/localizable_stringsdict_serializer'
