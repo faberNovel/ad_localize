@@ -58,7 +58,7 @@ module AdLocalize
             next if export_request.bypass_empty_values && value.nil?
 
             comment = row["#{COMMENT_KEY_COLUMN_IDENTIFIER} #{locale}"]
-            wording[locale].add_wording(key:, value:, comment:)
+            wording[locale].add_wording(key:, value: value.strip, comment:)
           end
           added_keys[raw_key] = true
         end
