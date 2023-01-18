@@ -6,13 +6,6 @@ module AdLocalize
       # see https://developer.apple.com/documentation/bundleresources/information_property_list
       INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)|NFCReaderUsageDescription/.freeze
 
-      module WordingType
-        SINGULAR = 'singular'
-        PLURAL = 'plural'
-        INFO_PLIST = 'info_plist'
-        ADAPTIVE = 'adaptive'
-      end
-
       def call(raw_key:)
         type = compute_type(raw_key:)
         label = compute_label(raw_key:, type:)
@@ -34,21 +27,21 @@ module AdLocalize
 
       def compute_type(raw_key:)
         if plural?(raw_key:)
-          WordingType::PLURAL
+          Entities::WordingType::PLURAL
         elsif adaptive?(raw_key:)
-          WordingType::ADAPTIVE
+          Entities::WordingType::ADAPTIVE
         elsif info_plist?(raw_key:)
-          WordingType::INFO_PLIST
+          Entities::WordingType::INFO_PLIST
         else
-          WordingType::SINGULAR
+          Entities::WordingType::SINGULAR
         end
       end
 
       def compute_label(raw_key:, type:)
         case type
-        when WordingType::PLURAL
+        when Entities::WordingType::PLURAL
           raw_key.gsub(PLURAL_KEY_REGEXP, '')
-        when WordingType::ADAPTIVE
+        when Entities::WordingType::ADAPTIVE
           raw_key.gsub(ADAPTIVE_KEY_REGEXP, '')
         else
           raw_key
@@ -57,9 +50,9 @@ module AdLocalize
 
       def compute_variant_name(raw_key:, type:)
         case type
-        when WordingType::PLURAL
+        when Entities::WordingType::PLURAL
           raw_key.match(PLURAL_KEY_REGEXP)&.captures&.first
-        when WordingType::ADAPTIVE
+        when Entities::WordingType::ADAPTIVE
           raw_key.match(ADAPTIVE_KEY_REGEXP)&.captures&.first
         end
       end

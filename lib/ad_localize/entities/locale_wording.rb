@@ -16,11 +16,11 @@ module AdLocalize
         wording = SimpleWording.new(key:, value:, comment:)
 
         case key.type
-        when Parsers::KeyParser::WordingType::PLURAL
+        when WordingType::PLURAL
           @plurals[key.label].append(wording)
-        when Parsers::KeyParser::WordingType::ADAPTIVE
+        when WordingType::ADAPTIVE
           @adaptives[key.label].append(wording)
-        when Parsers::KeyParser::WordingType::INFO_PLIST
+        when WordingType::INFO_PLIST
           @info_plists.append(wording)
         else
           @singulars.append(wording)

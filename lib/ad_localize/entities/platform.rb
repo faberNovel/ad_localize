@@ -6,10 +6,7 @@ module AdLocalize
       YML = 'yml'
       JSON = 'json'
       PROPERTIES = 'properties'
-
-      def self.supported_platforms
-        [IOS, ANDROID, YML, JSON, PROPERTIES]
-      end
+      SUPPORTED_PLATFORMS = [IOS, ANDROID, YML, JSON, PROPERTIES]
     end
   end
 end

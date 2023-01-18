@@ -29,6 +29,7 @@ require 'ad_localize/entities/key'
 require 'ad_localize/entities/locale_wording'
 require 'ad_localize/entities/platform'
 require 'ad_localize/entities/simple_wording'
+require 'ad_localize/entities/wording_type'
 
 require 'ad_localize/interactors/base_generate_files'
 require 'ad_localize/interactors/process_export_request'
