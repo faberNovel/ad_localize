@@ -5,8 +5,10 @@ module AdLocalize
           @drive_service = Google::Apis::DriveV3::DriveService.new
           @sheet_service = Google::Apis::SheetsV4::SheetsService.new
           if ENV['GOOGLE_APPLICATION_CREDENTIALS']
-            @drive_service.authorization = Google::Auth.get_application_default([Google::Apis::DriveV3::AUTH_DRIVE_READONLY])
-            @sheet_service.authorization = Google::Auth.get_application_default([Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY])
+            drive_scope = [Google::Apis::DriveV3::AUTH_DRIVE_READONLY]
+            sheet_scope = [Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY]
+            @drive_service.authorization = Google::Auth.get_application_default(drive_scope)
+            @sheet_service.authorization = Google::Auth.get_application_default(sheet_scope)
           end
         end
 
@@ -14,7 +16,8 @@ module AdLocalize
           sheet_ids.filter_map do |sheet_id|
             tempfile = Tempfile.new
             begin
-              @drive_service.http(:get, export_url(spreadsheet_id:, sheet_id:), download_dest: tempfile) do |string_io|
+              url = export_url(spreadsheet_id: spreadsheet_id, sheet_id: sheet_id)
+              @drive_service.http(:get, url, download_dest: tempfile) do |string_io|
                 tempfile.write(string_io.string)
               end
               tempfile.rewind
