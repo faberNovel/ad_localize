@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 module AdLocalize
-    module Entities
-        module WordingType
-          SINGULAR = 'singular'
-          PLURAL = 'plural'
-          INFO_PLIST = 'info_plist'
-          ADAPTIVE = 'adaptive'
-        end
+  module Entities
+    module WordingType
+      SINGULAR = 'singular'
+      PLURAL = 'plural'
+      INFO_PLIST = 'info_plist'
+      ADAPTIVE = 'adaptive'
     end
+  end
 end

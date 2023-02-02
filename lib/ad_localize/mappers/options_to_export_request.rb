@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Mappers
     class OptionsToExportRequest
@@ -10,7 +11,7 @@ module AdLocalize
           output_path: options[:'target-dir'],
           platforms: options[:only],
           spreadsheet_id: options[:'drive-key'],
-          sheet_ids: options[:'sheets'],
+          sheet_ids: options[:sheets],
           export_all: options[:'export-all-sheets'],
           verbose: options[:debug]
         )

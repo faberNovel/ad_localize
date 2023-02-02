@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   class OptionHandler
     DEFAULT_OPTIONS = {
@@ -20,7 +21,7 @@ module AdLocalize
         \tBy default, generates one export directory per sheet (see -m|--merge-sheets option to merge them).
         \tAn GCLOUD_CLIENT_SECRET environment variable containing the client_secret.json content is needed.
       DOC
-      merge_policy_option =  <<~DOC
+      merge_policy_option = <<~DOC
         Merge specified csv (or sheets from --export-all) instead of exporting each csv.
         \treplace: if a key is already defined, replace its value.
         \tkeep: if a key is already defined, keep the previous value.
@@ -40,10 +41,12 @@ module AdLocalize
           exit
         end
         parser.on("-k", "--drive-key SPREADSHEET_ID", String, 'Use google drive spreadsheets')
-        parser.on("-l", "--locales LOCALES", Array, 'LOCALES is a comma separated list. Only generate localisation files for the specified locales')
+        parser.on("-l", "--locales LOCALES", Array,
+                  'LOCALES is a comma separated list. Only generate localisation files for the specified locales')
         parser.on("-m", "--merge-policy POLICY", Interactors::MergeWordings::MERGE_POLICIES, merge_policy_option)
         parser.on("-o", "--only PLATFORMS", Array, platforms_option)
-        parser.on("-s", "--sheets SHEET_IDS", Array, 'SHEET_IDS is a comma separated list. Use a specific sheet id for Google Drive spreadsheets with several sheets')
+        parser.on("-s", "--sheets SHEET_IDS", Array,
+                  'SHEET_IDS is a comma separated list. Use a specific sheet id for Google Drive spreadsheets with several sheets')
         parser.on("-t", "--target-dir PATH", String, 'Path to the target directory')
         parser.on("-v", "--version", 'Prints current version') do
           puts AdLocalize::VERSION

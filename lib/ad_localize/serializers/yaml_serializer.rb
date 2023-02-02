@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
     class YAMLSerializer

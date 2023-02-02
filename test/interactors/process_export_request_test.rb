@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'test_helper'
 
 module AdLocalize
@@ -21,7 +22,7 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w(json))
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w[json])
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -41,7 +42,7 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w(ios))
+        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w[ios])
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -82,7 +83,7 @@ module AdLocalize
         # Given
         csv_file = "test/fixtures/reference.csv"
         assert(File.exist?(csv_file), "File does not exists #{csv_file}")
-        platforms = %w(ios)
+        platforms = %w[ios]
 
         # When
         export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: platforms)
@@ -97,7 +98,7 @@ module AdLocalize
 
       test 'it should merge multiple input csv files replacing old values' do
         # Given
-        csv_files = %w(test/fixtures/reference.csv test/fixtures/reference1.csv test/fixtures/reference2.csv)
+        csv_files = %w[test/fixtures/reference.csv test/fixtures/reference1.csv test/fixtures/reference2.csv]
         csv_files.each { |file| assert(File.exist?(file), "File does not exists #{file}") }
         reference_dir = "test/fixtures/exports_merge_replace"
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
@@ -118,7 +119,7 @@ module AdLocalize
 
       test 'it should merge multiple input csv files keeping old values' do
         # Given
-        csv_files = %w(test/fixtures/reference.csv test/fixtures/reference1.csv test/fixtures/reference2.csv)
+        csv_files = %w[test/fixtures/reference.csv test/fixtures/reference1.csv test/fixtures/reference2.csv]
         csv_files.each { |file| assert(File.exist?(file), "File does not exists #{file}") }
         reference_dir = "test/fixtures/exports_merge_keep"
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
@@ -139,7 +140,7 @@ module AdLocalize
 
       test 'it should only export non-empty values' do
         # Given
-        csv_files = %w(test/fixtures/reference_empty_values.csv)
+        csv_files = %w[test/fixtures/reference_empty_values.csv]
         csv_files.each { |file| assert(File.exist?(file), "File does not exists #{file}") }
         reference_dir = "test/fixtures/exports_non_empty"
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")

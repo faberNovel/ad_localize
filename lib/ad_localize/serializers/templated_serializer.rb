@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
     class TemplatedSerializer
@@ -6,19 +7,20 @@ module AdLocalize
       end
 
       def render(locale_wording:)
-        variable_binding = variable_binding(locale_wording:)
+        variable_binding = variable_binding(locale_wording: locale_wording)
         return unless variable_binding
+
         render_template(template_path: template_path, variable_binding: variable_binding)
       end
 
       protected
-      
+
       TEMPLATES_DIRECTORY = __dir__ + "/../templates"
 
       def template_path
         raise 'Override me!'
       end
-      
+
       def variable_binding(locale_wording:)
         raise 'override me!'
       end
@@ -35,8 +37,8 @@ module AdLocalize
       end
 
       def map_compound_wording(label:, translations:)
-        variants = translations.map { |translation| map_simple_wording(translation:) }
-        CompoundWordingViewModel.new(label:, variants:)
+        variants = translations.map { |translation| map_simple_wording(translation: translation) }
+        CompoundWordingViewModel.new(label: label, variants: variants)
       end
 
       def render_template(template_path:, variable_binding:)

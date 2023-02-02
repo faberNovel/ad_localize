@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Parsers
     class KeyParser
@@ -7,10 +8,10 @@ module AdLocalize
       INFO_PLIST_KEY_REGEXP = /(NS.+UsageDescription)|(CF.+Name)|NFCReaderUsageDescription/.freeze
 
       def call(raw_key:)
-        type = compute_type(raw_key:)
-        label = compute_label(raw_key:, type:)
-        variant_name = compute_variant_name(raw_key:, type:)
-        Entities::Key.new(id: raw_key, label:, type:, variant_name:)
+        type = compute_type(raw_key: raw_key)
+        label = compute_label(raw_key: raw_key, type: type)
+        variant_name = compute_variant_name(raw_key: raw_key, type: type)
+        Entities::Key.new(id: raw_key, label: label, type: type, variant_name: variant_name)
       end
 
       def plural?(raw_key:)
@@ -26,11 +27,11 @@ module AdLocalize
       end
 
       def compute_type(raw_key:)
-        if plural?(raw_key:)
+        if plural?(raw_key: raw_key)
           Entities::WordingType::PLURAL
-        elsif adaptive?(raw_key:)
+        elsif adaptive?(raw_key: raw_key)
           Entities::WordingType::ADAPTIVE
-        elsif info_plist?(raw_key:)
+        elsif info_plist?(raw_key: raw_key)
           Entities::WordingType::INFO_PLIST
         else
           Entities::WordingType::SINGULAR

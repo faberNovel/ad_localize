@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Interactors
     class MergeWordings
@@ -33,7 +34,7 @@ module AdLocalize
           if reference_hash[new_label].nil?
             reference_hash[new_label] = new_list
           elsif merge_policy == REPLACE_MERGE_POLICY
-            merge_simple_wordings(reference_list: reference_hash[new_label], new_list:, merge_policy:)
+            merge_simple_wordings(reference_list: reference_hash[new_label], new_list: new_list, merge_policy: merge_policy)
           end
         end
       end
@@ -43,10 +44,26 @@ module AdLocalize
         wordings[1..-1].each do |wording|
           wording.each do |locale, locale_wording|
             reference = wording_reference[locale]
-            merge_simple_wordings(reference_list: reference.singulars, new_list: locale_wording.singulars, merge_policy:)
-            merge_simple_wordings(reference_list: reference.info_plists, new_list: locale_wording.info_plists, merge_policy:)
-            merge_compound_wordings(reference_hash: reference.plurals, new_hash: locale_wording.plurals, merge_policy:)
-            merge_compound_wordings(reference_hash: reference.adaptives, new_hash: locale_wording.adaptives, merge_policy:)
+            merge_simple_wordings(
+              reference_list: reference.singulars,
+              new_list: locale_wording.singulars,
+              merge_policy: merge_policy
+            )
+            merge_simple_wordings(
+              reference_list: reference.info_plists,
+              new_list: locale_wording.info_plists,
+              merge_policy: merge_policy
+            )
+            merge_compound_wordings(
+              reference_hash: reference.plurals,
+              new_hash: locale_wording.plurals,
+              merge_policy: merge_policy
+            )
+            merge_compound_wordings(
+              reference_hash: reference.adaptives,
+              new_hash: locale_wording.adaptives,
+              merge_policy: merge_policy
+            )
           end
         end
         wording_reference

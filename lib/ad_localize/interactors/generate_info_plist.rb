@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Interactors
     class GenerateInfoPlist < BaseGenerateFiles
@@ -9,7 +10,7 @@ module AdLocalize
       end
 
       private
-      
+
       def has_wording?(locale_wording:)
         locale_wording.info_plists.any?
       end

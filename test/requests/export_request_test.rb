@@ -1,14 +1,15 @@
+# frozen_string_literal: true
 require 'test_helper'
 
 module AdLocalize
   module Requests
     class ExportRequestTest < TestCase
       test 'should get locales' do
-        request = ExportRequest.new(locales: "")
+        request = ExportRequest.new(locales: '')
         assert_empty request.locales
 
-        request = ExportRequest.new(locales: %w(fr en))
-        assert_equal %w(fr en), request.locales
+        request = ExportRequest.new(locales: %w[fr en])
+        assert_equal %w[fr en], request.locales
 
         request = ExportRequest.new(locales: nil)
         assert_empty request.locales
@@ -32,7 +33,7 @@ module AdLocalize
       # end
 
       test 'should get output path' do
-        request = ExportRequest.new(output_path: "")
+        request = ExportRequest.new(output_path: '')
         assert_equal ExportRequest::DEFAULTS[:output_path], request.output_path
 
         request = ExportRequest.new(output_path: 'foo')
@@ -60,7 +61,7 @@ module AdLocalize
         request = ExportRequest.new(merge_policy: nil)
         assert_equal 'keep', request.merge_policy
 
-        request = ExportRequest.new(merge_policy: "")
+        request = ExportRequest.new(merge_policy: '')
         assert_equal 'keep', request.merge_policy
 
         request = ExportRequest.new(merge_policy: 'replace')
@@ -119,8 +120,8 @@ module AdLocalize
         request = ExportRequest.new(bypass_empty_values: nil)
         assert_not request.bypass_empty_values
 
-        request = ExportRequest.new(bypass_empty_values: "")
-        assert_equal "", request.bypass_empty_values
+        request = ExportRequest.new(bypass_empty_values: '')
+        assert_equal '', request.bypass_empty_values
       end
     end
   end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
     class PropertiesSerializer < TemplatedSerializer
@@ -12,9 +13,10 @@ module AdLocalize
       end
 
       def variable_binding(locale_wording:)
-        {
-          translations: locale_wording.singulars.map { |translation| map_simple_wording(translation:) }
-        }
+        singulars = locale_wording.singulars.map do |translation|
+          map_simple_wording(translation: translation)
+        end
+        { translations: singulars }
       end
     end
   end

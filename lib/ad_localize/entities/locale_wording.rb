@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Entities
     class LocaleWording
@@ -13,7 +14,7 @@ module AdLocalize
       end
 
       def add_wording(key:, value:, comment:)
-        wording = SimpleWording.new(key:, value:, comment:)
+        wording = SimpleWording.new(key: key, value: value, comment: comment)
 
         case key.type
         when WordingType::PLURAL
@@ -29,10 +30,10 @@ module AdLocalize
 
       def to_s
         "Locale\nis default: #{is_default}\n==========\n" +
-        "Singulars\n#{singulars}\n==========\n" +
-        "InfoPlists\n#{info_plists}\n==========\n" +
-        "Plurals\n#{plurals}\n==========\n" +
-        "Adaptives\n#{adaptives}\n==========\n"
+          "Singulars\n#{singulars}\n==========\n" +
+          "InfoPlists\n#{info_plists}\n==========\n" +
+          "Plurals\n#{plurals}\n==========\n" +
+          "Adaptives\n#{adaptives}\n==========\n"
       end
     end
   end

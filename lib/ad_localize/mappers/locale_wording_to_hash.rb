@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Mappers
     class LocaleWordingToHash
@@ -19,7 +20,7 @@ module AdLocalize
           dotted_key_to_hash(inner_keys, { inner_keys.pop => translation.value })
         end
       end
-      
+
       def map_plurals(coumpound_wordings:)
         result = {}
         coumpound_wordings.each do |label, simple_wordings|

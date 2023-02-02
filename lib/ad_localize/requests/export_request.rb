@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module AdLocalize
   module Requests
     class ExportRequest
@@ -8,7 +9,7 @@ module AdLocalize
         merge_policy: Interactors::MergeWordings::DEFAULT_POLICY,
         output_path: Pathname.new('exports'),
         spreadsheet_id: nil,
-        sheet_ids: %w(0),
+        sheet_ids: %w[0],
         export_all: false,
         verbose: false,
         platforms: Entities::Platform::SUPPORTED_PLATFORMS
