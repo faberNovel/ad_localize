@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+
+- Remove extra spaces before and after key/translation contents
+- skip lines starting with a `#` character
+- new option `-l` or `--locales` to export only a subset or locales
+- Separate csv parse responsibility between key parser and csv parser
+
+### Changed
+
+- parse csv in 2 steps : first analyze keys and keep them in a map, second add translations to keys
+- do not store empty values during parse if `-x` option is active
+- handle duplicate keys while parsing csv instead of while exporting for a platform
+- BREAKING CHANGE : the way to provide service account information is no longer to set GCLOUD_CLIENT_SECRET with the content of the service account configuration. Now you need to provide the path to the configuration using the environment variable GCLOUD_CLIENT_SECRET
+- we no longer access to spreadsheet cells using GSheet v4. Now we downloaded all the relevant sheets and then we parse file contents like normal csv files.
+- locale wording stores separately each type of wording. This allows to export each wording type concurrently if you want to
+- no more plaform interactor. It has been replaced with generated file interactors. We still have an ios interactor because there are multiple files to export.
+- All templated serializers now share a common parent : `TemplatedSerializer`
+- Isolate the process to ensure a translation is correctly formatted for a platform in a new class type `sanitizers`. They can be tested separately.
+
+### Removed
+
+- no more GSpreadsheetOptions. It is handled directly in request
 
 ## [5.0.0] - 2022-07-26
 

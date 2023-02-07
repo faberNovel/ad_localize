@@ -43,12 +43,12 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 
 * Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
 ```
-$ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) ad_localize -k <your-spreadsheet-drive-key>
+$ GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secret.json> ad_localize -k <your-spreadsheet-drive-key>
 ```
 
 * Export wording from all sheets in a google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
 ```
-$ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) ad_localize -k <your-spreadsheet-drive-key> -e
+$ GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secret.json> ad_localize -k <your-spreadsheet-drive-key> -e
 ```
 
 * Only generate wording files for the specified platforms
@@ -71,6 +71,11 @@ $ ad_localize -d
 $ ad_localize -x
 ```
 
+* Only generate wording files for the specified locales
+```
+$ ad_localize -l fr,en
+```
+
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
 
@@ -79,12 +84,19 @@ If you want more examples, please open a documentation issue.
 
 ```Ruby
     require 'ad_localize'
-    # create optional google spreasheet options
-    g_spreadsheet_options = AdLocalize::Requests::GSpreadsheetOptions.new(spreadsheet_id: 'some_id', sheet_ids: ['first', 'second'], service_account_config: ENV['GCLOUD_CLIENT_SECRET'])
     # create export request
-    export_request = AdLocalize::Requests::ExportRequest.new(g_spreadsheet_options: g_spreadsheet_options, verbose: true)
-    # execute request
-    AdLocalize::Interactors::ExecuteExportRequest.new.call(export_request: export_request)
+    export_request = Requests::ExportRequest.new(spreadsheet_id: 'some_id', sheet_ids: %w[first second], verbose: true)
+    begin
+        # download files - be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
+        export_request.downloaded_csvs = DownloadSpreadsheets.new.call(export_request: export_request)
+        # execute request
+        AdLocalize::Interactors::ExecuteExportRequest.new.call(export_request: export_request)
+    ensure
+        export_request.downloaded_csvs.each do |file|
+            file.close
+            file.unlink
+        end
+    end
 ```
 
 ## Accessing a google spreadsheet
@@ -106,12 +118,12 @@ To use a private google spreasheet you need to use a Google Cloud Service Accoun
     - In *IAM & Admin / Service Account*, the service account's email is listed. Invite it to the spreadsheet to export.
 
 ```
-$ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secrets>) ad_localize -k # one way
-$ GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secrets>) ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list> # another way
+$ GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secrets> ad_localize -k # one way
+$ GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secrets> ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list> # another way
 ```
 
 ```
-$ export GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secrets>)
+$ export GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secrets>
 $ ad_localize -k <your-spreadsheet-drive-key> # one way
 $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list> # another way
 ```
@@ -121,6 +133,7 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 
 | key | fr | en |
 | --- | --- | --- |
+| # General |  |  |
 | agenda | agenda | events |
 | favorites | Mes favoris | My favorites |
 | from_to | du %1$@ au %2$@ | from %1$@ to %2$@ |
@@ -129,6 +142,7 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 - Keys should contain only letter, number, underscore and dot : [a-z0-9_.]+.
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: `"%1$@ %2$@'s report"`).
 - _Only for Android_ keys without translation won't be considered
+- Lines starting with a comment will be ignored
 
 ### Comments
 
