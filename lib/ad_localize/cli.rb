@@ -2,16 +2,14 @@
 module AdLocalize
   class CLI
     def self.start(args:)
-      downloaded_files = []
       options = OptionHandler.parse!(args)
       export_request = Mappers::OptionsToExportRequest.new.map(options: options)
       if export_request.has_sheets?
-        downloaded_files = DownloadSpreadsheets.new.call(export_request: export_request)
-        export_request.csv_paths.concat(downloaded_files)
+        export_request.downloaded_csvs = DownloadSpreadsheets.new.call(export_request: export_request)
       end
-      Interactors::ExecuteExportRequest.new.call(export_request: export_request)
+      Interactors::ProcessExportRequest.new.call(export_request: export_request)
     ensure
-      downloaded_files.each do |file|
+      export_request.downloaded_csvs.each do |file|
         file.close
         file.unlink
       end
