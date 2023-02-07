@@ -1,12 +1,10 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
     class YAMLSerializer
-      def initialize
-        @locale_wording_to_hash = Mappers::LocaleWordingToHash.new
-      end
-
       def render(locale_wording:)
-        @locale_wording_to_hash.map(locale_wording: locale_wording).to_yaml
+        content = Mappers::LocaleWordingToHash.new.map(locale_wording: locale_wording)
+        content.to_yaml
       end
     end
   end

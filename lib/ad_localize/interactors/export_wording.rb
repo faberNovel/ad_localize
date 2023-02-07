@@ -1,33 +1,39 @@
+# frozen_string_literal: true
 module AdLocalize
   module Interactors
     class ExportWording
-      def initialize
-        @export_platform_factory = Platforms::ExportPlatformFactory.new
-      end
-
       def call(export_request:, wording:)
-        LOGGER.debug("Starting export wording")
         export_request.platforms.each do |platform|
-          platform_interactor = @export_platform_factory.build(platform: platform)
-          options = build_export_wording_options(wording: wording, export_request: export_request, platform: platform)
-          platform_interactor.call(export_wording_options: options)
+          LOGGER.debug("[#{platform}] Starting export...")
+          configure_output_directory(platform: platform, export_request: export_request)
+          export_platform(wording: wording, platform: platform, export_request: export_request)
+          LOGGER.debug("[#{platform}] done !")
         end
       end
 
       private
 
-      def build_export_wording_options(wording:, export_request:, platform:)
-        platform_output_directory = export_request.output_path
-        platform_output_directory = platform_output_directory.join(platform.to_s) if export_request.multiple_platforms?
-        locales = export_request.locales.size.zero? ? wording.locales : wording.locales & export_request.locales
+      def configure_output_directory(platform:, export_request:)
+        if export_request.many_platforms?
+          export_request.output_dir = export_request.output_path.join(platform)
+        else
+          export_request.output_dir = export_request.output_path
+        end
+      end
 
-        Requests::ExportWordingOptions.new(
-          locales: locales,
-          wording: wording,
-          platform_output_directory: platform_output_directory,
-          bypass_empty_values: export_request.non_empty_values,
-          csv_paths: export_request.csv_paths
-        )
+      def export_platform(wording:, platform:, export_request:)
+        case platform
+        when Entities::Platform::IOS
+          GenerateIOSFiles.new.call(wording: wording, export_request: export_request)
+        when Entities::Platform::ANDROID
+          GenerateStrings.new.call(wording: wording, export_request: export_request)
+        when Entities::Platform::YML
+          GenerateYAML.new.call(wording: wording, export_request: export_request)
+        when Entities::Platform::JSON
+          GenerateJSON.new.call(wording: wording, export_request: export_request)
+        when Entities::Platform::PROPERTIES
+          GenerateProperties.new.call(wording: wording, export_request: export_request)
+        end
       end
     end
   end

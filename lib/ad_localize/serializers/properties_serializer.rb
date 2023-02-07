@@ -1,10 +1,9 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
-    class PropertiesSerializer
-      include WithTemplate
-
+    class PropertiesSerializer < TemplatedSerializer
       def initialize
-        @translation_mapper = Mappers::TranslationMapper.new
+        super(sanitizer: Sanitizers::PassThroughSanitizer.new)
       end
 
       private
@@ -13,12 +12,11 @@ module AdLocalize
         TEMPLATES_DIRECTORY + "/properties/template.properties.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.singulars) }
-      end
-
-      def map_translations(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+      def variable_binding(locale_wording:)
+        singulars = locale_wording.singulars.map do |translation|
+          map_simple_wording(translation: translation)
+        end
+        { translations: singulars }
       end
     end
   end

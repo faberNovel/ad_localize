@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plist>
     <dict>
-        <%- plurals.each do |translation_group| -%>
-        <key><%= translation_group.label %></key>
+        <%- plurals.each do |plural_group| -%>
+        <key><%= plural_group.label %></key>
         <dict>
             <key>NSStringLocalizedFormatKey</key>
             <string>%#@key@</string>
@@ -12,27 +12,27 @@
                 <string>NSStringPluralRuleType</string>
                 <key>NSStringFormatValueTypeKey</key>
                 <string>d</string>
-                <%- translation_group.translation_view_models.each do |translation_view_model| -%>
-                <%- if translation_view_model.comment -%>
-                <!-- <%= translation_view_model.comment %> -->
+                <%- plural_group.variants.each do |variant| -%>
+                <%- if variant.comment -%>
+                <!-- <%= variant.comment %> -->
                 <%- end -%>
-                <key><%= translation_view_model.key -%></key>
-                <string><%= translation_view_model.value -%></string>
+                <key><%= variant.variant_name -%></key>
+                <string><%= variant.value -%></string>
                 <%- end -%>
             </dict>
         </dict>
         <%- end -%>
-        <%- adaptives.each do |translation_group| -%>
-        <key><%= translation_group.label %></key>
+        <%- adaptives.each do |adaptive_group| -%>
+        <key><%= adaptive_group.label %></key>
         <dict>
             <key>NSStringVariableWidthRuleType</key>
             <dict>
-                <%- translation_group.translation_view_models.each do |translation_view_model| -%>
-                <%- if translation_view_model.comment -%>
-                <!-- <%= translation_view_model.comment %> -->
+                <%- adaptive_group.variants.each do |variant| -%>
+                <%- if variant.comment -%>
+                <!-- <%= variant.comment %> -->
                 <%- end -%>
-                <key><%= translation_view_model.key %></key>
-                <string><%= translation_view_model.value %></string>
+                <key><%= variant.variant_name %></key>
+                <string><%= variant.value %></string>
                 <%- end -%>
             </dict>
         </dict>

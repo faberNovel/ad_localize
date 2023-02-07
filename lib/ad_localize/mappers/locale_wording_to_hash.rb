@@ -1,32 +1,53 @@
+# frozen_string_literal: true
 module AdLocalize
   module Mappers
     class LocaleWordingToHash
       def map(locale_wording:)
-        result = locale_wording.translations.each_with_object({}) do |translation, hash|
-          inner_keys = translation.key.label.split('.')
-          inner_keys.each_with_index do |inner_key, index|
-            if index === inner_keys.count - 1
-              if translation.key.plural?
-                hash[translation.key.label] = {} unless hash.key? translation.key.label
-                hash[translation.key.label][translation.key.plural_key] = translation.value
-              else
-                unless hash.is_a?(Hash)
-                  LOGGER.warn "Corrupted input. Trying to insert a value for key '#{translation.key.label}' but a value already exists for '#{inner_keys[0..index-1].join(".")}'. Skipping."
-                  break # skip this corrupted key
-                end
-                previous_value = hash[inner_key.to_s]
-                if !previous_value.blank? && previous_value.is_a?(Hash)
-                  LOGGER.warn "Corrupted input. Trying to insert a value for key '#{translation.key.label}' but values already exist for keys '#{translation.key.label}.*'. Previous values will be lost."
-                end
-                hash[inner_key.to_s] = translation.value
-              end
-            else
-              hash[inner_key] = {} if hash[inner_key].nil?
-              hash = hash[inner_key]
-            end
-          end
+        singulars_hash = map_singulars(simple_wordings: locale_wording.singulars)
+        plural_hash = map_plurals(coumpound_wordings: locale_wording.plurals)
+        locale_hash = singulars_hash.merge(plural_hash)
+        { locale_wording.locale => locale_hash }
+      end
+
+      private
+
+      def inner_keys(label:)
+        label.split('.')
+      end
+
+      def map_singulars(simple_wordings:)
+        map_translations(translations: simple_wordings) do |inner_keys, translation|
+          dotted_key_to_hash(inner_keys, { inner_keys.pop => translation.value })
         end
-        { locale_wording.locale => result }
+      end
+
+      def map_plurals(coumpound_wordings:)
+        result = {}
+        coumpound_wordings.each do |label, simple_wordings|
+          variants_hash = map_translations(translations: simple_wordings) do |keys, translation|
+            dotted_key_to_hash(keys, { translation.key.variant_name => translation.value })
+          end
+          result.deep_merge!(variants_hash)
+        end
+        result
+      end
+
+      def map_translations(translations:)
+        translations.each_with_object({}) do |translation, hash|
+          keys = inner_keys(label: translation.key.label)
+          inner_keys_hash = yield(keys, translation)
+          hash.deep_merge!(inner_keys_hash)
+        end
+      end
+
+      def dotted_key_to_hash(array, h)
+        if array.size.zero?
+          h
+        elsif array.size == 1
+          { array.first => h }
+        elsif array.size > 1
+          { array.first => dotted_key_to_hash(array[1..-1], h) }
+        end
       end
     end
   end

@@ -1,12 +1,11 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
-    class InfoPlistSerializer
-      include WithTemplate
-
+    class InfoPlistSerializer < TemplatedSerializer
       INFO_PLIST_FILENAME = "InfoPlist.strings".freeze
 
       def initialize
-        @translation_mapper = Mappers::IOSTranslationMapper.new
+        super(sanitizer: Sanitizers::IOSSanitizer.new)
       end
 
       private
@@ -15,12 +14,11 @@ module AdLocalize
         TEMPLATES_DIRECTORY + "/ios/#{INFO_PLIST_FILENAME}.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.info_plists) }
-      end
-
-      def map_translations(translations:)
-        translations.map { |translation| @translation_mapper.map(translation: translation) }
+      def variable_binding(locale_wording:)
+        translations = locale_wording.info_plists.map do |translation|
+          map_simple_wording(translation: translation)
+        end
+        { translations: translations }
       end
     end
   end

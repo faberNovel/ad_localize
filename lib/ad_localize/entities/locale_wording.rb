@@ -1,59 +1,39 @@
+# frozen_string_literal: true
 module AdLocalize
   module Entities
     class LocaleWording
-      attr_reader(:locale, :translations)
+      attr_reader :locale, :is_default, :singulars, :plurals, :adaptives, :info_plists
 
-      def initialize(locale:, translations:)
+      def initialize(locale:, is_default:)
         @locale = locale
-        @translations = translations
+        @is_default = is_default
+        @singulars = []
+        @info_plists = []
+        @plurals = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
+        @adaptives = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
       end
 
-      def has_plural_keys?
-        plurals.present?
+      def add_wording(key:, value:, comment:)
+        wording = SimpleWording.new(key: key, value: value, comment: comment)
+
+        case key.type
+        when WordingType::PLURAL
+          @plurals[key.label].append(wording)
+        when WordingType::ADAPTIVE
+          @adaptives[key.label].append(wording)
+        when WordingType::INFO_PLIST
+          @info_plists.append(wording)
+        else
+          @singulars.append(wording)
+        end
       end
 
-      def has_info_plist_keys?
-        info_plists.present?
-      end
-
-      def has_singular_keys?
-        singulars.present?
-      end
-
-      def has_adaptive_keys?
-        adaptives.present?
-      end
-
-      def plurals
-        @plurals ||= @translations.select { |translation| translation.key.plural? }.group_by { |translation| translation.key.label }
-      end
-
-      def info_plists
-        @info_plists ||= @translations.select { |translation| translation.key.info_plist? }
-      end
-
-      def singulars
-        @singulars ||= @translations.select { |translation| translation.key.singular? }
-      end
-
-      def adaptives
-        @adaptives ||= @translations.select { |translation| translation.key.adaptive? }.group_by { |translation| translation.key.label }
-      end
-
-      def add_translation(translation:)
-        @translations.push(translation)
-      end
-
-      def keys
-        @translations.map(&:key)
-      end
-
-      def has_key?(key:)
-        translation_for(key: key).present?
-      end
-
-      def translation_for(key:)
-        @translations.find { |translation| translation.key.same_as?(key: key) }
+      def to_s
+        "Locale\nis default: #{is_default}\n==========\n" +
+          "Singulars\n#{singulars}\n==========\n" +
+          "InfoPlists\n#{info_plists}\n==========\n" +
+          "Plurals\n#{plurals}\n==========\n" +
+          "Adaptives\n#{adaptives}\n==========\n"
       end
     end
   end

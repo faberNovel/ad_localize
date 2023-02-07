@@ -1,17 +1,12 @@
+# frozen_string_literal: true
 module AdLocalize
   module Serializers
-    class LocalizableStringsSerializer
-      include WithTemplate
-
+    class LocalizableStringsSerializer < TemplatedSerializer
       LOCALIZABLE_STRINGS_FILENAME = "Localizable.strings".freeze
 
       def initialize
-        @translation_mapper = Mappers::IOSTranslationMapper.new
+        super(sanitizer: Sanitizers::IOSSanitizer.new)
       end
-
-      attr_accessor(
-        :bypass_empty_values
-      )
 
       private
 
@@ -19,12 +14,11 @@ module AdLocalize
         TEMPLATES_DIRECTORY + "/ios/#{LOCALIZABLE_STRINGS_FILENAME}.erb"
       end
 
-      def hash_binding(locale_wording:)
-        { translations: map_translations(translations: locale_wording.singulars) }
-      end
-
-      def map_translations(translations:)
-        translations.select(&:has_value?).map { |translation| @translation_mapper.map(translation: translation) }
+      def variable_binding(locale_wording:)
+        translations = locale_wording.singulars.map do |translation|
+          map_simple_wording(translation: translation)
+        end
+        { translations: translations }
       end
     end
   end

@@ -6,13 +6,13 @@
     <%- end -%>
     <string name="<%= single_translation.label %>"><%= single_translation.value %></string>
     <%- end -%>
-    <%- plurals.each do |translation_group| -%>
-    <plurals name="<%= translation_group.label %>">
-        <%- translation_group.translation_view_models.each do |translation_view_model| -%>
-        <%- if translation_view_model.comment -%>
-        <!-- <%= translation_view_model.comment %> -->
+    <%- plurals.each do |plural_group| -%>
+    <plurals name="<%= plural_group.label %>">
+        <%- plural_group.variants.each do |variant| -%>
+        <%- if variant.comment -%>
+        <!-- <%= variant.comment %> -->
         <%- end -%>
-        <item quantity="<%= translation_view_model.key %>"><%= translation_view_model.value %></item>
+        <item quantity="<%= variant.variant_name %>"><%= variant.value %></item>
         <%- end -%>
     </plurals>
     <%- end -%>
