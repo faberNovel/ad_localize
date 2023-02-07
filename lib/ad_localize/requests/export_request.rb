@@ -51,7 +51,7 @@ module AdLocalize
       end
 
       def has_csv_paths?
-        csv_paths.present?
+        all_csv_paths.present?
       end
 
       def many_platforms?
@@ -60,6 +60,20 @@ module AdLocalize
 
       def all_csv_paths
         csv_paths + downloaded_csvs.map(&:path)
+      end
+
+      def to_s
+        "locales: #{locales}, "\
+        "bypass_empty_values: #{bypass_empty_values}, "\
+        "csv_paths: #{csv_paths}, "\
+        "merge_policy: #{merge_policy}, "\
+        "output_path: #{output_path}, "\
+        "spreadsheet_id: #{spreadsheet_id}, "\
+        "sheet_ids: #{sheet_ids}, "\
+        "export_all: #{export_all}, "\
+        "verbose: #{verbose}, "\
+        "platforms: #{platforms}, "\
+        "downloaded_csvs: #{downloaded_csvs}"
       end
 
       private

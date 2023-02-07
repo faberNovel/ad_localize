@@ -5,12 +5,14 @@ module AdLocalize
       def call(export_request:)
         export_request.verbose ? LOGGER.debug! : LOGGER.info!
         LOGGER.debug(export_request)
-        LOGGER.debug("Checking request validity")
+        LOGGER.debug("Verify if there are CSV to process")
         return unless export_request.has_csv_paths?
 
+        LOGGER.debug("Parse CSV files")
         wording = ParseCSVFiles.new.call(export_request: export_request)
         return unless wording
 
+        LOGGER.debug("Export wording")
         ExportWording.new.call(export_request: export_request, wording: wording)
         LOGGER.debug("End of export request execution")
       end

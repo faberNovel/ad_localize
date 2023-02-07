@@ -11,6 +11,9 @@ module AdLocalize
 
       def call(csv_path:, export_request:)
         locales = find_locales(csv_path: csv_path, export_request: export_request)
+        LOGGER.debug("locales: #{locales}")
+        return if locales.blank?
+
         keys = find_keys(csv_path: csv_path)
         wording = build_wording(
           csv_path: csv_path,
@@ -35,6 +38,8 @@ module AdLocalize
       def find_keys(csv_path:)
         keys = {}
         CSV.foreach(csv_path, headers: true, skip_blanks: true, skip_lines: /^#/) do |row|
+          next if row[CSV_WORDING_KEYS_COLUMN].blank?
+
           raw_key = row[CSV_WORDING_KEYS_COLUMN].strip
           key = @key_parser.call(raw_key: raw_key)
 
@@ -63,10 +68,10 @@ module AdLocalize
 
           locales.each do |locale|
             value = row[locale]
-            next if export_request.bypass_empty_values && value.nil?
+            next if export_request.bypass_empty_values && value.blank?
 
             comment = row["#{COMMENT_KEY_COLUMN_IDENTIFIER} #{locale}"]
-            wording[locale].add_wording(key: key, value: value.strip, comment: comment)
+            wording[locale].add_wording(key: key, value: value&.strip, comment: comment)
           end
           added_keys[raw_key] = true
         end
