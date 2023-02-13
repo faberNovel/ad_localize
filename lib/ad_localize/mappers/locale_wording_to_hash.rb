@@ -24,7 +24,7 @@ module AdLocalize
       def map_plurals(coumpound_wordings:)
         result = {}
         coumpound_wordings.each do |label, simple_wordings|
-          variants_hash = map_translations(translations: simple_wordings) do |keys, translation|
+          variants_hash = map_translations(translations: simple_wordings.values) do |keys, translation|
             dotted_key_to_hash(keys, { translation.key.variant_name => translation.value })
           end
           result.deep_merge!(variants_hash)
