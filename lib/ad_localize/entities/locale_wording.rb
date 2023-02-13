@@ -7,8 +7,8 @@ module AdLocalize
       def initialize(locale:, is_default:)
         @locale = locale
         @is_default = is_default
-        @singulars = []
-        @info_plists = []
+        @singulars = {}
+        @info_plists = {}
         @plurals = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
         @adaptives = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
       end
@@ -22,9 +22,9 @@ module AdLocalize
         when WordingType::ADAPTIVE
           @adaptives[key.label].append(wording)
         when WordingType::INFO_PLIST
-          @info_plists.append(wording)
+          @info_plists[key.label] = wording
         else
-          @singulars.append(wording)
+          @singulars[key.label] = wording
         end
       end
 

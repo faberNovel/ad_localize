@@ -13,7 +13,7 @@ module AdLocalize
       end
 
       def variable_binding(locale_wording:)
-        singulars = locale_wording.singulars.map do |translation|
+        singulars = locale_wording.singulars.values.map do |translation|
           map_simple_wording(translation: translation)
         end
         { translations: singulars }

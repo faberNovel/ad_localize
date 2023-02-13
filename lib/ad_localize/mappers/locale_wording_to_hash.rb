@@ -3,7 +3,7 @@ module AdLocalize
   module Mappers
     class LocaleWordingToHash
       def map(locale_wording:)
-        singulars_hash = map_singulars(simple_wordings: locale_wording.singulars)
+        singulars_hash = map_singulars(simple_wordings: locale_wording.singulars.values)
         plural_hash = map_plurals(coumpound_wordings: locale_wording.plurals)
         locale_hash = singulars_hash.merge(plural_hash)
         { locale_wording.locale => locale_hash }
