@@ -62,6 +62,8 @@ module AdLocalize
         }
         added_keys = Hash.new { |hash, key| hash[key] = false }
         CSV.foreach(csv_path, headers: true, skip_blanks: true, skip_lines: /^#/) do |row|
+          next if row[CSV_WORDING_KEYS_COLUMN].blank?
+
           raw_key = row[CSV_WORDING_KEYS_COLUMN].strip
           key = keys[raw_key]
           next if key.nil? || added_keys[raw_key]
