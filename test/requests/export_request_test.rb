@@ -121,7 +121,7 @@ module AdLocalize
         assert_not request.bypass_empty_values
 
         request = ExportRequest.new(bypass_empty_values: '')
-        assert_equal '', request.bypass_empty_values
+        assert_not request.bypass_empty_values
       end
     end
   end
