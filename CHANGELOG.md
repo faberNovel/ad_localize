@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - skip lines starting with a `#` character
 - new option `-l` or `--locales` to export only a subset or locales
 - Separate csv parse responsibility between key parser and csv parser
-- use Rubocop to detect coding style offenses
+- use Rubocop to detect coding style offenses (also in github workflow)
+- print warning log when a value is replaced during merge
 
 ### Changed
 

@@ -24,7 +24,7 @@ module AdLocalize
           if translation_reference.nil?
             reference_list[label] = new_translation
           elsif merge_policy == REPLACE_MERGE_POLICY
-            LOGGER.debug("[MERGE] #{label} value changed from #{translation_reference.value} to #{new_translation.value}")
+            LOGGER.warn("[MERGE] #{label} value changed from #{translation_reference.value} to #{new_translation.value}")
             reference_list[label].value = new_translation.value
           end
         end
