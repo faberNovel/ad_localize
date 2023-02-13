@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - parse csv in 2 steps : first analyze keys and keep them in a map, second add translations to keys
 - do not store empty values during parse if `-x` option is active
 - handle duplicate keys while parsing csv instead of while exporting for a platform
-- BREAKING CHANGE : the way to provide service account information is no longer to set GCLOUD_CLIENT_SECRET with the content of the service account configuration. Now you need to provide the path to the configuration using the environment variable GCLOUD_CLIENT_SECRET
-- we no longer access to spreadsheet cells using GSheet v4. Now we downloaded all the relevant sheets and then we parse file contents like normal csv files.
+- BREAKING CHANGE : the way to provide service account information is no longer to set GCLOUD_CLIENT_SECRET with the content of the service account configuration. Now you need to provide the path to the configuration using the environment variable GOOGLE_APPLICATION_CREDENTIALS
+- we no longer access to spreadsheet cells using GSheet v4. Now we downloaded all the relevant sheets and then we parse file contents like normal csv files. We use the exponentiel retry feature provided by google with a maximum of 3 attempts [more info here](https://github.com/googleapis/google-api-ruby-client/blob/377edf2ca4c1ef41a91de4176e5c7ad7df220007/google-apis-core/lib/google/apis/options.rb#L70). We noticed we had download error for 6 or more sheets in a spreadsheet.
 - locale wording stores separately each type of wording. This allows to export each wording type concurrently if you want to
 - no more plaform interactor. It has been replaced with generated file interactors. We still have an ios interactor because there are multiple files to export.
 - All templated serializers now share a common parent : `TemplatedSerializer`
