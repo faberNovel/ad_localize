@@ -17,7 +17,7 @@ module AdLocalize
         sheet_ids.filter_map do |sheet_id|
           begin
             url = export_url(spreadsheet_id: spreadsheet_id, sheet_id: sheet_id)
-            string = @drive_service.http(:get, url)
+            string = @drive_service.http(:get, url, options: { retries: 3, max_elapsed_time: 60 })
             next unless string
 
             tempfile = Tempfile.new
