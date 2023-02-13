@@ -4,6 +4,11 @@ The purpose of this gem is to automatically generate wording files from a CSV in
 It supports iOS, Android, JSON, YAML and Java Properties.
 It is a useful tool when working on a mobile application or a SPA.
 
+## Migration from 5.x to 6.0.0
+
+When using the CLI replace GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) with GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secret.json>
+When using the interactor refer to [ruby program usage section](### In a Ruby program)
+
 ## Installation
 
 Add this line to your application's Gemfile:
