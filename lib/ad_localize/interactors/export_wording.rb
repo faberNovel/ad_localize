@@ -4,8 +4,8 @@ module AdLocalize
     class ExportWording
       def call(export_request:, wording:)
         export_request.platforms.each do |platform|
-          LOGGER.debug("[#{platform}] Starting export...")
           configure_output_directory(platform: platform, export_request: export_request)
+          LOGGER.debug("[#{platform}] Start exporting in #{export_request.output_dir}")
           export_platform(wording: wording, platform: platform, export_request: export_request)
           LOGGER.debug("[#{platform}] done !")
         end

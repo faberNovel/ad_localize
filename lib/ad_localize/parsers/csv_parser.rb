@@ -11,7 +11,7 @@ module AdLocalize
 
       def call(csv_path:, export_request:)
         locales = find_locales(csv_path: csv_path, export_request: export_request)
-        LOGGER.debug("locales: #{locales}")
+        LOGGER.debug("#{csv_path} - locales : #{locales.to_sentence}")
         return if locales.blank?
 
         keys = find_keys(csv_path: csv_path)

@@ -35,6 +35,7 @@ module AdLocalize
         begin
           spreadsheet = @sheet_service.get_spreadsheet(spreadsheet_id)
           sheet_ids = spreadsheet.sheets.map { |sheet| sheet.properties.sheet_id }
+          LOGGER.debug("#{sheet_ids.size} sheets in the spreadsheet")
           download_sheets_by_id(spreadsheet_id: spreadsheet_id, sheet_ids: sheet_ids)
         rescue => e
           LOGGER.error("Cannot download sheets. Error: #{e.message}")
