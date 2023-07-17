@@ -13,9 +13,10 @@ module AdLocalize
       end
 
       test 'should map list of autorized characters for android' do
-        password_specialchar_error = "Caractères spéciaux autorisés : - / : ; ( ) € & @ . , ? ! ' [ ] { } # % ^ * + = _ | ~ < > $ £ ¥ ` ° \""
+        password_specialchar_error = "Caractères spéciaux autorisés - / : ; ( ) € & @ . , ? ! ' [ ] { } # % ^ * + = _ | ~ < > $ £ ¥ ` ° \""
         sanitized_value = IOSToAndroidSanitizer.new.sanitize(value: password_specialchar_error)
-        expected_value = "\"Caractères spéciaux autorisés : - / : ; ( ) € \\&#38; @ . , ? ! \\&#39; [ ] { } # % ^ * + = _ | ~ \\&lt; \\&gt; $ £ ¥ ` ° \\&#34;\""
+        expected_value = "\"Caractères spéciaux autorisés " \
+                         "- / : ; ( ) € \\&#38; @ . , ? ! \\&#39; [ ] { } # % ^ * + = _ | ~ \\&lt; \\&gt; $ £ ¥ ` ° \\&#34;\""
         assert_equal expected_value, sanitized_value
       end
 

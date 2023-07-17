@@ -37,7 +37,7 @@ module AdLocalize
         assert_empty request.csv_paths
 
         request = ExportRequest.new(csv_paths: %w[csv_1 csv_2])
-        assert_equal %w[csv_1 csv_2], request.csv_paths
+        assert_equal [Pathname.new('csv_1'), Pathname.new('csv_2')], request.csv_paths
 
         request = ExportRequest.new(csv_paths: nil)
         assert_empty request.csv_paths
@@ -75,17 +75,17 @@ module AdLocalize
         request = ExportRequest.new(platforms: '')
         assert_equal Entities::Platform::SUPPORTED_PLATFORMS, request.platforms
 
-        request = ExportRequest.new(platforms: %w(ios android))
-        assert_equal %w(ios android), request.platforms
+        request = ExportRequest.new(platforms: %w[ios android])
+        assert_equal %w[ios android], request.platforms
 
         request = ExportRequest.new(platforms: 'json')
-        assert_equal %w(json), request.platforms
+        assert_equal %w[json], request.platforms
 
         request = ExportRequest.new(platforms: nil)
         assert_equal Entities::Platform::SUPPORTED_PLATFORMS, request.platforms
 
-        request = ExportRequest.new(platforms: %w(foo bar ios))
-        assert_equal %w(ios), request.platforms
+        request = ExportRequest.new(platforms: %w[foo bar ios])
+        assert_equal %w[ios], request.platforms
       end
 
       test 'should get spreadsheet id' do
