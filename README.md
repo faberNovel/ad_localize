@@ -6,8 +6,8 @@ It is a useful tool when working on a mobile application or a SPA.
 
 ## Migration from 5.x to 6.0.0
 
-When using the CLI replace GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>) with GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secret.json>
-When using the interactor refer to [ruby program usage section](### In a Ruby program)
+When using the CLI replace `GCLOUD_CLIENT_SECRET=$(cat <path-to-client-secret.json>)` with `GOOGLE_APPLICATION_CREDENTIALS=<path-to-client-secret.json>`  
+When using the interactor refer to [ruby program usage section](###In-a-Ruby-program)
 
 ## Installation
 
