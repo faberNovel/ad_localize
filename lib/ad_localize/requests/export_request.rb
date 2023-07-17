@@ -16,7 +16,7 @@ module AdLocalize
         downloaded_csvs: []
       }
 
-      attr_accessor(:output_dir, :downloaded_csvs)
+      attr_accessor :output_dir
 
       attr_reader(
         :locales,
@@ -28,22 +28,76 @@ module AdLocalize
         :spreadsheet_id,
         :sheet_ids,
         :export_all,
-        :verbose
+        :verbose,
+        :downloaded_csvs
       )
 
-      def initialize(args)
-        apply_defaults
-        @locales = args[:locales] unless args[:locales].blank?
-        @bypass_empty_values = args[:bypass_empty_values] unless args[:bypass_empty_values].blank?
-        @csv_paths = Array(args[:csv_paths]).map { |path| Pathname.new(path) } unless args[:csv_paths].blank?
-        @merge_policy = args[:merge_policy] unless args[:merge_policy].blank?
-        @output_path = Pathname.new(args[:output_path]) unless args[:output_path].blank?
-        @platforms = Array(args[:platforms]) & DEFAULTS[:platforms] unless args[:platforms].blank?
-        @spreadsheet_id = args[:spreadsheet_id] unless args[:spreadsheet_id].blank?
-        @sheet_ids = Array(args[:sheet_ids]) unless args[:sheet_ids].blank?
-        @export_all = args[:export_all] unless args[:export_all].blank?
-        @verbose = args[:verbose] unless args[:verbose].blank?
-        @downloaded_csvs = Array(args[:downloaded_csvs]) unless args[:downloaded_csvs].blank?
+      def initialize
+        @locales = DEFAULTS[:locales]
+        @bypass_empty_values = DEFAULTS[:bypass_empty_values]
+        @csv_paths = DEFAULTS[:csv_paths]
+        @merge_policy = DEFAULTS[:merge_policy]
+        @output_path = DEFAULTS[:output_path]
+        @platforms = DEFAULTS[:platforms]
+        @spreadsheet_id = DEFAULTS[:spreadsheet_id]
+        @sheet_ids = DEFAULTS[:sheet_ids]
+        @export_all = DEFAULTS[:export_all]
+        @verbose = DEFAULTS[:verbose]
+        @downloaded_csvs = DEFAULTS[:downloaded_csvs]
+      end
+
+      def locales=(value)
+        return unless value.is_a? Array
+
+        @locales = value.compact
+      end
+
+      def bypass_empty_values=(value)
+        @bypass_empty_values = [true, 'true'].include?(value)
+      end
+
+      def csv_paths=(value)
+        return unless value.is_a? Array
+
+        @csv_paths = value.compact.map { |path| Pathname.new(path) }
+      end
+
+      def merge_policy=(value)
+        @merge_policy = value unless value.blank?
+      end
+
+      def output_path=(value)
+        @output_path = Pathname.new(value) unless value.blank?
+      end
+
+      def platforms=(value)
+        return unless value.is_a? Array
+
+        @platforms = value.compact & DEFAULTS[:platforms]
+      end
+
+      def spreadsheet_id=(value)
+        @spreadsheet_id = value unless value.blank?
+      end
+
+      def sheet_ids=(value)
+        return unless value.is_a? Array
+
+        @sheet_ids = value.compact
+      end
+
+      def export_all=(value)
+        @export_all = [true, 'true'].include?(value)
+      end
+
+      def verbose=(value)
+        @verbose = [true, 'true'].include?(value)
+      end
+
+      def downloaded_csvs=(value)
+        return unless value.is_a? Array
+
+        @downloaded_csvs = value.compact
       end
 
       def has_sheets?
@@ -74,22 +128,6 @@ module AdLocalize
           "verbose: #{verbose}, " \
           "platforms: #{platforms}, " \
           "downloaded_csvs: #{downloaded_csvs}"
-      end
-
-      private
-
-      def apply_defaults
-        @locales = DEFAULTS[:locales]
-        @bypass_empty_values = DEFAULTS[:bypass_empty_values]
-        @csv_paths = DEFAULTS[:csv_paths]
-        @merge_policy = DEFAULTS[:merge_policy]
-        @output_path = DEFAULTS[:output_path]
-        @platforms = DEFAULTS[:platforms]
-        @spreadsheet_id = DEFAULTS[:spreadsheet_id]
-        @sheet_ids = DEFAULTS[:sheet_ids]
-        @export_all = DEFAULTS[:export_all]
-        @verbose = DEFAULTS[:verbose]
-        @downloaded_csvs = DEFAULTS[:downloaded_csvs]
       end
     end
   end

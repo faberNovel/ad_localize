@@ -90,7 +90,10 @@ If you want more examples, please open a documentation issue.
 ```Ruby
     require 'ad_localize'
     # create export request
-    export_request = Requests::ExportRequest.new(spreadsheet_id: 'some_id', sheet_ids: %w[first second], verbose: true)
+    export_request = Requests::ExportRequest.new
+    export_request.spreadsheet_id = 'some_id'
+    export_request.sheet_ids = %w[first second]
+    export_request.verbose = true
     begin
         # download files - be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
         export_request.downloaded_csvs = DownloadSpreadsheets.new.call(export_request: export_request)

@@ -22,7 +22,9 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w[json])
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = [csv_file]
+        export_request.platforms = %w[json]
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -42,7 +44,9 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: %w[ios])
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = [csv_file]
+        export_request.platforms = %w[ios]
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -66,7 +70,8 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file])
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = [csv_file]
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -86,7 +91,9 @@ module AdLocalize
         platforms = %w[ios]
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: [csv_file], platforms: platforms)
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = [csv_file]
+        export_request.platforms = platforms
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -104,7 +111,9 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: csv_files, merge_policy: 'replace')
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = csv_files
+        export_request.merge_policy = 'replace'
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -125,7 +134,9 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: csv_files, merge_policy: 'keep')
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = csv_files
+        export_request.merge_policy = 'keep'
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -146,7 +157,9 @@ module AdLocalize
         assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
 
         # When
-        export_request = Requests::ExportRequest.new(csv_paths: csv_files, bypass_empty_values: true)
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = csv_files
+        export_request.bypass_empty_values = true
         ProcessExportRequest.new.call(export_request: export_request)
 
         # Then
@@ -157,43 +170,6 @@ module AdLocalize
           diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
           assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
         end
-      end
-
-      private
-
-      def all_files(languages: DEFAULT_LANGUAGES)
-        ios_files(languages: languages) +
-          android_files(languages: languages) +
-          json_files(languages: languages) +
-          yml_files(languages: languages) +
-          properties_files(languages: languages)
-      end
-
-      def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES, files: DEFAULT_IOS_FILES)
-        languages
-          .map { |language| "#{language}.lproj" }
-          .product(files)
-          .map { |language_folder, file| "#{language_folder}/#{file}" }
-          .map { |file| with_platform_directory ? "ios/#{file}" : file }
-      end
-
-      def android_files(languages: DEFAULT_LANGUAGES)
-        languages
-          .each_with_index
-          .map { |language, i| i == 0 ? "values" : "values-#{language}" }
-          .map { |language_folder| "android/#{language_folder}/strings.xml" }
-      end
-
-      def json_files(languages: DEFAULT_LANGUAGES)
-        languages.map { |language| "json/#{language}.json" }
-      end
-
-      def yml_files(languages: DEFAULT_LANGUAGES)
-        languages.map { |language| "yml/#{language}.yml" }
-      end
-
-      def properties_files(languages: DEFAULT_LANGUAGES)
-        languages.map { |language| "properties/#{language}.properties" }
       end
     end
   end
