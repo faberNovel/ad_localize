@@ -7,7 +7,7 @@ module AdLocalize
         bypass_empty_values: false,
         csv_paths: [],
         merge_policy: Interactors::MergeWordings::DEFAULT_POLICY,
-        output_path: Pathname.new('exports'),
+        output_path: 'exports',
         spreadsheet_id: nil,
         sheet_ids: %w[0],
         export_all: false,
@@ -36,7 +36,7 @@ module AdLocalize
         @bypass_empty_values = value_for(optional: args[:bypass_empty_values], default_value: DEFAULTS[:bypass_empty_values])
         @csv_paths = value_for(optional: args[:csv_paths], default_value: DEFAULTS[:csv_paths])
         @merge_policy = value_for(optional: args[:merge_policy], default_value: DEFAULTS[:merge_policy])
-        @output_path = value_for(optional: args[:output_path], default_value: DEFAULTS[:output_path])
+        @output_path = Pathname.new(value_for(optional: args[:output_path], default_value: DEFAULTS[:output_path]))
         @platforms = value_for(optional: args[:platforms], default_value: DEFAULTS[:platforms])
         @spreadsheet_id = value_for(optional: args[:spreadsheet_id], default_value: DEFAULTS[:spreadsheet_id])
         @sheet_ids = value_for(optional: args[:sheet_ids], default_value: DEFAULTS[:sheet_ids])

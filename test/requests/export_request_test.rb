@@ -34,13 +34,13 @@ module AdLocalize
 
       test 'should get output path' do
         request = ExportRequest.new(output_path: '')
-        assert_equal ExportRequest::DEFAULTS[:output_path], request.output_path
+        assert_equal Pathname.new(ExportRequest::DEFAULTS[:output_path]), request.output_path
 
         request = ExportRequest.new(output_path: 'foo')
-        assert_equal 'foo', request.output_path
+        assert_equal Pathname.new('foo'), request.output_path
 
         request = ExportRequest.new(output_path: nil)
-        assert_equal ExportRequest::DEFAULTS[:output_path], request.output_path
+        assert_equal Pathname.new(ExportRequest::DEFAULTS[:output_path]), request.output_path
       end
 
       # test 'should get verbose' do
