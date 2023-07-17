@@ -17,7 +17,7 @@ module AdLocalize
         sheet_ids.filter_map do |sheet_id|
           begin
             url = export_url(spreadsheet_id: spreadsheet_id, sheet_id: sheet_id)
-            string = @drive_service.http(:get, url)
+            string = @drive_service.http(:get, url, options: { retries: 3, max_elapsed_time: 60 })
             next unless string
 
             tempfile = Tempfile.new
@@ -35,6 +35,7 @@ module AdLocalize
         begin
           spreadsheet = @sheet_service.get_spreadsheet(spreadsheet_id)
           sheet_ids = spreadsheet.sheets.map { |sheet| sheet.properties.sheet_id }
+          LOGGER.debug("#{sheet_ids.size} sheets in the spreadsheet")
           download_sheets_by_id(spreadsheet_id: spreadsheet_id, sheet_ids: sheet_ids)
         rescue => e
           LOGGER.error("Cannot download sheets. Error: #{e.message}")

@@ -60,11 +60,11 @@ require 'ad_localize/serializers/properties_serializer'
 require 'ad_localize/serializers/json_serializer'
 require 'ad_localize/serializers/yaml_serializer'
 
-require 'ad_localize/version'
-require 'ad_localize/ad_logger'
-require 'ad_localize/cli'
 require 'ad_localize/requests/export_request'
 require 'ad_localize/option_handler'
+require 'ad_localize/cli'
+require 'ad_localize/version'
+require 'ad_localize/ad_logger'
 
 module AdLocalize
   class Error < StandardError; end

@@ -19,12 +19,13 @@ module AdLocalize
       private
 
       def merge_simple_wordings(reference_list:, new_list:, merge_policy:)
-        new_list.each_with_index do |new_translation, index|
-          translation_reference = reference_list[index]
+        new_list.each do |label, new_translation|
+          translation_reference = reference_list[label]
           if translation_reference.nil?
-            reference_list.append(new_translation)
+            reference_list[label] = new_translation
           elsif merge_policy == REPLACE_MERGE_POLICY
-            translation_reference.value = new_translation.value
+            LOGGER.warn("[MERGE] #{label} value changed from #{translation_reference.value} to #{new_translation.value}")
+            reference_list[label].value = new_translation.value
           end
         end
       end

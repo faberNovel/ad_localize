@@ -12,10 +12,11 @@ module AdLocalize
         sheet_ids: %w[0],
         export_all: false,
         verbose: false,
-        platforms: Entities::Platform::SUPPORTED_PLATFORMS
+        platforms: Entities::Platform::SUPPORTED_PLATFORMS,
+        downloaded_csvs: []
       }
 
-      attr_accessor(:output_dir)
+      attr_accessor :output_dir
 
       attr_reader(
         :locales,
@@ -27,38 +28,11 @@ module AdLocalize
         :spreadsheet_id,
         :sheet_ids,
         :export_all,
-        :verbose
+        :verbose,
+        :downloaded_csvs
       )
 
-      def initialize(**args)
-        apply_defaults
-        @locales = args[:locales] unless args[:locales].blank?
-        @bypass_empty_values = args[:bypass_empty_values] unless args[:bypass_empty_values].nil?
-        @csv_paths = args[:csv_paths] unless args[:csv_paths].blank?
-        @merge_policy = args[:merge_policy] unless args[:merge_policy].blank?
-        @output_path = args[:output_path] unless args[:output_path].blank?
-        @platforms = args[:platforms] unless args[:platforms].blank?
-        @spreadsheet_id = args[:spreadsheet_id] unless args[:spreadsheet_id].blank?
-        @sheet_ids = args[:sheet_ids] unless args[:sheet_ids].blank?
-        @export_all = args[:export_all] unless args[:export_all].nil?
-        @verbose = args[:verbose] unless args[:verbose].nil?
-      end
-
-      def has_sheets?
-        spreadsheet_id.present?
-      end
-
-      def has_csv_paths?
-        csv_paths.present?
-      end
-
-      def many_platforms?
-        platforms.size > 1
-      end
-
-      private
-
-      def apply_defaults
+      def initialize
         @locales = DEFAULTS[:locales]
         @bypass_empty_values = DEFAULTS[:bypass_empty_values]
         @csv_paths = DEFAULTS[:csv_paths]
@@ -69,47 +43,92 @@ module AdLocalize
         @sheet_ids = DEFAULTS[:sheet_ids]
         @export_all = DEFAULTS[:export_all]
         @verbose = DEFAULTS[:verbose]
+        @downloaded_csvs = DEFAULTS[:downloaded_csvs]
       end
 
-      # def valid_locales?
-      #   locales.is_a? Array
-      # end
+      def locales=(value)
+        return unless value.is_a? Array
 
-      # def valid_bypass_empty_values?
-      #   [true, false].include? bypass_empty_values
-      # end
+        @locales = value.compact
+      end
 
-      # def valid_csv_paths?
-      #   csv_paths.is_a?(Array) && csv_paths.present? && csv_paths.all? { |csv_path| File.exist?(csv_path) }
-      # end
+      def bypass_empty_values=(value)
+        @bypass_empty_values = [true, 'true'].include?(value)
+      end
 
-      # def valid_merge_policy?
-      #   Interactors::MergeWordings::MERGE_POLICIES.include?(merge_policy)
-      # end
+      def csv_paths=(value)
+        return unless value.is_a? Array
 
-      # def valid_output_path?
-      #   output_path.is_a? Pathname
-      # end
+        @csv_paths = value.compact.map { |path| Pathname.new(path) }
+      end
 
-      # def valid_platforms?
-      #   platforms.is_a?(Array) && platforms.select { |platform| Entities::Platform::SUPPORTED_PLATFORMS.include?(platform) }.present?
-      # end
+      def merge_policy=(value)
+        @merge_policy = value unless value.blank?
+      end
 
-      # def valid_spreadsheet_id?
-      #   spreadsheet_id.nil? || spreadsheet_id.is_a?(String)
-      # end
+      def output_path=(value)
+        @output_path = Pathname.new(value) unless value.blank?
+      end
 
-      # def valid_sheet_ids?
-      #   sheet_ids.is_a?(Array) && (spreadsheet_id.nil? || sheet_ids.present?)
-      # end
+      def platforms=(value)
+        return unless value.is_a? Array
 
-      # def valid_export_all?
-      #   [true, false].include? export_all
-      # end
+        @platforms = value.compact & DEFAULTS[:platforms]
+      end
 
-      # def valid_verbose?
-      #   [true, false].include? verbose
-      # end
+      def spreadsheet_id=(value)
+        @spreadsheet_id = value unless value.blank?
+      end
+
+      def sheet_ids=(value)
+        return unless value.is_a? Array
+
+        @sheet_ids = value.compact
+      end
+
+      def export_all=(value)
+        @export_all = [true, 'true'].include?(value)
+      end
+
+      def verbose=(value)
+        @verbose = [true, 'true'].include?(value)
+      end
+
+      def downloaded_csvs=(value)
+        return unless value.is_a? Array
+
+        @downloaded_csvs = value.compact
+      end
+
+      def has_sheets?
+        spreadsheet_id.present?
+      end
+
+      def has_csv_paths?
+        all_csv_paths.present?
+      end
+
+      def many_platforms?
+        platforms.size > 1
+      end
+
+      def all_csv_paths
+        csv_paths + downloaded_csvs.map(&:path)
+      end
+
+      def to_s
+        "locales: #{locales}, " \
+          "bypass_empty_values: #{bypass_empty_values}, " \
+          "csv_paths: #{csv_paths}, " \
+          "merge_policy: #{merge_policy}, " \
+          "output_path: #{output_path}, " \
+          "spreadsheet_id: #{spreadsheet_id}, " \
+          "sheet_ids: #{sheet_ids}, " \
+          "export_all: #{export_all}, " \
+          "verbose: #{verbose}, " \
+          "platforms: #{platforms}, " \
+          "downloaded_csvs: #{downloaded_csvs}"
+      end
     end
   end
 end

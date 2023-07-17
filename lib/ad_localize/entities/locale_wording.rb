@@ -7,10 +7,10 @@ module AdLocalize
       def initialize(locale:, is_default:)
         @locale = locale
         @is_default = is_default
-        @singulars = []
-        @info_plists = []
-        @plurals = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
-        @adaptives = Hash.new { |hash, key| hash[key] = [] } # label: String => variants: [SimpleWording]
+        @singulars = {} # label => SimpleWording
+        @info_plists = {} # label => SimpleWording
+        @plurals = Hash.new { |hash, key| hash[key] = {} } # label: String => { variant_name: String => SimpleWording }
+        @adaptives = Hash.new { |hash, key| hash[key] = {} } # label: String => { variant_name: String => SimpleWording }
       end
 
       def add_wording(key:, value:, comment:)
@@ -18,13 +18,13 @@ module AdLocalize
 
         case key.type
         when WordingType::PLURAL
-          @plurals[key.label].append(wording)
+          @plurals[key.label][key.variant_name] = wording
         when WordingType::ADAPTIVE
-          @adaptives[key.label].append(wording)
+          @adaptives[key.label][key.variant_name] = wording
         when WordingType::INFO_PLIST
-          @info_plists.append(wording)
+          @info_plists[key.label] = wording
         else
-          @singulars.append(wording)
+          @singulars[key.label] = wording
         end
       end
 

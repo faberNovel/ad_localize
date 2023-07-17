@@ -27,13 +27,13 @@ module AdLocalize
         locale_wording = LocaleWording.new(locale: @locale, is_default: @is_default)
         assert_difference -> { locale_wording.plurals.size } do
           locale_wording.add_wording(key: @key, value: @value, comment: @comment)
-          plural = locale_wording.plurals[@key.label].last
+          plural = locale_wording.plurals[@key.label].values.last
           assert_equal @value, plural.value
           assert_equal @comment, plural.comment
         end
         assert_no_difference -> { locale_wording.plurals.size } do
           locale_wording.add_wording(key: @key, value: 'other', comment: 'comment #2')
-          plural = locale_wording.plurals[@key.label].last
+          plural = locale_wording.plurals[@key.label].values.last
           assert_equal 'other', plural.value
           assert_equal 'comment #2', plural.comment
         end
@@ -45,7 +45,7 @@ module AdLocalize
         locale_wording.add_wording(key: @key, value: @value, comment: @comment)
         assert_no_difference -> { locale_wording.plurals.size } do
           locale_wording.add_wording(key: @key, value: 'replace', comment: 'comment2')
-          plural = locale_wording.plurals[@key.label].last
+          plural = locale_wording.plurals[@key.label].values.last
           assert_equal 'replace', plural.value
           assert_equal 'comment2', plural.comment
         end
@@ -59,7 +59,7 @@ module AdLocalize
         other_key = Key.new(id: 'id2', label: 'label2', variant_name: 'variant_name', type: WordingType::PLURAL)
         assert_difference -> { locale_wording.plurals.size } do
           locale_wording.add_wording(key: other_key, value: 'value2', comment: 'comment2')
-          plural = locale_wording.plurals[other_key.label].last
+          plural = locale_wording.plurals[other_key.label].values.last
           assert_equal 'value2', plural.value
           assert_equal 'comment2', plural.comment
         end
@@ -70,13 +70,13 @@ module AdLocalize
         locale_wording = LocaleWording.new(locale: @locale, is_default: @is_default)
         assert_difference -> { locale_wording.adaptives.size } do
           locale_wording.add_wording(key: @key, value: @value, comment: @comment)
-          adaptive = locale_wording.adaptives[@key.label].last
+          adaptive = locale_wording.adaptives[@key.label].values.last
           assert_equal @value, adaptive.value
           assert_equal @comment, adaptive.comment
         end
         assert_no_difference -> { locale_wording.adaptives.size } do
           locale_wording.add_wording(key: @key, value: 'other', comment: 'comment #2')
-          adaptive = locale_wording.adaptives[@key.label].last
+          adaptive = locale_wording.adaptives[@key.label].values.last
           assert_equal 'other', adaptive.value
           assert_equal 'comment #2', adaptive.comment
         end
@@ -88,7 +88,7 @@ module AdLocalize
         locale_wording.add_wording(key: @key, value: @value, comment: @comment)
         assert_no_difference -> { locale_wording.adaptives.size } do
           locale_wording.add_wording(key: @key, value: 'replace', comment: 'comment2')
-          adaptive = locale_wording.adaptives[@key.label].last
+          adaptive = locale_wording.adaptives[@key.label].values.last
           assert_equal 'replace', adaptive.value
           assert_equal 'comment2', adaptive.comment
         end
@@ -103,7 +103,7 @@ module AdLocalize
                             type: WordingType::ADAPTIVE)
         assert_difference -> { locale_wording.adaptives.size } do
           locale_wording.add_wording(key: other_key, value: 'value2', comment: 'comment2')
-          adaptive = locale_wording.adaptives[other_key.label].last
+          adaptive = locale_wording.adaptives[other_key.label].values.last
           assert_equal 'value2', adaptive.value
           assert_equal 'comment2', adaptive.comment
         end
@@ -114,7 +114,7 @@ module AdLocalize
         locale_wording = LocaleWording.new(locale: @locale, is_default: @is_default)
         assert_difference -> { locale_wording.info_plists.size } do
           locale_wording.add_wording(key: @key, value: @value, comment: @comment)
-          info_plist = locale_wording.info_plists.last
+          info_plist = locale_wording.info_plists.values.last
           assert_equal @value, info_plist.value
           assert_equal @comment, info_plist.comment
         end
@@ -125,7 +125,7 @@ module AdLocalize
         locale_wording = LocaleWording.new(locale: @locale, is_default: @is_default)
         assert_difference -> { locale_wording.singulars.size } do
           locale_wording.add_wording(key: @key, value: @value, comment: @comment)
-          singular = locale_wording.singulars.last
+          singular = locale_wording.singulars.values.last
           assert_equal @value, singular.value
           assert_equal @comment, singular.comment
         end

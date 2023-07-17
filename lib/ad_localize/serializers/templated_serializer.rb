@@ -37,7 +37,7 @@ module AdLocalize
       end
 
       def map_compound_wording(label:, translations:)
-        variants = translations.map { |translation| map_simple_wording(translation: translation) }
+        variants = translations.map { |_, translation| map_simple_wording(translation: translation) }
         CompoundWordingViewModel.new(label: label, variants: variants)
       end
 
