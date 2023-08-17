@@ -4,6 +4,7 @@ module AdLocalize
     DEFAULT_OPTIONS = {
       locales: Requests::ExportRequest::DEFAULTS[:locales],
       :'non-empty-values' => Requests::ExportRequest::DEFAULTS[:bypass_empty_values],
+      :'auto-escape-percent' => Requests::ExportRequest::DEFAULTS[:auto_escape_percent],
       csv_paths: Requests::ExportRequest::DEFAULTS[:csv_paths],
       :'merge-policy' => Requests::ExportRequest::DEFAULTS[:merge_policy],
       :'target-dir' => Requests::ExportRequest::DEFAULTS[:output_path],
@@ -53,6 +54,7 @@ module AdLocalize
           exit
         end
         parser.on("-x", "--non-empty-values", TrueClass, 'Do not export keys with empty values (iOS only)')
+        parser.on("--auto-escape-percent", TrueClass, 'Add escaping for % symbol to support wording use with String formatting (iOS only)')
       end.parse!(options, into: args)
 
       args[:csv_paths] = options

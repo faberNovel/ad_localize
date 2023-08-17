@@ -38,6 +38,20 @@ module AdLocalize
         assert_not @request.bypass_empty_values
       end
 
+      test 'should detect if request auto escape empty values' do
+        @request.auto_escape_percent = true
+        assert @request.auto_escape_percent
+
+        @request.auto_escape_percent = false
+        assert_not @request.auto_escape_percent
+
+        @request.auto_escape_percent = nil
+        assert_not @request.auto_escape_percent
+
+        @request.auto_escape_percent = ''
+        assert_not @request.auto_escape_percent
+      end
+
       test 'should get csv paths' do
         @request.csv_paths = []
         assert_empty @request.csv_paths

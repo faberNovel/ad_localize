@@ -6,6 +6,7 @@ module AdLocalize
         request = Requests::ExportRequest.new
         request.locales = options[:locales]
         request.bypass_empty_values = options[:'non-empty-values']
+        request.auto_escape_percent = options[:'auto-escape-percent']
         request.csv_paths = options[:csv_paths]
         request.merge_policy = options[:'merge-policy']
         request.output_path = options[:'target-dir']

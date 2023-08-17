@@ -4,8 +4,8 @@ module AdLocalize
     class GenerateIOSFiles
       def call(wording:, export_request:)
         GenerateInfoPlist.new.call(wording: wording, export_request: export_request)
-        GenerateLocalizableStrings.new.call(wording: wording, export_request: export_request)
-        GenerateLocalizableStringsDict.new.call(wording: wording, export_request: export_request)
+        GenerateLocalizableStrings.new(export_request: export_request).call(wording: wording, export_request: export_request)
+        GenerateLocalizableStringsDict.new(export_request: export_request).call(wording: wording, export_request: export_request)
       end
     end
   end

@@ -4,8 +4,8 @@ module AdLocalize
     class LocalizableStringsdictSerializer < TemplatedSerializer
       LOCALIZABLE_STRINGSDICT_FILENAME = "Localizable.stringsdict".freeze
 
-      def initialize
-        super(sanitizer: Sanitizers::IOSSanitizer.new)
+      def initialize(export_request:)
+        super(sanitizer: Sanitizers::IOSSanitizer.new(auto_escape_percent: export_request.auto_escape_percent))
       end
 
       private
