@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+    <dict>
+        <key>plural_key1</key>
+        <dict>
+            <key>NSStringLocalizedFormatKey</key>
+            <string>%#@key@</string>
+            <key>key</key>
+            <dict>
+                <key>NSStringFormatSpecTypeKey</key>
+                <string>NSStringPluralRuleType</string>
+                <key>NSStringFormatValueTypeKey</key>
+                <string>d</string>
+                <key>other</key>
+                <string>Réduction de %1$@%%</string>
+            </dict>
+        </dict>
+        <key>plural_key2</key>
+        <dict>
+            <key>NSStringLocalizedFormatKey</key>
+            <string>%#@key@</string>
+            <key>key</key>
+            <dict>
+                <key>NSStringFormatSpecTypeKey</key>
+                <string>NSStringPluralRuleType</string>
+                <key>NSStringFormatValueTypeKey</key>
+                <string>d</string>
+                <key>other</key>
+                <string>%d %@ %2$@</string>
+            </dict>
+        </dict>
+        <key>adaptive_key1</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>Réduction de %1$@%%</string>
+            </dict>
+        </dict>
+        <key>adaptive_key2</key>
+        <dict>
+            <key>NSStringVariableWidthRuleType</key>
+            <dict>
+                <key>20</key>
+                <string>%d %@ %2$@</string>
+            </dict>
+        </dict>
+    </dict>
+</plist>
