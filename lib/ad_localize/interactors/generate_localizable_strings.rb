@@ -5,8 +5,8 @@ module AdLocalize
       LOCALIZABLE_STRINGS_FILENAME = "Localizable.strings".freeze
       LOCALE_DIRECTORY_CONVENTION = "%{locale}.lproj".freeze
 
-      def initialize(export_request:)
-        super(serializer: Serializers::LocalizableStringsSerializer.new(export_request: export_request))
+      def initialize
+        super(serializer: Serializers::LocalizableStringsSerializer.new)
       end
 
       private

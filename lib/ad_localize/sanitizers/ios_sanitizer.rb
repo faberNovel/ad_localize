@@ -2,8 +2,10 @@
 module AdLocalize
   module Sanitizers
     class IOSSanitizer
-      def initialize(auto_escape_percent: false)
-        @should_auto_escape_percent = auto_escape_percent
+      attr_accessor :should_auto_escape_percent
+
+      def initialize
+        @should_auto_escape_percent = false
       end
 
       def sanitize(value:)

@@ -10,6 +10,7 @@ module AdLocalize
       end
 
       def call(wording:, export_request:)
+        @serializer.configure(export_request: export_request) if @serializer.respond_to?(:configure)
         wording.each do |locale, locale_wording|
           next unless has_wording?(locale_wording: locale_wording)
 

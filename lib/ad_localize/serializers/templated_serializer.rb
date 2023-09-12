@@ -13,6 +13,10 @@ module AdLocalize
         render_template(template_path: template_path, variable_binding: variable_binding)
       end
 
+      def configure(export_request:)
+        # override if you need flags from export_request
+      end
+
       protected
 
       TEMPLATES_DIRECTORY = __dir__ + "/../templates"
