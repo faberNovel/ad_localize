@@ -1,0 +1,10 @@
+,key,fr,comment fr,en,comment en
+#Generic actions,,,,,
+,key1,Réduction de %1$@%,,%1$@% discount,
+,key2,%d %@ %2$@,,%d %@ %2$@,
+#Plurals,,,,,
+,plural_key1##{other},Réduction de %1$@%,,%1$@% discount,
+,plural_key2##{other},%d %@ %2$@,,%d %@ %2$@,
+#Adaptive,,,,,
+,adaptive_key1##{20},Réduction de %1$@%,,%1$@% discount,
+,adaptive_key2##{20},%d %@ %2$@,,%d %@ %2$@,

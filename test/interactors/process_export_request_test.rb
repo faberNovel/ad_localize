@@ -171,6 +171,29 @@ module AdLocalize
           assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
         end
       end
+
+      test 'it should escape percent characters' do
+        # Given
+        csv_files = %w[test/fixtures/reference_auto_escape_percent.csv]
+        csv_files.each { |file| assert(File.exist?(file), "File does not exists #{file}") }
+        reference_dir = "test/fixtures/exports_auto_escape_percent"
+        assert(File.exist?(reference_dir), "File does not exists #{reference_dir}")
+
+        # When
+        export_request = Requests::ExportRequest.new
+        export_request.csv_paths = csv_files
+        export_request.auto_escape_percent = true
+        ProcessExportRequest.new.call(export_request: export_request)
+
+        # Then
+        ios_files(files: ["Localizable.strings", "Localizable.stringsdict"]).each do |file|
+          reference_file = "#{reference_dir}/#{file}"
+          generated_file = "exports/#{file}"
+          assert(File.exist?(generated_file), "File does not exists #{generated_file}")
+          diff = Diffy::Diff.new(reference_file, generated_file, :source => 'files')
+          assert_empty(diff.to_s, "File #{generated_file} do not match reference. Diff: \n\n#{diff}\n")
+        end
+      end
     end
   end
 end

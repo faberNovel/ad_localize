@@ -5,6 +5,7 @@ module AdLocalize
       DEFAULTS = {
         locales: [],
         bypass_empty_values: false,
+        auto_escape_percent: false,
         csv_paths: [],
         merge_policy: Interactors::MergeWordings::DEFAULT_POLICY,
         output_path: Pathname.new('exports'),
@@ -21,6 +22,7 @@ module AdLocalize
       attr_reader(
         :locales,
         :bypass_empty_values,
+        :auto_escape_percent,
         :csv_paths,
         :merge_policy,
         :output_path,
@@ -35,6 +37,7 @@ module AdLocalize
       def initialize
         @locales = DEFAULTS[:locales]
         @bypass_empty_values = DEFAULTS[:bypass_empty_values]
+        @auto_escape_percent = DEFAULTS[:auto_escape_percent]
         @csv_paths = DEFAULTS[:csv_paths]
         @merge_policy = DEFAULTS[:merge_policy]
         @output_path = DEFAULTS[:output_path]
@@ -54,6 +57,10 @@ module AdLocalize
 
       def bypass_empty_values=(value)
         @bypass_empty_values = [true, 'true'].include?(value)
+      end
+
+      def auto_escape_percent=(value)
+        @auto_escape_percent = [true, 'true'].include?(value)
       end
 
       def csv_paths=(value)
@@ -119,6 +126,7 @@ module AdLocalize
       def to_s
         "locales: #{locales}, " \
           "bypass_empty_values: #{bypass_empty_values}, " \
+          "auto_escape_percent: #{auto_escape_percent}, " \
           "csv_paths: #{csv_paths}, " \
           "merge_policy: #{merge_policy}, " \
           "output_path: #{output_path}, " \

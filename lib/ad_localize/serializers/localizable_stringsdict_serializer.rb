@@ -8,6 +8,10 @@ module AdLocalize
         super(sanitizer: Sanitizers::IOSSanitizer.new)
       end
 
+      def configure(export_request:)
+        @sanitizer.should_auto_escape_percent = export_request.auto_escape_percent
+      end
+
       private
 
       def template_path

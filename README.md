@@ -76,6 +76,11 @@ $ ad_localize -d
 $ ad_localize -x
 ```
 
+* Will escape % character present in wordings (iOS feature only), this is useful when using the wording through String(format:)
+```
+$ ad_localize --auto-escape-percent
+```
+
 * Only generate wording files for the specified locales
 ```
 $ ad_localize -l fr,en

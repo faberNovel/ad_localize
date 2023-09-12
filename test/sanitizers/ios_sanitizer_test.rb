@@ -27,6 +27,36 @@ module AdLocalize
         result = IOSSanitizer.new.sanitize(value: "String \"unescaped\"")
         assert_equal "String \"unescaped\"", result
       end
+
+      test 'should not escape "%" if escaping is not enabled' do
+        percentage_value = "% abcdef 100% %1$@% 10 %. abcdef %"
+        sanitized_value = IOSSanitizer.new.sanitize(value: percentage_value)
+        assert_equal "% abcdef 100% %1$@% 10 %. abcdef %", sanitized_value
+      end
+
+      test 'should escape "%" when needed' do
+        percentage_value = "% abcdef 100% %1$@% %10$@ %$@ 10 %. abcdef %"
+        sanitizer = IOSSanitizer.new
+        sanitizer.should_auto_escape_percent = true
+        sanitized_value = sanitizer.sanitize(value: percentage_value)
+        assert_equal "%% abcdef 100%% %1$@%% %10$@ %%$@ 10 %%. abcdef %%", sanitized_value
+      end
+
+      test 'should not escape "%" when not needed for ios' do
+        percentage_value = "%@ %1$@ %s %i %d %X %ld"
+        sanitizer = IOSSanitizer.new
+        sanitizer.should_auto_escape_percent = true
+        sanitized_value = sanitizer.sanitize(value: percentage_value)
+        assert_equal "%@ %1$@ %s %i %d %X %ld", sanitized_value
+      end
+
+      test 'should escape "%" even when repeated for ios' do
+        percentage_value = "% %% %%% %%%%"
+        sanitizer = IOSSanitizer.new
+        sanitizer.should_auto_escape_percent = true
+        sanitized_value = sanitizer.sanitize(value: percentage_value)
+        assert_equal "%% %%%% %%%%%% %%%%%%%%", sanitized_value
+      end
     end
   end
 end
