@@ -7,6 +7,7 @@ module AdLocalize
         request.locales = options[:locales]
         request.bypass_empty_values = options[:'non-empty-values']
         request.auto_escape_percent = options[:'auto-escape-percent']
+        request.skip_value_stripping = options[:'skip-value-stripping']
         request.csv_paths = options[:csv_paths]
         request.merge_policy = options[:'merge-policy']
         request.output_path = options[:'target-dir']
