@@ -288,6 +288,15 @@ To see all available commands run `bundle exec rake -T` .
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/applidium/ad_localize. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+## How to release a new version
+
+1. After all your changes are reviewed and merged
+2. Create a `release` branch
+3. Update the version in field `s.version` from file `ad_localize.gemspec`
+4. Execute `make publish`
+
+You may need to configure your account at step `4.` if you've never pushed any gem. You can find all the informations you need on [the official documentation](https://guides.rubygems.org/make-your-own-gem/#your-first-gem).
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
