@@ -111,7 +111,7 @@ GEM
     webrick (1.7.0)
 
 PLATFORMS
-  arm64-darwin-21
+  ruby
 
 DEPENDENCIES
   ad_localize!
