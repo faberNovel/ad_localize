@@ -48,7 +48,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', "~> 1.0"
 
   spec.add_dependency 'activesupport', '>= 6.1.3.2', '< 8.0'
-  spec.add_dependency 'colorize', '~> 0.8'
+  spec.add_dependency 'colorize', '~> 1.0'
   spec.add_dependency 'google-apis-sheets_v4', '~> 0.9'
   spec.add_dependency 'google-apis-drive_v3', '~> 0.33.0'
 
