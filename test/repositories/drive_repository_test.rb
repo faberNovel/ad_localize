@@ -16,7 +16,6 @@ module AdLocalize
       end
 
       test 'download private sheets' do
-        skip('This test needs CI update to work')
         spreadsheet_id = '149EE3axc9e0knaCZuf7nTjj0vR7EyRhGgGT3MqWKpwM'
         sheet_ids = %w[0 877315405]
         files = DriveRepository.new.download_sheets_by_id(spreadsheet_id: spreadsheet_id, sheet_ids: sheet_ids)
