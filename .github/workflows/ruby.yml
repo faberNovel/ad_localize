@@ -20,11 +20,13 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Run linter
         run: bundle exec rubocop
+      - name: Run tests
+        run: bundle exec rake test
       - run: 'echo "$GOOGLE_APPLICATION_CREDENTIALS" > account_secret.json'
         shell: bash
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
-      - name: Run tests
-        run: bundle exec rake test
+      - name: Run private google sheet tests
+        run: bundle exec rake test_private_google_sheet
         env:
           GOOGLE_APPLICATION_CREDENTIALS: 'account_secret.json'
