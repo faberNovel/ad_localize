@@ -292,7 +292,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/applid
 
 1. After all your changes are reviewed and merged
 2. Create a `release` branch
-3. Update the version in field `s.version` from file `ad_localize.gemspec`
+3. Update the version in `lib/ad_localize/version.rb`
 4. Execute `make publish`
 
 You may need to configure your account at step `4.` if you've never pushed any gem. You can find all the informations you need on [the official documentation](https://guides.rubygems.org/make-your-own-gem/#your-first-gem).
