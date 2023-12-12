@@ -86,6 +86,11 @@ $ ad_localize --auto-escape-percent
 $ ad_localize -l fr,en
 ```
 
+* Keep extra spaces before and after translated values
+```
+$ ad_localize --skip-value-stripping
+```
+
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
 

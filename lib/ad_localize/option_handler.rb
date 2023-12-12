@@ -5,6 +5,7 @@ module AdLocalize
       locales: Requests::ExportRequest::DEFAULTS[:locales],
       :'non-empty-values' => Requests::ExportRequest::DEFAULTS[:bypass_empty_values],
       :'auto-escape-percent' => Requests::ExportRequest::DEFAULTS[:auto_escape_percent],
+      :'skip-value-stripping' => Requests::ExportRequest::DEFAULTS[:skip_value_stripping],
       csv_paths: Requests::ExportRequest::DEFAULTS[:csv_paths],
       :'merge-policy' => Requests::ExportRequest::DEFAULTS[:merge_policy],
       :'target-dir' => Requests::ExportRequest::DEFAULTS[:output_path],
@@ -39,6 +40,7 @@ module AdLocalize
         end
         parser.on("-x", "--non-empty-values", TrueClass, 'Do not export keys with empty values (iOS only)')
         parser.on("--auto-escape-percent", TrueClass, 'Add escaping for % symbol to support wording use with String formatting (iOS only)')
+        parser.on("--skip-value-stripping", TrueClass, 'Disable the removal of leading and trailing whitespaces on wording values')
       end.parse!(options, into: args)
 
       args[:csv_paths] = options

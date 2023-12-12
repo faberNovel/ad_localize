@@ -6,6 +6,7 @@ module AdLocalize
         locales: [],
         bypass_empty_values: false,
         auto_escape_percent: false,
+        skip_value_stripping: false,
         csv_paths: [],
         merge_policy: Interactors::MergeWordings::DEFAULT_POLICY,
         output_path: Pathname.new('exports'),
@@ -23,6 +24,7 @@ module AdLocalize
         :locales,
         :bypass_empty_values,
         :auto_escape_percent,
+        :skip_value_stripping,
         :csv_paths,
         :merge_policy,
         :output_path,
@@ -38,6 +40,7 @@ module AdLocalize
         @locales = DEFAULTS[:locales]
         @bypass_empty_values = DEFAULTS[:bypass_empty_values]
         @auto_escape_percent = DEFAULTS[:auto_escape_percent]
+        @skip_value_stripping = DEFAULTS[:skip_value_stripping]
         @csv_paths = DEFAULTS[:csv_paths]
         @merge_policy = DEFAULTS[:merge_policy]
         @output_path = DEFAULTS[:output_path]
@@ -61,6 +64,10 @@ module AdLocalize
 
       def auto_escape_percent=(value)
         @auto_escape_percent = [true, 'true'].include?(value)
+      end
+
+      def skip_value_stripping=(value)
+        @skip_value_stripping = [true, 'true'].include?(value)
       end
 
       def csv_paths=(value)
@@ -127,6 +134,7 @@ module AdLocalize
         "locales: #{locales}, " \
           "bypass_empty_values: #{bypass_empty_values}, " \
           "auto_escape_percent: #{auto_escape_percent}, " \
+          "skip_value_stripping: #{skip_value_stripping}, " \
           "csv_paths: #{csv_paths}, " \
           "merge_policy: #{merge_policy}, " \
           "output_path: #{output_path}, " \
