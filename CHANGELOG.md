@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - new option `--skip-value-stripping` that disable the leading and trailing whitespaces removal on wording values. The value stripping was introduced with version 6.0.0.
 
+### Changed
+
+- Updated dependencies
+
 ## 6.1.0
 ### Added
 
