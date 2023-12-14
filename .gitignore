@@ -11,3 +11,4 @@ ad_localize/tmp/
 .ruby-version
 pkg/
 exports/
+account_secret.json

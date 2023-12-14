@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated dependencies
+- Increase number of retries to 5 and timeout delay to 120s when accessing Google APIs. This reduces the amount of rate limit error when using private Google spreadsheet.
 
 ## 6.1.0
 ### Added
