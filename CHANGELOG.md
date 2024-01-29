@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [6.2.0] - 2023-12-12
+
 ### Added
 
 - new option `--skip-value-stripping` that disable the leading and trailing whitespaces removal on wording values. The value stripping was introduced with version 6.0.0.
@@ -16,12 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated dependencies
 - Increase number of retries to 5 and timeout delay to 120s when accessing Google APIs. This reduces the amount of rate limit error when using private Google spreadsheet.
 
-## 6.1.0
+## [6.1.0] - 2023-09-12
+
 ### Added
 
 - new option (iOS only) `--auto-escape-percent` that escapes % character in wording. This option should be used if the wording is intended to be used with `String(format:)`.
 
-## 6.0.0
+## [6.0.0] - 2023-07-17
+
 ### Added
 
 - Remove extra spaces before and after key/translation contents
