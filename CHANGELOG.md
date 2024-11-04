@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [6.3.0] - 2024-11-04
+
 ### Removed
 
 - Drop support for for ruby <3.1
