@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['3.0.6', '3.1.4', '3.2.0']
+        ruby: ['3.1.4', '3.2.0', '3.3.5']
 
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
           gem install bundler
           bundle install --jobs 4 --retry 3
       - name: Run linter
-        run: bundle exec rubocop
+        run: bundle exec rubocop --lint
       - name: Run tests
         run: bundle exec rake test
       - run: 'echo "$GOOGLE_APPLICATION_CREDENTIALS" > account_secret.json'
@@ -27,7 +27,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       - name: Run private google sheet tests
-        if: matrix.ruby == '3.2.0' # Limit execution on latest ruby version to prevent reaching rate limits
+        if: matrix.ruby == '3.3.5' # Limit execution on latest ruby version to prevent reaching rate limits
         run: bundle exec rake test_private_google_sheet
         env:
           GOOGLE_APPLICATION_CREDENTIALS: 'account_secret.json'
