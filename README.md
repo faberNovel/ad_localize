@@ -106,9 +106,9 @@ If you want more examples, please open a documentation issue.
     export_request.verbose = true
     begin
         # download files - be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
-        export_request.downloaded_csvs = DownloadSpreadsheets.new.call(export_request: export_request)
+        export_request.downloaded_csvs = AdLocalize::Interactors::DownloadSpreadsheets.new.call(export_request: export_request)
         # execute request
-        AdLocalize::Interactors::ExecuteExportRequest.new.call(export_request: export_request)
+        AdLocalize::Interactors::ProcessExportRequest.new.call(export_request: export_request)
     ensure
         export_request.downloaded_csvs.each do |file|
             file.close
