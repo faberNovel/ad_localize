@@ -43,6 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'colorize', '~> 1.0'
   spec.add_dependency 'google-apis-sheets_v4', '~> 0.9'
   spec.add_dependency 'google-apis-drive_v3', '~> 0.33.0'
+  spec.add_dependency 'rubyXL', '~> 3.4'
 
   spec.required_ruby_version = '>= 3.1', '< 4.0'
   spec.metadata['rubygems_mfa_required'] = 'true'

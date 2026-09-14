@@ -1,6 +1,6 @@
 # AdLocalize
 
-The purpose of this gem is to automatically generate wording files from a CSV input (CSV file or Google Spreadsheet).
+The purpose of this gem is to automatically generate wording files from a CSV or Excel input (CSV file, `.xlsx` file or Google Spreadsheet).
 It supports iOS, Android, JSON, YAML and Java Properties.
 It is a useful tool when working on a mobile application or a SPA.
 
@@ -44,6 +44,23 @@ $ ad_localize -k <your-spreadsheet-drive-key>
 * Export wording from a set of google spreadsheet tabs.
 ```
 $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
+```
+
+Google is the default download source. Use `--excel-file` to convert Microsoft Excel `.xlsx` sources before export.
+
+* Export wording from a local Excel file. Only `.xlsx` files are supported. This can be used as an offline fallback.
+```
+$ ad_localize --excel-file wordings.xlsx
+```
+
+* Export wording from an Excel sharing URL. Remote Excel files are downloaded through Microsoft Graph API and require a `MICROSOFT_GRAPH_ACCESS_TOKEN` environment variable.
+```
+$ MICROSOFT_GRAPH_ACCESS_TOKEN=<token> ad_localize --excel-file https://example.sharepoint.com/.../wordings.xlsx
+```
+
+* Export wording from specific Excel sheets.
+```
+$ ad_localize --excel-file wordings.xlsx -s <comma-separated-sheet-name-list>
 ```
 
 * Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
@@ -105,7 +122,8 @@ If you want more examples, please open a documentation issue.
     export_request.sheet_ids = %w[first second]
     export_request.verbose = true
     begin
-        # download files - be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
+        # download Google spreadsheets and convert Excel files to CSV tempfiles
+        # be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
         export_request.downloaded_csvs = AdLocalize::Interactors::DownloadSpreadsheets.new.call(export_request: export_request)
         # execute request
         AdLocalize::Interactors::ProcessExportRequest.new.call(export_request: export_request)

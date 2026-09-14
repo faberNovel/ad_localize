@@ -8,6 +8,7 @@ module AdLocalize
         auto_escape_percent: false,
         skip_value_stripping: false,
         csv_paths: [],
+        excel_file: nil,
         merge_policy: Interactors::MergeWordings::DEFAULT_POLICY,
         output_path: Pathname.new('exports'),
         spreadsheet_id: nil,
@@ -26,6 +27,7 @@ module AdLocalize
         :auto_escape_percent,
         :skip_value_stripping,
         :csv_paths,
+        :excel_file,
         :merge_policy,
         :output_path,
         :platforms,
@@ -42,6 +44,7 @@ module AdLocalize
         @auto_escape_percent = DEFAULTS[:auto_escape_percent]
         @skip_value_stripping = DEFAULTS[:skip_value_stripping]
         @csv_paths = DEFAULTS[:csv_paths]
+        @excel_file = DEFAULTS[:excel_file]
         @merge_policy = DEFAULTS[:merge_policy]
         @output_path = DEFAULTS[:output_path]
         @platforms = DEFAULTS[:platforms]
@@ -74,6 +77,10 @@ module AdLocalize
         return unless value.is_a? Array
 
         @csv_paths = value.compact.map { |path| Pathname.new(path) }
+      end
+
+      def excel_file=(value)
+        @excel_file = Pathname.new(value) unless value.blank?
       end
 
       def merge_policy=(value)
@@ -118,6 +125,10 @@ module AdLocalize
         spreadsheet_id.present?
       end
 
+      def has_excel_file?
+        excel_file.present?
+      end
+
       def has_csv_paths?
         all_csv_paths.present?
       end
@@ -136,6 +147,7 @@ module AdLocalize
           "auto_escape_percent: #{auto_escape_percent}, " \
           "skip_value_stripping: #{skip_value_stripping}, " \
           "csv_paths: #{csv_paths}, " \
+          "excel_file: #{excel_file}, " \
           "merge_policy: #{merge_policy}, " \
           "output_path: #{output_path}, " \
           "spreadsheet_id: #{spreadsheet_id}, " \
