@@ -24,6 +24,17 @@ module AdLocalize
       assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w[-m]) }
     end
 
+    test 'should parse excel file option' do
+      options = OptionHandler.parse!(%w[-f https://example.com/wordings.xlsx])
+      assert_equal 'https://example.com/wordings.xlsx', options[:'excel-file']
+
+      options = OptionHandler.parse!(%w[--excel-file wordings.xlsx])
+      assert_equal 'wordings.xlsx', options[:'excel-file']
+
+      assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w[-f]) }
+      assert_raises(OptionParser::InvalidOption) { OptionHandler.parse!(%w[-k spreadsheet_id -f wordings.xlsx]) }
+    end
+
     test 'should parse -s option' do
       options = OptionHandler.parse!(%w[-s 1])
       assert_equal %w[1], options[:sheets]
@@ -32,6 +43,13 @@ module AdLocalize
       assert_equal %w[1 2 3], options[:sheets]
 
       assert_raises(OptionParser::MissingArgument) { OptionHandler.parse!(%w[-s]) }
+    end
+
+    test 'should not keep values from previous parses' do
+      OptionHandler.parse!(%w[-s Wordings])
+      options = OptionHandler.parse!(%w[])
+
+      assert_equal Requests::ExportRequest::DEFAULTS[:sheet_ids], options[:sheets]
     end
 
     test 'should parse -o option' do

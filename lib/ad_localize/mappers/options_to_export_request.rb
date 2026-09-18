@@ -9,6 +9,7 @@ module AdLocalize
         request.auto_escape_percent = options[:'auto-escape-percent']
         request.skip_value_stripping = options[:'skip-value-stripping']
         request.csv_paths = options[:csv_paths]
+        request.excel_file = options[:'excel-file']
         request.merge_policy = options[:'merge-policy']
         request.output_path = options[:'target-dir']
         request.platforms = options[:only]

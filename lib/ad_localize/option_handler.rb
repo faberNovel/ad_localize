@@ -7,6 +7,7 @@ module AdLocalize
       :'auto-escape-percent' => Requests::ExportRequest::DEFAULTS[:auto_escape_percent],
       :'skip-value-stripping' => Requests::ExportRequest::DEFAULTS[:skip_value_stripping],
       csv_paths: Requests::ExportRequest::DEFAULTS[:csv_paths],
+      :'excel-file' => Requests::ExportRequest::DEFAULTS[:excel_file],
       :'merge-policy' => Requests::ExportRequest::DEFAULTS[:merge_policy],
       :'target-dir' => Requests::ExportRequest::DEFAULTS[:output_path],
       :'drive-key' => Requests::ExportRequest::DEFAULTS[:spreadsheet_id],
@@ -17,7 +18,7 @@ module AdLocalize
     }
 
     def self.parse!(options)
-      args = DEFAULT_OPTIONS
+      args = DEFAULT_OPTIONS.deep_dup
       OptionParser.new do |parser|
         parser.banner = 'Usage: exe/ad_localize [options] file(s)'
         parser.on("-d", "--debug", TrueClass, 'Run in debug mode')
@@ -31,8 +32,7 @@ module AdLocalize
                   'LOCALES is a comma separated list. Only generate localisation files for the specified locales')
         merge_policy_option(parser)
         platforms_option(parser)
-        parser.on("-s", "--sheets SHEET_IDS", Array,
-                  'SHEET_IDS is a comma separated list. Use a specific sheet id for Google Drive spreadsheets with several sheets')
+        spreadsheet_options(parser)
         parser.on("-t", "--target-dir PATH", String, 'Path to the target directory')
         parser.on("-v", "--version", 'Prints current version') do
           puts AdLocalize::VERSION
@@ -43,6 +43,7 @@ module AdLocalize
         parser.on("--skip-value-stripping", TrueClass, 'Disable the removal of leading and trailing whitespaces on wording values')
       end.parse!(options, into: args)
 
+      validate_download_source!(args)
       args[:csv_paths] = options
       return args
     end
@@ -63,6 +64,18 @@ module AdLocalize
         \tkeep: if a key is already defined, keep the previous value.
       DOC
       parser.on("-m", "--merge-policy POLICY", Interactors::MergeWordings::MERGE_POLICIES, merge_policy_option)
+    end
+
+    def self.spreadsheet_options(parser)
+      parser.on("-f", "--excel-file XLSX_PATH_OR_URL", String, 'Use a Microsoft Excel .xlsx file path or sharing URL')
+      parser.on("-s", "--sheets SHEET_IDS", Array,
+                'SHEET_IDS is a comma separated list. Use specific sheet ids for Google Drive spreadsheets or sheet names for Excel files')
+    end
+
+    def self.validate_download_source!(args)
+      return unless args[:'drive-key'].present? && args[:'excel-file'].present?
+
+      raise OptionParser::InvalidOption.new('Use either --drive-key or --excel-file, not both')
     end
 
     def self.platforms_option(parser)

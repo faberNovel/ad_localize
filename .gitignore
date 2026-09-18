@@ -12,3 +12,4 @@ ad_localize/tmp/
 pkg/
 exports/
 account_secret.json
+.DS_Store
