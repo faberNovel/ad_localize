@@ -51,7 +51,7 @@ module AdLocalize
     def self.export_all_option(parser)
       export_all_option = <<~DOC
         Export all sheets from spreadsheet specified by --drive-key or --excel-file option.
-        \tBy default, generates one export directory per sheet (see -m|--merge-sheets option to merge them).
+        \tSheets are merged into a single export (see -m|--merge-policy option to handle duplicated keys).
         \tWith --drive-key, an GCLOUD_CLIENT_SECRET environment variable containing the client_secret.json content is needed.
       DOC
       parser.on("-e", "--export-all-sheets", TrueClass, export_all_option)

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `--excel-file` option to support XLSX file format in addition of CSV files.
 - Add `script/excel-downloader-browser.py`, a temporary workaround script that downloads an XLSX file from sharepoint by using the user browser session 
 - drop support of ruby 3.1
+- Fix plurals and adaptive wordings emptied when merging several sheets or csv files with the default `keep` merge policy
 
 ## [6.3.0] - 2024-11-04
 

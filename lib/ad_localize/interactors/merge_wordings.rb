@@ -32,7 +32,8 @@ module AdLocalize
 
       def merge_compound_wordings(reference_hash:, new_hash:, merge_policy:)
         new_hash.each do |new_label, new_list|
-          if reference_hash[new_label].nil?
+          # key? instead of [] : plurals and adaptives hashes create an empty entry on read
+          if !reference_hash.key?(new_label)
             reference_hash[new_label] = new_list
           elsif merge_policy == REPLACE_MERGE_POLICY
             merge_simple_wordings(reference_list: reference_hash[new_label], new_list: new_list, merge_policy: merge_policy)
