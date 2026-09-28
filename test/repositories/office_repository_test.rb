@@ -47,6 +47,27 @@ module AdLocalize
         assert_equal 'Delete', wording['en'].singulars['delete'].value
       end
 
+      test 'converts all excel sheets to csv when export all is requested' do
+        @created_files = @repository.convert_to_csvs(
+          paths: [Pathname.new('test/fixtures/reference_excel_sheets.xlsx')],
+          sheet_ids: Requests::ExportRequest::DEFAULTS[:sheet_ids],
+          export_all: true
+        )
+
+        assert_equal 2, @created_files.size
+      end
+
+      test 'rejects non https remote excel files' do
+        Net::HTTP.stub(:start, ->(*) { flunk 'no request expected' }) do
+          @created_files = @repository.convert_to_csvs(
+            paths: [Pathname.new('http://example.com/reference.xlsx')],
+            sheet_ids: Requests::ExportRequest::DEFAULTS[:sheet_ids]
+          )
+        end
+
+        assert_empty @created_files
+      end
+
       test 'downloads remote excel file before converting it to csv' do
         response = Struct.new(:code, :body) { def [](header); end }
         body = File.binread('test/fixtures/reference_whitespace_stripping.xlsx')
@@ -67,7 +88,7 @@ module AdLocalize
           end
         end
 
-        assert_equal 'graph.microsoft.com', requests.first.uri.hostname
+        assert_equal URI(OfficeRepository::GRAPH_URL).hostname, requests.first.uri.hostname
         expected_path = '/v1.0/shares/u!aHR0cHM6Ly9leGFtcGxlLmNvbS9yZWZlcmVuY2Vfd2hpdGVzcGFjZV9zdHJpcHBpbmcueGxzeA/driveItem/content'
         assert_equal expected_path, requests.first.uri.path
         assert_equal 'Bearer token', requests.first['Authorization']

@@ -12,18 +12,18 @@ module AdLocalize
         false
       end
 
-      def convert_to_csvs(paths:, sheet_ids:)
+      def convert_to_csvs(paths:, sheet_ids:, export_all: false)
         paths.flat_map do |path|
-          convert_to_csv(path: path, sheet_ids: sheet_ids)
+          convert_to_csv(path: path, sheet_ids: sheet_ids, export_all: export_all)
         end
       end
 
       private
 
-      def convert_to_csv(path:, sheet_ids:)
+      def convert_to_csv(path:, sheet_ids:, export_all:)
         source_file = download(path: path) if remote_source?(path)
         workbook = RubyXL::Parser.parse(source_file&.path || path.to_s)
-        worksheets = worksheets_for(workbook: workbook, sheet_ids: sheet_ids, path: path)
+        worksheets = worksheets_for(workbook: workbook, sheet_ids: sheet_ids, path: path, export_all: export_all)
         worksheets.map { |worksheet| write_csv(worksheet: worksheet) }
       rescue StandardError => e
         LOGGER.error("Cannot convert Excel file #{path}. Error: #{e.message}")
@@ -49,7 +49,10 @@ module AdLocalize
         when 200..299
           response.body
         when 300..399
-          download_body(uri: URI.join(uri, response['location']), limit: limit - 1)
+          redirect_uri = URI.join(uri, response['location'])
+          raise "Refusing to follow non-https redirect to #{redirect_uri.hostname}" unless redirect_uri.scheme == 'https'
+
+          download_body(uri: redirect_uri, limit: limit - 1)
         else
           raise "HTTP #{response.code}"
         end
@@ -57,8 +60,9 @@ module AdLocalize
 
       def get(uri:)
         request = Net::HTTP::Get.new(uri)
-        request['Authorization'] = "Bearer #{graph_access_token}"
-        Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+        # Graph redirects to a pre-authenticated download URL: never leak the token to another host
+        request['Authorization'] = "Bearer #{graph_access_token}" if uri.hostname == URI(GRAPH_URL).hostname
+        Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
           http.request(request)
         end
       end
@@ -78,7 +82,8 @@ module AdLocalize
         end
       end
 
-      def worksheets_for(workbook:, sheet_ids:, path:)
+      def worksheets_for(workbook:, sheet_ids:, path:, export_all:)
+        return workbook.worksheets if export_all
         return [workbook.worksheets.first] if sheet_ids == Requests::ExportRequest::DEFAULTS[:sheet_ids]
 
         sheet_ids.filter_map do |sheet_id|
@@ -100,7 +105,9 @@ module AdLocalize
       end
 
       def remote_source?(path)
-        path.to_s.start_with?('http://', 'https://')
+        raise "Only https URLs are supported for Excel files: #{path}" if path.to_s.start_with?('http://')
+
+        path.to_s.start_with?('https://')
       end
     end
   end

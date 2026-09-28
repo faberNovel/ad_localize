@@ -27,7 +27,9 @@ module AdLocalize
       end
 
       def download_office_spreadsheets(export_request:)
-        @office_repository.convert_to_csvs(paths: [export_request.excel_file], sheet_ids: export_request.sheet_ids)
+        @office_repository.convert_to_csvs(paths: [export_request.excel_file],
+                                           sheet_ids: export_request.sheet_ids,
+                                           export_all: export_request.export_all)
       end
     end
   end

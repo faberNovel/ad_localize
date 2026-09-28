@@ -1,406 +1,148 @@
 #!/usr/bin/env python3
 #
+# Download an Excel file from a SharePoint share link by using the user browser session.
+# Accepts long share links (/:x:/r/...?d=w<id>) and Excel Online URLs (Doc.aspx?sourcedoc={id}).
+# Short share links (/:x:/s/...) must first be opened in the browser to get the Excel Online URL.
+#
 # This script can be used with ad_localize like this :
-# 
+#
 # XLSX_FILE=$(./excel-downloader-browser.py <sharepoint share url>)
 # ad_localize --excel-file $XLSX_FILE
 #
 
 import argparse
-import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 import time
+import uuid
 import webbrowser
 from pathlib import Path
-from urllib.parse import urlparse, unquote, quote
-from urllib.request import Request, urlopen
+from urllib.parse import parse_qsl, unquote, urlencode, urlparse, urlunparse
+
+EXCEL_SUFFIX = ".xlsx"
+SITE_PREFIXES = ("sites", "teams", "personal")
+STABLE_CHECKS = 3
 
 
-def run(cmd):
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return result.stdout.strip()
+def file_unique_id(query):
+    # Long share links carry the file id as d=w<32 hex>, Excel Online URLs as sourcedoc={guid}
+    raw = query.get("d", "").removeprefix("w") or query.get("sourcedoc") or query.get("UniqueId", "")
+    hex_id = re.sub(r"[{}\-]", "", raw).lower()
+
+    if not re.fullmatch(r"[0-9a-f]{32}", hex_id):
+        return None
+
+    return str(uuid.UUID(hex_id))
 
 
-def get_graph_token():
-    try:
-        return run([
-            "az",
-            "account",
-            "get-access-token",
-            "--resource-type",
-            "ms-graph",
-            "--query",
-            "accessToken",
-            "-o",
-            "tsv",
-        ])
-    except subprocess.CalledProcessError:
-        print(
-            "Impossible de récupérer un token Graph. "
-            "Exécutez 'az login'.",
-            file=sys.stderr,
+def site_path(path):
+    parts = [p for p in unquote(path).split("/") if p]
+    index = next((i for i, p in enumerate(parts) if p in SITE_PREFIXES), None)
+
+    if index is None or index + 1 >= len(parts):
+        return None
+
+    return "/" + "/".join(parts[index:index + 2])
+
+
+def download_url(share_url):
+    url = urlparse(share_url)
+
+    if url.scheme != "https" or not url.hostname:
+        raise ValueError(f"URL de partage https attendue : {share_url}")
+
+    unique_id = file_unique_id(dict(parse_qsl(url.query)))
+    site = site_path(url.path)
+
+    if not unique_id or not site:
+        raise ValueError(
+            "Identifiant du fichier introuvable dans le lien. "
+            "Pour un lien court (/:x:/s/...), ouvrez-le dans le navigateur "
+            "et relancez le script avec l'URL affichée dans la barre d'adresse."
         )
-        sys.exit(1)
+
+    query = urlencode({"UniqueId": unique_id})
+
+    return urlunparse(("https", url.netloc, f"{site}/_layouts/15/download.aspx", "", query, ""))
 
 
-def graph_get(url, token):
-    req = Request(
-        url,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json",
-        },
-    )
-
-    with urlopen(req) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
-def graph_redirect(url, token):
-    req = Request(
-        url,
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-        method="GET",
-    )
-
-    import urllib.request
-
-    class RedirectBlocker(urllib.request.HTTPRedirectHandler):
-        def redirect_request(
-            self,
-            req,
-            fp,
-            code,
-            msg,
-            headers,
-            newurl,
-        ):
-            return None
-
-    opener = urllib.request.build_opener(RedirectBlocker)
-
-    try:
-        opener.open(req)
-        raise RuntimeError("Aucune redirection reçue")
-
-    except Exception as e:
-        if hasattr(e, "headers"):
-            location = e.headers.get("Location")
-            if location:
-                return location
-        raise
-
-def graph_encode_path(path):
-    return quote(path, safe="/")
-
-def parse_sharepoint_url(url):
-    u = urlparse(url)
-
-    path = unquote(u.path)
-
-    parts = [p for p in path.split("/") if p]
-
-    site_index = parts.index("sites")
-
-    site_name = parts[site_index + 1]
-
-    library_name = parts[site_index + 2]
-
-    file_segments = parts[site_index + 3:]
-
-    file_path = "/".join(file_segments)
-
+def snapshot(downloads_dir):
     return {
-        "hostname": u.hostname,
-        "site_name": site_name,
-        "site_path": f"/sites/{site_name}",
-        "library_name": library_name,
-        "file_path": file_path,
-        "filename": os.path.basename(file_path),
+        p.name: p.stat().st_mtime_ns
+        for p in Path(downloads_dir).iterdir()
+        if p.is_file()
     }
 
 
-def snapshot_downloads(downloads_dir):
-    snapshot = {}
-
-    for p in Path(downloads_dir).iterdir():
-        if not p.is_file():
-            continue
-
-        stat = p.stat()
-
-        snapshot[str(p)] = {
-            "size": stat.st_size,
-            "mtime_ns": stat.st_mtime_ns,
-        }
-
-    return snapshot
-
-
-def wait_for_download(
-    downloads_dir,
-    filename,
-    baseline,
-    timeout=180,
-):
-    stem = Path(filename).stem
-    suffix = Path(filename).suffix
-
-    pattern = re.compile(
-        rf"^{re.escape(stem)}(?: \((\d+)\))?{re.escape(suffix)}$",
-        re.IGNORECASE,
-    )
-
-    partial_suffixes = (
-        ".crdownload",
-        ".download",
-        ".part",
-        ".partial",
-        ".tmp",
-    )
-
+def wait_for_download(downloads_dir, baseline, timeout):
     deadline = time.monotonic() + timeout
-
-    stability = {}
+    last_seen = None
+    stable_count = 0
 
     while time.monotonic() < deadline:
-
-        candidates = []
-
-        for entry in Path(downloads_dir).iterdir():
-
-            if not entry.is_file():
-                continue
-
-            lower = entry.name.lower()
-
-            if lower.endswith(partial_suffixes):
-                continue
-
-            if not pattern.fullmatch(entry.name):
-                continue
-
-            stat = entry.stat()
-
-            old = baseline.get(str(entry))
-
-            changed = (
-                old is None
-                or old["size"] != stat.st_size
-                or old["mtime_ns"] != stat.st_mtime_ns
-            )
-
-            if not changed:
-                continue
-
-            candidates.append(
-                {
-                    "path": str(entry),
-                    "size": stat.st_size,
-                    "mtime_ns": stat.st_mtime_ns,
-                }
-            )
+        # Browsers write to a temporary name (.crdownload, .part, ...) and rename at the end,
+        # so only completed files carry the .xlsx suffix
+        candidates = [
+            p for p in Path(downloads_dir).iterdir()
+            if p.is_file()
+            and p.suffix.lower() == EXCEL_SUFFIX
+            and baseline.get(p.name) != p.stat().st_mtime_ns
+        ]
 
         if candidates:
+            newest = max(candidates, key=lambda p: p.stat().st_mtime_ns)
+            current = (newest, newest.stat().st_size)
 
-            candidate = max(
-                candidates,
-                key=lambda x: x["mtime_ns"],
-            )
+            stable_count = stable_count + 1 if current == last_seen else 1
+            last_seen = current
 
-            path = candidate["path"]
-            size = candidate["size"]
-
-            previous = stability.get(path)
-
-            if previous and previous["size"] == size:
-                count = previous["count"] + 1
-            else:
-                count = 1
-
-            stability = {
-                path: {
-                    "size": size,
-                    "count": count,
-                }
-            }
-
-            if size > 0 and count >= 3:
-                return path
-
-        else:
-            stability = {}
+            if current[1] > 0 and stable_count >= STABLE_CHECKS:
+                return newest
 
         time.sleep(1)
 
-    raise TimeoutError(
-        f"Téléchargement non détecté pour {filename}"
-    )
+    raise TimeoutError(f"Aucun fichier {EXCEL_SUFFIX} téléchargé dans {downloads_dir}")
 
 
 def main():
-
     parser = argparse.ArgumentParser(
-        description="Téléchargement SharePoint via Graph + navigateur"
+        description="Téléchargement d'un fichier Excel SharePoint via la session du navigateur"
     )
-
-    parser.add_argument(
-        "sharepoint_url",
-        help="URL SharePoint du fichier",
-    )
-
+    parser.add_argument("share_url", help="Lien de partage SharePoint du fichier")
     parser.add_argument(
         "-o",
         "--output",
         help="Fichier de sortie. Si absent, un fichier temporaire est utilisé.",
     )
-
     args = parser.parse_args()
 
-    sharepoint_url = args.sharepoint_url
-    output_file = args.output
+    downloads_dir = os.environ.get("DOWNLOADS_DIR", str(Path.home() / "Downloads"))
+    timeout = int(os.environ.get("DOWNLOAD_TIMEOUT", "180"))
 
-    token = get_graph_token()
+    try:
+        url = download_url(args.share_url)
+        baseline = snapshot(downloads_dir)
 
-    info = parse_sharepoint_url(sharepoint_url)
+        print("Ouverture navigateur...", file=sys.stderr)
+        webbrowser.open(url)
 
-    hostname = info["hostname"]
-    site_path = info["site_path"]
-    file_path = info["file_path"]
-    file_name = info["filename"]
+        downloaded_file = wait_for_download(downloads_dir, baseline, timeout)
+    except (ValueError, TimeoutError, OSError) as e:
+        print(f"Erreur : {e}", file=sys.stderr)
+        sys.exit(1)
 
-    print("HOSTNAME :", hostname, file=sys.stderr)
-    print("SITE_PATH :", site_path, file=sys.stderr)
-    print("FILE_PATH :", file_path, file=sys.stderr)
-    print("FILE_NAME :", file_name, file=sys.stderr)
-
-    print("Recherche du Site ID...", file=sys.stderr)
-
-    site = graph_get(
-        f"https://graph.microsoft.com/v1.0/sites/{hostname}:{site_path}",
-        token,
-    )
-
-    site_id = site["id"]
-
-    print("SITE_ID :", site_id, file=sys.stderr)
-
-    drives = graph_get(
-        f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives",
-        token,
-    )
-
-    drive_id = None
-
-    for drive in drives.get("value", []):
-        weburl = drive.get("webUrl", "").lower()
-
-        if "shared%20documents" in weburl:
-            drive_id = drive["id"]
-            break
-
-    if not drive_id:
-        drive_id = drives["value"][0]["id"]
-
-    print("DRIVE_ID :", drive_id, file=sys.stderr)
-
-    downloads_dir = os.environ.get(
-        "DOWNLOADS_DIR",
-        str(Path.home() / "Downloads"),
-    )
-
-    baseline = snapshot_downloads(downloads_dir)
-
-    encoded_file_path = graph_encode_path(file_path)
-
-    download_url = (
-        f"https://graph.microsoft.com/v1.0/"
-        f"drives/{drive_id}"
-        f"/root:/{encoded_file_path}:/content"
-    )
-
-    redirect_url = graph_redirect(
-        download_url,
-        token,
-    )
-
-    parsed_redirect = urlparse(redirect_url)
-
-    if parsed_redirect.hostname.lower() != hostname.lower():
-        raise RuntimeError(
-            "Hostname de redirection inattendu"
-        )
-
-    print("Ouverture navigateur...", file=sys.stderr)
-
-    webbrowser.open(redirect_url)
-
-    downloaded_file = wait_for_download(
-        downloads_dir,
-        file_name,
-        baseline,
-        timeout=int(
-            os.environ.get(
-                "DOWNLOAD_TIMEOUT",
-                "180",
-            )
-        ),
-    )
-
-    if output_file:
-
-        output_file = os.path.abspath(output_file)
-
-        parent_dir = os.path.dirname(output_file)
-
-        if parent_dir:
-            os.makedirs(
-                parent_dir,
-                exist_ok=True,
-            )
-
-        final_file = output_file
-
+    if args.output:
+        final_file = Path(args.output).resolve()
+        final_file.parent.mkdir(parents=True, exist_ok=True)
     else:
+        final_file = Path(tempfile.mkdtemp(prefix="sharepoint-download-")) / downloaded_file.name
 
-        tmp_dir = tempfile.mkdtemp(
-            prefix="sharepoint-download-"
-        )
+    shutil.move(downloaded_file, final_file)
 
-        final_file = os.path.join(
-            tmp_dir,
-            file_name,
-        )
-
-    shutil.move(
-        downloaded_file,
-        final_file,
-    )
-
-    size = os.path.getsize(final_file)
-
-    if size == 0:
-        raise RuntimeError(
-            "Le fichier téléchargé est vide"
-        )
-
-    print(file=sys.stderr)
-    print("Téléchargement réussi", file=sys.stderr)
-    print("Source  :", downloaded_file, file=sys.stderr)
-    print("Fichier :", final_file, file=sys.stderr)
-    print("Taille  :", size, "octets", file=sys.stderr)
+    print("Téléchargement réussi :", final_file, file=sys.stderr)
     print(final_file)
 
 
