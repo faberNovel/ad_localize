@@ -108,6 +108,30 @@ $ ad_localize -l fr,en
 $ ad_localize --skip-value-stripping
 ```
 
+### Download from an external source with the browser
+
+When the wording file must first be downloaded from an external source (for example a SharePoint share link) and no API access is available, `scripts/download_with_navigator` downloads it through your browser, so that your browser session and cookies are used.
+
+The script opens the URL in the default browser, waits for the download to complete in `~/Downloads`, moves the file to a temporary directory (or to the `-o` path) and prints its path on stdout.
+
+* Download a file from its raw URL
+```
+$ scripts/download_with_navigator <url>
+```
+
+* Download a file from a SharePoint share link
+```
+$ scripts/download_with_navigator <sharepoint share url> --source sharepoint
+```
+
+* Download a file then export its wording with ad_localize
+```
+$ XLSX_FILE=$(scripts/download_with_navigator <sharepoint share url> --source sharepoint)
+$ ad_localize --excel-file "$XLSX_FILE"
+```
+
+Run `scripts/download_with_navigator -h` for all options. The `DOWNLOADS_DIR` (default `~/Downloads`) and `DOWNLOAD_TIMEOUT` (default `180` seconds) environment variables can be used to change the watched directory and the wait duration.
+
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
 

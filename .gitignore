@@ -13,3 +13,4 @@ pkg/
 exports/
 account_secret.json
 .DS_Store
+__pycache__/

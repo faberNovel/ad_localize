@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+#
+# Download a file through the user browser, so that the download uses the browser session and cookies.
+# The URL is opened as is, unless a --source option tells how to turn it into a download URL :
+#
+# --source sharepoint : the URL is a SharePoint share link, its query is replaced with download=1
+#
+# This script can be used with ad_localize like this :
+#
+# XLSX_FILE=$(./download_with_navigator <sharepoint share url> --source sharepoint)
+# ad_localize --excel-file "$XLSX_FILE"
+#
+
+import argparse
+import os
+import shutil
+import sys
+import tempfile
+import time
+import webbrowser
+from pathlib import Path
+from urllib.parse import urlencode, urlparse, urlunparse
+
+# Browsers write to a temporary name and rename it when the download is complete
+PARTIAL_SUFFIXES = (".crdownload", ".part", ".download", ".tmp")
+STABLE_CHECKS = 3
+
+
+def sharepoint_url(url):
+    parsed = urlparse(url)
+
+    return urlunparse(parsed._replace(query=urlencode({"download": "1"}), fragment=""))
+
+
+SOURCES = {
+    "sharepoint": sharepoint_url,
+}
+
+
+def download_url(url, source):
+    parsed = urlparse(url)
+
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise ValueError(f"http(s) URL expected: {url}")
+
+    return SOURCES[source](url) if source else url
+
+
+def completed_files(downloads_dir):
+    return [
+        p for p in Path(downloads_dir).iterdir()
+        if p.is_file()
+        and not p.name.startswith(".")
+        and p.suffix.lower() not in PARTIAL_SUFFIXES
+    ]
+
+
+def snapshot(downloads_dir):
+    return {p.name: p.stat().st_mtime_ns for p in completed_files(downloads_dir)}
+
+
+def wait_for_download(downloads_dir, baseline, timeout):
+    deadline = time.monotonic() + timeout
+    last_seen = None
+    stable_count = 0
+
+    while time.monotonic() < deadline:
+        candidates = [
+            p for p in completed_files(downloads_dir)
+            if baseline.get(p.name) != p.stat().st_mtime_ns
+        ]
+
+        if candidates:
+            newest = max(candidates, key=lambda p: p.stat().st_mtime_ns)
+            current = (newest, newest.stat().st_size)
+
+            stable_count = stable_count + 1 if current == last_seen else 1
+            last_seen = current
+
+            if current[1] > 0 and stable_count >= STABLE_CHECKS:
+                return newest
+
+        time.sleep(1)
+
+    raise TimeoutError(f"No file downloaded in {downloads_dir}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Download a file through the browser, using the user session"
+    )
+    parser.add_argument("url", help="URL of the file to download")
+    parser.add_argument(
+        "--source",
+        choices=sorted(SOURCES),
+        help="Origin of the URL, used to turn it into a download URL. If missing, the URL is opened as is.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output file. If missing, a temporary file is used.",
+    )
+    args = parser.parse_args()
+
+    downloads_dir = os.environ.get("DOWNLOADS_DIR", str(Path.home() / "Downloads"))
+    timeout = int(os.environ.get("DOWNLOAD_TIMEOUT", "180"))
+
+    try:
+        url = download_url(args.url, args.source)
+        baseline = snapshot(downloads_dir)
+
+        print("Opening browser...", file=sys.stderr)
+        webbrowser.open(url)
+
+        downloaded_file = wait_for_download(downloads_dir, baseline, timeout)
+    except (ValueError, TimeoutError, OSError) as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.output:
+        final_file = Path(args.output).resolve()
+        final_file.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        final_file = Path(tempfile.mkdtemp(prefix="navigator-download-")) / downloaded_file.name
+
+    shutil.move(downloaded_file, final_file)
+
+    print("Download succeeded:", final_file, file=sys.stderr)
+    print(final_file)
+
+
+if __name__ == "__main__":
+    main()
