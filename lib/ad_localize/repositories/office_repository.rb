@@ -54,7 +54,7 @@ module AdLocalize
 
           download_body(uri: redirect_uri, limit: limit - 1)
         else
-          raise "HTTP #{response.code}"
+          raise "HTTP #{response.code}: #{response.body}"
         end
       end
 
