@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q(AdLocalize helps with mobile and web applications wording)
   spec.description   = %q(AdLocalize produces localization files from platform agnostic wording.
-                          Supported wording format : CSV. Supported export format: iOS, Android, JSON and YAML)
+                          Supported wording format : CSV, XLSX. Supported export format: iOS, Android, JSON and YAML)
   spec.homepage      = 'https://github.com/applidium/ad_localize'
 
   # Specify which files should be added to the gem when it is released.
