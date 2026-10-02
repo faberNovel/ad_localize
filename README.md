@@ -1,6 +1,6 @@
 # AdLocalize
 
-The purpose of this gem is to automatically generate wording files from a CSV input (CSV file or Google Spreadsheet).
+The purpose of this gem is to automatically generate wording files from a CSV or Excel input (CSV file, `.xlsx` file or Google Spreadsheet).
 It supports iOS, Android, JSON, YAML and Java Properties.
 It is a useful tool when working on a mobile application or a SPA.
 
@@ -44,6 +44,23 @@ $ ad_localize -k <your-spreadsheet-drive-key>
 * Export wording from a set of google spreadsheet tabs.
 ```
 $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
+```
+
+Google is the default download source. Use `--excel-file` to convert Microsoft Excel `.xlsx` sources before export.
+
+* Export wording from a local Excel file. Only `.xlsx` files are supported. This can be used as an offline fallback.
+```
+$ ad_localize --excel-file wordings.xlsx
+```
+
+* Export wording from an Excel sharing URL. Remote Excel files are downloaded through Microsoft Graph API and require a `MICROSOFT_GRAPH_ACCESS_TOKEN` environment variable.
+```
+$ MICROSOFT_GRAPH_ACCESS_TOKEN=<token> ad_localize --excel-file https://example.sharepoint.com/.../wordings.xlsx
+```
+
+* Export wording from specific Excel sheets.
+```
+$ ad_localize --excel-file wordings.xlsx -s <comma-separated-sheet-name-list>
 ```
 
 * Export wording from a private google spreadsheet. It requires a [Google Cloud Service Account](#using-a-google-cloud-service-account).
@@ -91,6 +108,32 @@ $ ad_localize -l fr,en
 $ ad_localize --skip-value-stripping
 ```
 
+### Download from an external source with the browser
+
+When the wording file must first be downloaded from an external source (for example a SharePoint share link) and no API access is available, `scripts/download_with_navigator` downloads it through your browser, so that your browser session and cookies are used.
+
+The script opens the URL in the default browser, waits for the download to complete in `~/Downloads`, moves the file to a temporary directory (or to the `-o` path) and prints its path on stdout.
+
+If you download the script on its own (outside of this repository), make it executable with `chmod +x download_with_navigator`, or run it with `python3 download_with_navigator ...`.
+
+* Download a file from its raw URL
+```
+$ scripts/download_with_navigator <url>
+```
+
+* Download a file from a SharePoint share link
+```
+$ scripts/download_with_navigator <sharepoint share url> --source sharepoint
+```
+
+* Download a file then export its wording with ad_localize
+```
+$ XLSX_FILE=$(scripts/download_with_navigator <sharepoint share url> --source sharepoint)
+$ ad_localize --excel-file "$XLSX_FILE"
+```
+
+Run `scripts/download_with_navigator -h` for all options, and `scripts/download_with_navigator --version` to check the version of a downloaded copy. The `DOWNLOADS_DIR` (default `~/Downloads`) and `DOWNLOAD_TIMEOUT` (default `180` seconds) environment variables can be used to change the watched directory and the wait duration.
+
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
 
@@ -105,7 +148,8 @@ If you want more examples, please open a documentation issue.
     export_request.sheet_ids = %w[first second]
     export_request.verbose = true
     begin
-        # download files - be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
+        # download Google spreadsheets and convert Excel files to CSV tempfiles
+        # be sure that GOOGLE_APPLICATION_CREDENTIALS is set if you use service account
         export_request.downloaded_csvs = AdLocalize::Interactors::DownloadSpreadsheets.new.call(export_request: export_request)
         # execute request
         AdLocalize::Interactors::ProcessExportRequest.new.call(export_request: export_request)

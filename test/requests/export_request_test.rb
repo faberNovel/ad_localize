@@ -64,6 +64,14 @@ module AdLocalize
         end
       end
 
+      test 'should get excel file' do
+        assert_nil @request.excel_file
+        ['', nil].each { |value| assert_no_changes(-> { @request.excel_file }) { @request.excel_file = value } }
+        @request.excel_file = 'wordings.xlsx'
+
+        assert_equal Pathname.new('wordings.xlsx'), @request.excel_file
+      end
+
       test 'should get merge policy' do
         assert_no_changes -> { @request.merge_policy } do
           @request.merge_policy = nil

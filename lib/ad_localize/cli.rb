@@ -5,7 +5,7 @@ module AdLocalize
       options = OptionHandler.parse!(args)
       export_request = Mappers::OptionsToExportRequest.new.map(options: options)
       LOGGER.debug("Export request options : #{export_request}")
-      export_request.downloaded_csvs = Interactors::DownloadSpreadsheets.new.call(export_request: export_request) if export_request.has_sheets?
+      export_request.downloaded_csvs = Interactors::DownloadSpreadsheets.new.call(export_request: export_request)
       Interactors::ProcessExportRequest.new.call(export_request: export_request)
     ensure
       export_request&.downloaded_csvs&.each do |file|

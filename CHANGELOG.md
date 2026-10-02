@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [6.4.0]
+
+- Add `--excel-file` option to support XLSX file format in addition of CSV files.
+- Add `scripts/download_with_navigator`, a temporary workaround script that downloads a file through the user browser session (`--source sharepoint` turns a SharePoint share link into a download link)
+- drop support of ruby 3.1
+- Fix plurals and adaptive wordings emptied when merging several sheets or csv files with the default `keep` merge policy
+- Fix the key appended to the last value of a Google Sheet export without trailing newline, by requiring csv >= 3.2.7
+
 ## [6.3.0] - 2024-11-04
 
 ### Removed
