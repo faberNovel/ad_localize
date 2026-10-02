@@ -114,6 +114,8 @@ When the wording file must first be downloaded from an external source (for exam
 
 The script opens the URL in the default browser, waits for the download to complete in `~/Downloads`, moves the file to a temporary directory (or to the `-o` path) and prints its path on stdout.
 
+If you download the script on its own (outside of this repository), make it executable with `chmod +x download_with_navigator`, or run it with `python3 download_with_navigator ...`.
+
 * Download a file from its raw URL
 ```
 $ scripts/download_with_navigator <url>
@@ -130,7 +132,7 @@ $ XLSX_FILE=$(scripts/download_with_navigator <sharepoint share url> --source sh
 $ ad_localize --excel-file "$XLSX_FILE"
 ```
 
-Run `scripts/download_with_navigator -h` for all options. The `DOWNLOADS_DIR` (default `~/Downloads`) and `DOWNLOAD_TIMEOUT` (default `180` seconds) environment variables can be used to change the watched directory and the wait duration.
+Run `scripts/download_with_navigator -h` for all options, and `scripts/download_with_navigator --version` to check the version of a downloaded copy. The `DOWNLOADS_DIR` (default `~/Downloads`) and `DOWNLOAD_TIMEOUT` (default `180` seconds) environment variables can be used to change the watched directory and the wait duration.
 
 ### In a Ruby program
 There are many possibilities when using AdLocalize in a ruby program. You can add support to your own wording format, support other platforms, select which locales you want to export, generate wording file content without writing on the disk and many more.
