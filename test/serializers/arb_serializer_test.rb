@@ -45,8 +45,8 @@ module AdLocalize
 
       test 'should render plurals as ICU messages' do
         wordings = [
-          ['rate##{one}', 'Rate %1$@ star', nil],
-          ['rate##{other}', 'Rate %1$@ stars', 'Rating']
+          ["rate##\{one}", 'Rate %1$@ star', nil],
+          ["rate##\{other}", 'Rate %1$@ stars', 'Rating']
         ]
         locale_wording = build_locale_wording(locale: 'en', wordings: wordings)
 
