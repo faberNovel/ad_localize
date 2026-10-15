@@ -33,6 +33,8 @@ module AdLocalize
           GenerateJSON.new.call(wording: wording, export_request: export_request)
         when Entities::Platform::PROPERTIES
           GenerateProperties.new.call(wording: wording, export_request: export_request)
+        when Entities::Platform::ARB
+          GenerateARB.new.call(wording: wording, export_request: export_request)
         end
       end
     end

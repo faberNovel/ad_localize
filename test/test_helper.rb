@@ -19,7 +19,8 @@ class TestCase < ActiveSupport::TestCase
       android_files(languages: languages) +
       json_files(languages: languages) +
       yml_files(languages: languages) +
-      properties_files(languages: languages)
+      properties_files(languages: languages) +
+      arb_files(languages: languages)
   end
 
   def ios_files(with_platform_directory: true, languages: DEFAULT_LANGUAGES, files: DEFAULT_IOS_FILES)
@@ -47,5 +48,9 @@ class TestCase < ActiveSupport::TestCase
 
   def properties_files(languages: DEFAULT_LANGUAGES)
     languages.map { |language| "properties/#{language}.properties" }
+  end
+
+  def arb_files(languages: DEFAULT_LANGUAGES)
+    languages.map { |language| "arb/app_#{language}.arb" }
   end
 end

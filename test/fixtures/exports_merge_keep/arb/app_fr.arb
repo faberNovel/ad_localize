@@ -1,0 +1,32 @@
+{
+  "@@locale": "fr",
+  "delete": "Supprimer",
+  "@delete": {
+    "description": "Comment fr"
+  },
+  "send": "Envoyer",
+  "send_again": "Renvoyer",
+  "quit": "Quitter",
+  "done": "Terminer",
+  "save": "Enregistrer",
+  "login_title": "Login",
+  "login_email_title": "Email",
+  "login_password": "Mot de passe",
+  "unescaped_format": "String \"unescaped\"",
+  "escaped_format": "String \"escaped\"",
+  "space_before_key": "Value",
+  "space_after_key": "Value",
+  "password_specialchar_error": "Caractères spéciaux autorisés : - / : ; ( ) € & @ . , ? ! '' [ ] '{' '}' # % ^ * + = _ | ~ < > $ £ ¥ ` ° \"",
+  "assess_rate_trip_voiceover": "{count, plural, one{Attribuer {p1} étoile} other{Attribuer {p1} étoiles}}",
+  "@assess_rate_trip_voiceover": {
+    "description": "Si %1$@<=3 : prononcer également assess_comment_placeholder. Si %1$@>3 : prononcer également assess_optional_comment_placeholder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "p1": {
+        "type": "String"
+      }
+    }
+  }
+}
