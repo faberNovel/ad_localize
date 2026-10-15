@@ -1,7 +1,7 @@
 # AdLocalize
 
 The purpose of this gem is to automatically generate wording files from a CSV or Excel input (CSV file, `.xlsx` file or Google Spreadsheet).
-It supports iOS, Android, JSON, YAML and Java Properties.
+It supports iOS, Android, Flutter (ARB), JSON, YAML and Java Properties.
 It is a useful tool when working on a mobile application or a SPA.
 
 ## Migration from 5.x to 6.0.0
@@ -203,15 +203,15 @@ $ ad_localize -k <your-spreadsheet-drive-key> -s <comma-separated-sheet-id-list>
 - Any column after the `key` column will be considered as a locale column (except from the optional `comment` columns)
 - Keys should contain only letter, number, underscore and dot : [a-z0-9_.]+.
 - Format specifiers must be numeroted if there are more than one in a translation string (eg: `"%1$@ %2$@'s report"`).
-- _Only for Android_ keys without translation won't be considered
+- _Only for Android and ARB_ keys without translation won't be considered
 - Lines starting with a comment will be ignored
 
 ### Comments
 
-_Only for Android and iOS_
+_Only for Android, iOS and ARB_
 
-To add comments for iOS or Android, simply add a comment column using the naming convention `comment <locale>`.
-Comments are available in `strings.xml`, `Localizable.strings`, `Localizable.stringsdict`, `InfoPlist.strings`. Here is an example for `InfoPlist.strings` :
+To add comments for iOS, Android or ARB, simply add a comment column using the naming convention `comment <locale>`.
+Comments are available in `strings.xml`, `Localizable.strings`, `Localizable.stringsdict`, `InfoPlist.strings` and in the `description` of ARB entries. Here is an example for `InfoPlist.strings` :
 
 | key | en | comment en |
 | --- | --- | --- |
@@ -225,7 +225,7 @@ Comments are available in `strings.xml`, `Localizable.strings`, `Localizable.str
 
 ### Key with plural notation
 
-_Only for Android and iOS_
+_Only for Android, iOS and ARB_
 
 Syntax for plural keys in the CSV file: `key##{text}`.
 
@@ -236,7 +236,7 @@ Syntax for plural keys in the CSV file: `key##{text}`.
 
 ### String interpolation mapping
 
-_Only for Android_
+_Only for Android and ARB_
 
 If you want to share a spreadsheet between iOS and Android, you can write the wording using the iOS string interpolation convention.
 The translation to android convention will be done automagically.
@@ -284,6 +284,40 @@ fr:
     email: "email"
 ```
 
+### ARB (Flutter)
+
+ARB files are generated for [Flutter `gen-l10n`](https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization) from the same spreadsheet as iOS and Android:
+
+- Files are named `app_<locale>.arb`. Locales use the Flutter convention (`pt-BR` becomes `pt_BR`).
+- Keys keep their name; dots are replaced by underscores (`login.email.title` becomes `login_email_title`). Keys must be valid Dart identifiers (starting with a lowercase letter), a warning is logged otherwise.
+- iOS format specifiers are converted to ICU placeholders: `%1$@` becomes `{p1}` (`String`), `%d`/`%i` become `int` placeholders and `%f` becomes a `double` placeholder.
+- Plural keys are converted to ICU plurals with a `count` placeholder, e.g. `{count, plural, one{Rate {p1} star} other{Rate {p1} stars}}`.
+- `InfoPlist` and adaptive keys are iOS only and are not exported.
+- `'`, `{` and `}` are escaped, so `use-escaping: true` is required in your `l10n.yaml`:
+
+```yaml
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+use-escaping: true
+```
+
+| key | en |
+| --- | --- |
+| from_to | from %1$@ to %2$@ |
+
+```json
+{
+  "@@locale": "en",
+  "from_to": "from {p1} to {p2}",
+  "@from_to": {
+    "placeholders": {
+      "p1": { "type": "String" },
+      "p2": { "type": "String" }
+    }
+  }
+}
+```
 
 ## Output
 
@@ -300,6 +334,9 @@ exports/
 │   │   └── strings.xml
 │   └── values-en
 │       └── strings.xml
+├── arb
+│   ├── app_en.arb
+│   └── app_fr.arb
 ├── ios
 │   ├── en.lproj
 │   │   ├── InfoPlist.strings

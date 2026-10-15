@@ -7,7 +7,8 @@ module AdLocalize
       YML = 'yml'
       JSON = 'json'
       PROPERTIES = 'properties'
-      SUPPORTED_PLATFORMS = [IOS, ANDROID, YML, JSON, PROPERTIES]
+      ARB = 'arb'
+      SUPPORTED_PLATFORMS = [IOS, ANDROID, YML, JSON, PROPERTIES, ARB]
     end
   end
 end

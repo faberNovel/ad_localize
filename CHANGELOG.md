@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Add `arb` platform to export Flutter ARB files (`app_<locale>.arb`) compatible with `flutter gen-l10n`
+
 ## [6.4.0] - 2026-10-02
 
 ### Added
