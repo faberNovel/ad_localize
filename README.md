@@ -53,7 +53,7 @@ Google is the default download source. Use `--excel-file` to convert Microsoft E
 $ ad_localize --excel-file wordings.xlsx
 ```
 
-* Export wording from an Excel sharing URL. Remote Excel files are downloaded through Microsoft Graph API and require a `MICROSOFT_GRAPH_ACCESS_TOKEN` environment variable.
+* Export wording from an Excel sharing URL. Remote Excel files require a `MICROSOFT_GRAPH_ACCESS_TOKEN` environment variable. The content is read directly through the Microsoft Graph Excel API (no file download), so recent SharePoint edits are reflected.
 ```
 $ MICROSOFT_GRAPH_ACCESS_TOKEN=<token> ad_localize --excel-file https://example.sharepoint.com/.../wordings.xlsx
 ```
