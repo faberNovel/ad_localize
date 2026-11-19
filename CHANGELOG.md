@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Security
+
+- Bump `addressable` to 2.9.2, `activesupport` to 8.1.4.1 and `nokogiri` to 1.19.7 to fix vulnerabilities reported by Dependabot
+
 ## [6.4.0] - 2026-10-02
 
 ### Added
