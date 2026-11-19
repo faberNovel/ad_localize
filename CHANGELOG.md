@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [6.4.1] - 2026-11-19
+
 ### Security
 
 - Raise the minimum `activesupport` version required by the gemspec from `6.1.3.2` to `8.1.4.1` to prevent resolving to a vulnerable version
