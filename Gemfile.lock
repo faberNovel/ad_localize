@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ad_localize (6.4.0)
+    ad_localize (6.4.1)
       activesupport (>= 8.1.4.1, < 9.0)
       colorize (~> 1.0)
       csv (~> 3.2, >= 3.2.7)
